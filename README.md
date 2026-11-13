@@ -131,12 +131,12 @@ project/
 
 特别感谢经典的**《魔塔》（Magic Tower）**，本作的灵感来源于它的核心循环：一层一层向上、在有限资源中取舍。本作不复制其地图、名称或对白。
 
-## 许可证
-
-本项目基于 [MIT License](LICENSE) 发布。
-
 ## 💬 加入微信交流群
 
 扫码加入微信交流群，分享攻略、反馈问题、聊聊星穹塔。
 
-![微信交流群二维码](https://i.imgur.com/bm6RKQo.jpeg)
+<img src="https://i.imgur.com/bm6RKQo.jpeg" alt="微信交流群二维码" width="200" />
+
+## 许可证
+
+本项目基于 [MIT License](LICENSE) 发布。
