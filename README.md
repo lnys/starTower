@@ -134,3 +134,9 @@ project/
 ## 许可证
 
 本项目基于 [MIT License](LICENSE) 发布。
+
+## 💬 加入微信交流群
+
+扫码加入微信交流群，分享攻略、反馈问题、聊聊星穹塔。
+
+![微信交流群二维码](https://i.imgur.com/bm6RKQo.jpeg)
