@@ -1,0 +1,23 @@
+{
+  "name": "mota-tower",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "魔塔（Mota）风格 RPG —— Vue 3 + Vite",
+  "scripts": {
+    "images": "node scripts/generate-images.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node tests/star-engine.mjs && node tests/star-rules.mjs && node tools/star-verify.mjs"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "vue": "^3.5.45"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "vite": "^5.4.21",
+    "vite-plugin-singlefile": "^2.3.4"
+  }
+}

@@ -1,0 +1,98 @@
+// 《星穹塔》第 33–36 层地图（草稿，待校验）。
+// 字符：. 空地  # 墙  % 裂墙  w 假墙  ~ 熔岩  * 虚空  y/b/r 门  a 机关门  ^ 上楼梯  v 下楼梯
+// 其余字符按本层 legend 查实体。
+export default [
+  {
+    index: 33,
+    entry: { x: 0, y: 9 },
+    legend: { o: 'slagSoldier', p: 'magmaHound', q: 'forgeMage', s: 'ironKnight', R: 'redCrystal', U: 'blueCrystal', P: 'redPotion', Q: 'bluePotion', Y: 'yellowKey' },
+    grid: [
+      '###########',
+      '###########',
+      '##########^',
+      '##.R.#Pp.#.',
+      '##..o#Q..yY',
+      '##...y..q#.',
+      '###y##o..#p',
+      '##...##y##.',
+      'v#Pq.#Usp#Y',
+      '.##y###b##.',
+      '..Y..o..Y..',
+    ],
+    events: [],
+  },
+  {
+    index: 34,
+    entry: { x: 10, y: 3 },
+    legend: { o: 'slagSoldier', p: 'magmaHound', q: 'forgeMage', s: 'ironKnight', R: 'redCrystal', U: 'blueCrystal', P: 'redPotion', Q: 'bluePotion', Y: 'yellowKey', L: 'blueKey', F: 'furnaceShield' },
+    grid: [
+      '###########',
+      '#.F#P.#RU##',
+      '#..#.q#.P#v',
+      '##a#..#p.#.',
+      '#ss##y##b#L',
+      '#o.Y..Yp.Y.',
+      '##y##y##y##',
+      '#..#..#...#',
+      '#.o#..#q.p#',
+      '#P.#q.#..Q#',
+      '#####^#####',
+    ],
+    events: [
+      {
+        id: 'f34-knights',
+        floor: 34,
+        trigger: { op: 'allDefeated', at: [{ x: 1, y: 4 }, { x: 2, y: 4 }] },
+        effects: [{ op: 'setTerrain', x: 2, y: 3, terrain: '.' }],
+      },
+    ],
+  },
+  {
+    index: 35,
+    entry: { x: 5, y: 9 },
+    legend: { o: 'slagSoldier', x: 'lavaDrake', R: 'redCrystal', U: 'blueCrystal', Q: 'bluePotion', Y: 'yellowKey' },
+    grid: [
+      '###########',
+      '###########',
+      '###########',
+      '####..R####',
+      '...#.o.####',
+      '^..x...####',
+      '...#...####',
+      '#o##..U####',
+      '#w###y#####',
+      '#..Y....Q.#',
+      '#....v....#',
+    ],
+    events: [
+      {
+        id: 'f35-dragon',
+        floor: 35,
+        trigger: { op: 'defeated', at: { x: 3, y: 5 } },
+        effects: [
+          { op: 'spawnItem', x: 3, y: 5, id: 'frostCore' },
+          { op: 'say', text: '熔岩巨龙倒下了，它守护的霜核落在原地。' },
+        ],
+      },
+    ],
+  },
+  {
+    index: 36,
+    entry: { x: 1, y: 5 },
+    legend: { s: 'ironKnight', q: 'forgeMage', p: 'magmaHound', t: 'hammerLord', R: 'redCrystal', U: 'blueCrystal', P: 'redPotion', Q: 'bluePotion', Y: 'yellowKey' },
+    grid: [
+      '###########',
+      '#R..#.#..Q.',
+      '#..s#.#.Y..',
+      '##y##.#q...',
+      '#.Y.~Y~.p..',
+      'v...ypy....',
+      '#Y..#.#....',
+      '##y##t##y#s',
+      '#Pq.#b#.P#.',
+      '#..s#U#pq#.',
+      '#######P.#^',
+    ],
+    events: [],
+  },
+]

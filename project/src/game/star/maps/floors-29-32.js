@@ -1,0 +1,95 @@
+// 《星穹塔》第 29–32 层地图（草稿，待校验）。
+// 字符：. 空地  # 墙  % 裂墙  w 假墙  ~ 熔岩  * 虚空  y/b/r 门  a 机关门  ^ 上楼梯  v 下楼梯
+// 其余字符按本层 legend 查实体。
+export default [
+  {
+    index: 29,
+    entry: { x: 9, y: 2 },
+    legend: { m: 'glassGolem', k: 'echoMage', l: 'twinShade', R: 'redCrystal', U: 'blueCrystal', P: 'redPotion', Q: 'bluePotion', Y: 'yellowKey', E: 'redKey' },
+    grid: [
+      '######PR#PU',
+      '#######y#b#',
+      '#.mykYy.Y.v',
+      '#.#######y#',
+      '#..k...#lll',
+      '^...m..##a#',
+      '##.Y.kP#.E.',
+      '##.m...#..Q',
+      '###########',
+      '###########',
+      '###########',
+    ],
+    events: [
+      { id: 'f29-gate', floor: 29, trigger: { op: 'allDefeated', at: [{ x: 8, y: 4 }, { x: 9, y: 4 }, { x: 10, y: 4 }] }, effects: [{ op: 'setTerrain', x: 9, y: 5, terrain: '.' }] },
+    ],
+  },
+  {
+    index: 30,
+    entry: { x: 1, y: 5 },
+    legend: { j: 'mirrorShade', n: 'mirrorBoss', Q: 'bluePotion' },
+    grid: [
+      '###########',
+      'Q.#.....###',
+      'Q.#.....###',
+      '..#.....###',
+      '..#.....###',
+      'v.#..n..###',
+      '#r###a#####',
+      '#.j.j.j.j.#',
+      '#.........#',
+      '#..j...j..#',
+      '###########',
+    ],
+    events: [
+      { id: 'f30-gate', floor: 30, trigger: { op: 'allDefeated', at: [{ x: 2, y: 7 }, { x: 4, y: 7 }, { x: 6, y: 7 }, { x: 8, y: 7 }, { x: 3, y: 9 }, { x: 7, y: 9 }] }, effects: [{ op: 'setTerrain', x: 5, y: 6, terrain: '.' }] },
+      {
+        id: 'f30-boss', floor: 30, trigger: { op: 'defeated', at: { x: 5, y: 5 } },
+        effects: [
+          { op: 'addStair', x: 5, y: 4, dir: 'up' },
+          { op: 'spawnItem', x: 5, y: 5, id: 'redCrystal' },
+          { op: 'spawnItem', x: 4, y: 4, id: 'blueCrystal' },
+        ],
+      },
+    ],
+  },
+  {
+    index: 31,
+    entry: { x: 5, y: 3 },
+    legend: { o: 'slagSoldier', p: 'magmaHound', q: 'forgeMage', R: 'redCrystal', U: 'blueCrystal', P: 'redPotion', Q: 'bluePotion', Y: 'yellowKey', G: 'guide', N: 'merchant' },
+    grid: [
+      '###########',
+      '######.R#PU',
+      '#G..N##y#b#',
+      '#.....YyYo.',
+      '#..Y.vy#y#.',
+      '#.o..#P#Q#y',
+      '#Y..o#p#o#p',
+      '#.....####.',
+      '#.qo.#####^',
+      '#....######',
+      '###########',
+    ],
+    events: [
+      { id: 'f31-guide', floor: 31, trigger: { op: 'talked', npc: 'guide' }, effects: [{ op: 'say', text: '这里是四区检查点。墙上有裂纹的地方，后面多半藏着东西，三十七层尤其多。' }] },
+    ],
+  },
+  {
+    index: 32,
+    entry: { x: 9, y: 8 },
+    legend: { o: 'slagSoldier', p: 'magmaHound', q: 'forgeMage', R: 'redCrystal', U: 'blueCrystal', P: 'redPotion', Y: 'yellowKey', L: 'blueKey', A: 'altar' },
+    grid: [
+      '#####P#####',
+      '#####.#####',
+      '#####p#####',
+      '#####Y#####',
+      '#####y#####',
+      '#RP#...#YU#',
+      '#..#qAo#.o#',
+      '##y#.p.#y##',
+      '^..o..Yp..v',
+      '##y#####y##',
+      '#P.o###qYL#',
+    ],
+    events: [],
+  },
+]
