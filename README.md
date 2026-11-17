@@ -110,6 +110,21 @@ project/
 
 ## 更新说明
 
+### v1.0.1 — 2026-11-17
+
+- 📦 新增可复用 Skill，入口为 [SKILL.md](SKILL.md)，名称 `$star-tower`。当前目录即完整 Skill 包，包含 `project/` 原创源码快照、`MANIFEST.sha256` 校验清单、`verify.sh` 和 `rebuild.sh`，不包含编译产物与依赖缓存。
+- 🖥️ 还原后可构建网页、Mac Universal 桌面版和 Windows x64 安装版／便携版。
+- 🛠️ `rebuild.sh` 只写入空目录，运行锁定依赖安装、通关回放和网页构建。
+- ✅ 完整通关报告和桌面说明位于 [通关测试](project/通关测试.md) 与 [桌面版打包](project/docs/桌面版打包.md)。历史验证包含 Intel Mac 启动、Mac 包完整性及 Windows 安装包结构检查；Apple 芯片和 Windows 实机运行尚未验证。
+
+```bash
+bash verify.sh
+bash rebuild.sh /path/to/empty/star-tower
+cd /path/to/empty/star-tower
+npm run dist:mac
+npm run dist:win
+```
+
 ### v1.0.0 — 2026-11-13 首次发布
 
 - 🎉 正式发布第一版《星穹塔》，共 50 层、五个区域、五位区域首领。
@@ -142,18 +157,3 @@ project/
 ## 许可证
 
 本项目基于 [MIT License](LICENSE) 发布。
-
-
-## 可复用 Skill（2026-11-17 更新）
-
-入口为 [SKILL.md](SKILL.md)，名称 `$star-tower`。当前目录即完整 skill 包，包含 `project/` 原创源码快照、`MANIFEST.sha256` 校验清单、`verify.sh` 和 `rebuild.sh`。还原后可构建网页、Mac Universal 桌面版和 Windows x64 安装版／便携版，不包含编译产物与依赖缓存。
-
-```bash
-bash verify.sh
-bash rebuild.sh /path/to/empty/star-tower
-cd /path/to/empty/star-tower
-npm run dist:mac
-npm run dist:win
-```
-
-`rebuild.sh` 只写入空目录，运行锁定依赖安装、通关回放和网页构建。完整通关报告和桌面说明位于 `project/通关测试.md` 与 `project/docs/桌面版打包.md`。历史验证包含 Intel Mac 启动、Mac 包完整性及 Windows 安装包结构检查；Apple 芯片和 Windows 实机运行尚未验证。
