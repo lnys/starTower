@@ -284,6 +284,18 @@ t('撤销：撤销一步后状态与动作前一致；失败的动作不占撤�
   assert.equal(at6, 6)
 })
 
+t('失败操作不能吃掉已有的撤销记录', () => {
+  const defs = world([[7, 5, '#']])
+  const s = play(defs)
+  const before = serialize(s)
+  moveHero(s, defs, 'right')
+  const history = [...s.history]
+  moveHero(s, defs, 'right')
+  assert.deepEqual(s.history, history)
+  assert.equal(undo(s).ok, true)
+  assert.equal(serialize(s), before)
+})
+
 t('撤销上限 50 步', () => {
   const defs = world()
   const s = play(defs, { x: 5, y: 5 })

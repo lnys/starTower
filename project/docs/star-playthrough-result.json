@@ -1,0 +1,230 @@
+{
+  "won": true,
+  "maxFloor": 50,
+  "actions": 3774,
+  "stuck": null,
+  "snaps": {
+    "10": {
+      "floor": 11,
+      "hp": 980,
+      "atk": 40,
+      "def": 49,
+      "gold": 219,
+      "keys": [
+        0,
+        0,
+        0
+      ],
+      "altar": 3,
+      "items": {
+        "compass": 1
+      },
+      "flags": {
+        "tideSpear": false,
+        "charm": false,
+        "dragonFang": false,
+        "starShield": false
+      }
+    },
+    "20": {
+      "floor": 21,
+      "hp": 1943,
+      "atk": 90,
+      "def": 111,
+      "gold": 342,
+      "keys": [
+        2,
+        0,
+        0
+      ],
+      "altar": 5,
+      "items": {
+        "compass": 1,
+        "pickaxe": 1,
+        "flask": 1
+      },
+      "flags": {
+        "tideSpear": true,
+        "charm": false,
+        "dragonFang": false,
+        "starShield": false
+      }
+    },
+    "30": {
+      "floor": 31,
+      "hp": 981,
+      "atk": 153,
+      "def": 206,
+      "gold": 312,
+      "keys": [
+        1,
+        0,
+        1
+      ],
+      "altar": 9,
+      "items": {
+        "compass": 1,
+        "pickaxe": 1,
+        "flask": 0,
+        "mirrorJump": 1
+      },
+      "flags": {
+        "tideSpear": true,
+        "charm": true,
+        "dragonFang": false,
+        "starShield": false
+      }
+    },
+    "40": {
+      "floor": 41,
+      "hp": 8582,
+      "atk": 268,
+      "def": 368,
+      "gold": 1622,
+      "keys": [
+        0,
+        0,
+        1
+      ],
+      "altar": 13,
+      "items": {
+        "compass": 1,
+        "pickaxe": 1,
+        "flask": 0,
+        "mirrorJump": 1,
+        "frostCore": 1
+      },
+      "flags": {
+        "tideSpear": true,
+        "charm": true,
+        "dragonFang": true,
+        "starShield": false
+      }
+    },
+    "49": {
+      "floor": 50,
+      "hp": 9551,
+      "atk": 378,
+      "def": 501,
+      "gold": 1782,
+      "keys": [
+        0,
+        0,
+        0
+      ],
+      "altar": 15,
+      "items": {
+        "compass": 1,
+        "pickaxe": 1,
+        "flask": 0,
+        "mirrorJump": 1,
+        "frostCore": 1,
+        "bomb": 1
+      },
+      "flags": {
+        "tideSpear": true,
+        "charm": true,
+        "dragonFang": true,
+        "starShield": true
+      }
+    },
+    "final": {
+      "floor": 50,
+      "hp": 791,
+      "atk": 378,
+      "def": 501,
+      "gold": 5782,
+      "keys": [
+        0,
+        0,
+        0
+      ],
+      "altar": 15,
+      "items": {
+        "compass": 1,
+        "pickaxe": 1,
+        "flask": 0,
+        "mirrorJump": 1,
+        "frostCore": 1,
+        "bomb": 1
+      },
+      "flags": {
+        "tideSpear": true,
+        "charm": true,
+        "dragonFang": true,
+        "starShield": true
+      }
+    }
+  },
+  "minHp": {
+    "1": 138,
+    "2": 920,
+    "3": 968,
+    "4": 968,
+    "5": 1057,
+    "6": 1057,
+    "7": 1163,
+    "8": 1052,
+    "9": 949,
+    "10": 980,
+    "11": 879,
+    "12": 629,
+    "13": 405,
+    "14": 345,
+    "15": 375,
+    "16": 247,
+    "17": 355,
+    "18": 565,
+    "19": 1905,
+    "20": 438,
+    "21": 138,
+    "22": 1273,
+    "23": 1063,
+    "24": 575,
+    "25": 170,
+    "26": 138,
+    "27": 138,
+    "28": 288,
+    "29": 888,
+    "30": 981,
+    "31": 981,
+    "32": 1189,
+    "33": 1269,
+    "34": 1364,
+    "35": 1934,
+    "36": 2524,
+    "37": 3244,
+    "38": 5465,
+    "39": 5465,
+    "40": 8465,
+    "41": 8084,
+    "42": 7684,
+    "43": 6995,
+    "44": 6995,
+    "45": 6995,
+    "46": 7995,
+    "47": 8755,
+    "48": 8355,
+    "49": 8355,
+    "50": 791
+  },
+  "engineErrors": [],
+  "dataIssues": [
+    "裂墙数量：第 41 层 实际 0 处，规格 1 处",
+    "（信息）全塔裂墙合计 9 处，规格 §8.4 为 10 处",
+    "第 4 层：黄门 实际 3 规格 4",
+    "第 8 层：黄门 实际 4 规格 5",
+    "第 14 层：黄门 实际 4 规格 5",
+    "第 15 层：黄门 实际 3 规格 4",
+    "第 16 层：黄门 实际 4 规格 5",
+    "第 17 层：黄门 实际 3 规格 4",
+    "第 18 层：黄门 实际 4 规格 5",
+    "第 19 层：黄门 实际 4 规格 5",
+    "第 22 层：黄门 实际 5 规格 4",
+    "第 25 层：黄门 实际 2 规格 3",
+    "第 28 层：黄门 实际 3 规格 4",
+    "第 39 层：蓝药 实际 4 规格 1",
+    "第 48 层：蓝药 实际 2 规格 4；蓝钥 实际 1 规格 2"
+  ],
+  "dataHash": "8f1ed819d3b1"
+}

@@ -8,6 +8,7 @@
 //
 // ---------------- 贪心机器人策略 ----------------
 // 每一步重新规划（不做长期计划），规划在「全塔已到过的楼层」上做一次多层 BFS。
+// BFS 是逐步重规划的启发式搜索，不构成穷尽求解；实际动作全部由真实引擎执行。
 // BFS 状态 = (楼层, x, y, 黄/蓝/红钥匙数)。可通行的格子与实际引擎规则一致：
 //   - 墙、虚空、机关门：不可通行；裂墙仅在持有矿镐时可凿；熔岩仅在持有霜核时可清除
 //   - 假墙：可撞开（一步），门：有对应钥匙才可开（一步）
@@ -32,7 +33,7 @@
 // 卡住时不修改地图与数值，输出诊断（打不动的怪、被阻塞的前进路线、钥匙不足的门）后退出。
 
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { createGame, moveHero, buyAltar, merchantBuy, useItem } from '../src/game/star/engine.js'
 import { combat, altarPrice, ALTAR_TIER } from '../src/game/star/rules.js'
 import { MONSTERS, KEYS, GEAR, HOLD, ACTIVE, CONSUMABLES, MERCHANTS, LAST_FLOOR } from '../src/game/star/data.js'
@@ -192,7 +193,9 @@ function checkData() {
     // 楼梯对：上楼梯的落点楼层必须在邻域内有对应的下楼梯（引擎只支持 ±1 层）
     if (n < LAST_FLOOR) {
       for (const s of stairCells(d, 'up')) {
-        if (!near(stairCells(defs[n + 1], 'down'), s.x, s.y)) {
+        const target = defs[n].stairTo?.[ck(s.x, s.y)] ?? n + 1
+        if (target === 26) continue
+        if (!near(stairCells(defs[target], 'down'), s.x, s.y)) {
           const note = n === 43 ? '（规格 §8.4：43 层明处的上楼梯应通往第 45 层）' : ''
           issues.push(`第 ${n} 层上楼梯 (${s.x},${s.y}) 在引擎中通往第 ${n + 1} 层，但该层邻域没有下楼梯；引擎 engine.js 的 step() 在此回退分支会抛 TypeError（return 处读取 cp.floor）${note}`)
         }
@@ -200,7 +203,8 @@ function checkData() {
     }
     if (n > 1) {
       for (const s of stairCells(d, 'down')) {
-        if (!near(stairCells(defs[n - 1], 'up'), s.x, s.y)) {
+        const target = defs[n].stairTo?.[ck(s.x, s.y)] ?? n - 1
+        if (!near(stairCells(defs[target], 'up'), s.x, s.y)) {
           const note = n === 45 ? '（规格 §8.4：45 层下楼梯应通往第 43 层）' : ''
           issues.push(`第 ${n} 层下楼梯 (${s.x},${s.y}) 在引擎中通往第 ${n - 1} 层，但该层邻域没有上楼梯；引擎 step() 在此回退分支会抛 TypeError${note}`)
         }
@@ -314,9 +318,9 @@ function view(state, f) {
   return viewCache.get(f)
 }
 
-/** 与引擎 counterpart() + landing() 相同的楼梯规则；返回 null 表示引擎会报错 */
+/** 与引擎一致：stairTo 优先，否则相邻层；单向层回退到入口。 */
 function stairDest(state, f, dir, x, y) {
-  const t = dir === 'up' ? f + 1 : f - 1
+  const t = defs[f].stairTo?.[ck(x, y)] ?? (dir === 'up' ? f + 1 : f - 1)
   if (t < 1 || t > LAST_FLOOR) return null
   const want = dir === 'up' ? 'v' : '^'
   const w = view(state, t)
@@ -388,7 +392,9 @@ function search(state, mode, reserve, opts = {}) {
     if (!memo.has(id)) memo.set(id, evalMon(state, id, pillars))
     return memo.get(id)
   }
-  const k0 = [state.hero.keys.yellowKey, state.hero.keys.blueKey, state.hero.keys.redKey]
+  // 规划时限制钥匙状态数量；实际背包不截断，动作后重新规划。
+  const caps = [8, 4, 3]
+  const k0 = [state.hero.keys.yellowKey, state.hero.keys.blueKey, state.hero.keys.redKey].map((v, i) => Math.min(v, caps[i]))
   const start = { key: nk(state.floor, state.hero.x, state.hero.y, k0), f: state.floor, x: state.hero.x, y: state.hero.y, k: k0, d: 0, parent: null, act: null }
   const nodes = new Map([[start.key, start]])
   const q = [start]
@@ -441,10 +447,11 @@ function search(state, mode, reserve, opts = {}) {
         const dest = stairDest(state, u.f, t === '^' ? 'up' : 'down', x, y)
         if (!dest) continue
         // 前进目标 E 只记录第一次出现的那一步；这一步本身仍是普通移动（楼梯照常传送）
-        if (t === '^' && opts.wantE && dest.floor === maxF + 1 && !eNode) {
+        if (t === '^' && opts.wantE && !state.visited.includes(dest.floor) && !eNode) {
           eNode = { key: 'E', f: u.f, x, y, k: u.k, d: u.d + 1, parent: u.key, act: 'move', dir: dname }
           nodes.set('E', eNode)
         }
+        if (!state.visited.includes(dest.floor)) continue
         nf = dest.floor
         nx = dest.x
         ny = dest.y
@@ -459,7 +466,7 @@ function search(state, mode, reserve, opts = {}) {
         continue
       } else if (e && e.kind === 'item' && KEY_IDX[e.id] !== undefined && !pickedOnPath(u, x, y)) {
         k = k.slice()
-        k[KEY_IDX[e.id]] += KEY_MULT
+        k[KEY_IDX[e.id]] = Math.min(caps[KEY_IDX[e.id]], k[KEY_IDX[e.id]] + KEY_MULT)
       }
       add({ key: nk(nf, nx, ny, k), f: nf, x: nx, y: ny, k, d: u.d + 1, parent: u.key, act: 'move', dir: dname })
     }
@@ -569,6 +576,8 @@ function talkAdjacentGuide(state) {
   return [{ type: 'blocked', reason: '相邻没有引路人' }]
 }
 
+const maxVisited = (state) => Math.max(...state.visited)
+
 function planStep(state, bad, commit) {
   const price = altarPrice(state.altarBuys + 1)
   const gold = state.hero.gold
@@ -604,8 +613,8 @@ function planStep(state, bad, commit) {
   if (blockedLoss && state.items.flask > 0 && gold < price) return { kind: 'flask' }
 
   // 金币留给 12 层商人的红钥匙（800，§9 / §13.18）：未买且没有红钥匙时，祭坛购买不得动用这笔钱
-  const reserveGold = !state.soldOut.includes('m12a') && state.hero.keys.redKey < 1 ? 800 : 0
-  const bombOK = blockedUnpierce && state.items.bomb > 0
+  const reserveGold = maxVisited(state) >= 11 && !state.soldOut.includes('m12a') && state.hero.keys.redKey < 1 ? 800 : 0
+  const bombOK = state.items.bomb > 0
   const pillars = pillarCount(state)
   const C = []
   const D = []
@@ -721,6 +730,7 @@ function run() {
   const commit = { cur: null }
   const seen = new Map()
   const snaps = {}
+  const replay = []
   let actions = 0
   let maxFloor = 1
   let prevFloor = state.floor
@@ -749,6 +759,13 @@ function run() {
       break
     }
 
+    const action = plan.kind === 'flask' ? { item: 'flask' }
+      : plan.n.d === 0 && plan.kind === 'C' ? { altar: plan.needAtk ? 'atk' : 'def' }
+      : plan.n.d === 0 && plan.kind === 'D' ? { shop: plan.shop }
+      : plan.n.d === 0 && plan.kind === 'F' ? { item: 'bomb' }
+      : plan.n.d === 0 && plan.kind === 'T' ? { talk: true }
+      : { step: plan.search.firstStep(plan.n).act, dir: plan.search.firstStep(plan.n).dir, to: plan.search.firstStep(plan.n).to }
+    replay.push(action)
     let res
     if (plan.kind === 'flask') {
       res = useItem(state, defs, 'flask')
@@ -800,13 +817,14 @@ function run() {
       if (state.floor > prevFloor && SNAP_FLOORS.includes(prevFloor) && !snaps[prevFloor]) snaps[prevFloor] = snap(state)
       if (state.floor > maxFloor) {
         maxFloor = state.floor
+        if (process.env.CHECKPOINT) writeFileSync(process.env.CHECKPOINT, JSON.stringify({ ...state, history: [] }))
         note(`到达第 ${state.floor} 层（hp ${state.hero.hp} 攻 ${state.hero.atk} 防 ${state.hero.def} 金 ${state.hero.gold}）`)
       }
       prevFloor = state.floor
     }
   }
   snaps.final = snap(state)
-  return { state, stuck, actions, maxFloor, snaps }
+  return { state, stuck, actions, maxFloor, snaps, replay }
 }
 
 /* ---------------- 运行与报告 ---------------- */
@@ -826,7 +844,7 @@ console.log('')
 console.log(`[数据检查] ${dataIssues.length} 条说明`)
 for (const s of dataIssues) console.log(`  - ${s}`)
 console.log('')
-console.log(`[引擎异常] ${engineErrors.length} 次（引擎缺陷；异常后按变更后的状态继续）`)
+console.log(`[引擎异常] ${engineErrors.length} 次（出现任何异常即判验证失败）`)
 for (const e of engineErrors) console.log(`  第 ${e.floor} 层 (${e.pos}) 移动时抛出：${e.message} → 之后位于第 ${e.floorAfter} 层`)
 console.log('')
 console.log('[进程]')
@@ -879,4 +897,9 @@ for (let i = 0; i < minLine.length; i += 10) console.log(`  ${minLine.slice(i, i
 
 const DATA_HASH_END = dataHash()
 if (DATA_HASH_END !== DATA_HASH_START) console.log(`[警告] 运行期间地图或规格被修改（${DATA_HASH_START} → ${DATA_HASH_END}），本次结果只对应开始时的数据`)
-process.exit(won.v && state.ended ? 0 : 1)
+if (process.env.REPORT) writeFileSync(process.env.REPORT, JSON.stringify({
+  won: won.v && state.ended, maxFloor, actions, stuck, snaps, minHp,
+  engineErrors, dataIssues, dataHash: DATA_HASH_START, replay: result.replay, state: { ...state, history: [] },
+}, null, 2))
+const success = NO_ALTAR ? !state.ended && maxFloor < 20 : won.v && state.ended
+process.exit(success && !engineErrors.length && DATA_HASH_END === DATA_HASH_START ? 0 : 1)

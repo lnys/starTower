@@ -104,8 +104,7 @@ function pushSnapshot(state, before) {
 
 /** 动作结束后：若状态没有变化，撤掉这次快照（失败的动作不占撤销步数） */
 function settle(state, before) {
-  if (bodyJson(state) === before) state.history.pop()
-  else pushSnapshot(state, before)
+  if (bodyJson(state) !== before) pushSnapshot(state, before)
 }
 
 export function undo(state) {

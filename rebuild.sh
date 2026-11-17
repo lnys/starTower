@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-# 把 star-tower skill 里的项目快照还原到目标目录，安装依赖，跑测试，构建，并输出产物校验和。
-# 用法：bash ~/.claude/skills/star-tower/rebuild.sh /path/to/target
+# 还原到空目录，安装锁定依赖，执行通关回放与网页构建。
 set -euo pipefail
-SKILL="$(cd "$(dirname "$0")" && pwd)"
-TARGET="${1:?用法：rebuild.sh <目标目录>}"
-mkdir -p "$TARGET"
-cp -R "$SKILL/project/." "$TARGET/"
-cd "$TARGET"
-if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
-node tests/star-rules.mjs | tail -1
-node tests/star-engine.mjs | tail -1
-node tools/star-verify.mjs
+SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
+TARGET_DIR="${1:?用法：rebuild.sh <空的目标目录>}"
+if [ -e "$TARGET_DIR" ]; then
+  if [ ! -d "$TARGET_DIR" ] || [ -n "$(ls -A "$TARGET_DIR")" ]; then
+    echo "目标必须为空目录，已有项目请直接修改，避免覆盖文件。" >&2
+    exit 1
+  fi
+fi
+bash "$SKILL_DIR/verify.sh"
+mkdir -p "$TARGET_DIR"
+cp -R "$SKILL_DIR/project/." "$TARGET_DIR/"
+cd "$TARGET_DIR"
+npm ci --no-audit --no-fund
+npm test
 npm run build
 shasum -a 256 dist/index.html

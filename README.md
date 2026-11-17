@@ -68,7 +68,7 @@ npm run build    # 产物为 dist/index.html，可直接双击用浏览器打开
 npm test
 ```
 
-`npm test` 会依次运行引擎测试、规则测试与全塔地图校验（楼梯链、入口、楼梯旁无怪、机关门配对）。
+`npm test` 会依次运行 26 条引擎测试、17 条规则测试、全塔地图校验和 3774 步真实引擎通关回放。
 
 ## 项目结构
 
@@ -102,7 +102,7 @@ project/
 
 ## 已知问题
 
-- **尚未验证可以通关。** 全程模拟在第 43 层卡住：生命被灼域降到 1，身上没有黄钥匙，之后的商人在若干扇黄门与怪物之后。修复方案尚未确定。
+- **已验证存在通关路线。** 修复后段主路钥匙瓶颈与撤销问题后，真实引擎 3774 步回放通关，最终生命 791、攻击 378、防御 501。并未穷尽所有路线，地图规格偏差仍见 `project/通关测试.md`。
 - **美术未完成。** 部分怪物与道具仍在借用外形相近的旧图，部分怪物、道具、祭坛与引路人还没有专属图，界面用文字占位。
 - **地图与规格存在偏差。** 个别层的黄门数量、药水数量、裂墙数量与玩法规格不完全一致，详见 `docs/star-map-brief.md`。
 - **引路人只触发一次对话。** 重复对话暂不支持。
@@ -125,7 +125,7 @@ project/
 
 本项目会持续更新、不断完善。如果你有好的建议（玩法、数值、地图、界面、美术等），欢迎到 [Issues](https://github.com/lnys/starTower/issues) 提出，我们会认真查看。
 
-欢迎提交 Issue 或 Pull Request，尤其欢迎关于地图平衡、第 43 层问题与美术素材的反馈。
+欢迎提交 Issue 或 Pull Request，尤其欢迎关于地图平衡、桌面兼容性与美术素材的反馈。
 
 ## 致谢
 
@@ -142,3 +142,18 @@ project/
 ## 许可证
 
 本项目基于 [MIT License](LICENSE) 发布。
+
+
+## 可复用 Skill（2026-11-17 更新）
+
+入口为 [SKILL.md](SKILL.md)，名称 `$star-tower`。当前目录即完整 skill 包，包含 `project/` 原创源码快照、`MANIFEST.sha256` 校验清单、`verify.sh` 和 `rebuild.sh`。还原后可构建网页、Mac Universal 桌面版和 Windows x64 安装版／便携版，不包含编译产物与依赖缓存。
+
+```bash
+bash verify.sh
+bash rebuild.sh /path/to/empty/star-tower
+cd /path/to/empty/star-tower
+npm run dist:mac
+npm run dist:win
+```
+
+`rebuild.sh` 只写入空目录，运行锁定依赖安装、通关回放和网页构建。完整通关报告和桌面说明位于 `project/通关测试.md` 与 `project/docs/桌面版打包.md`。历史验证包含 Intel Mac 启动、Mac 包完整性及 Windows 安装包结构检查；Apple 芯片和 Windows 实机运行尚未验证。
