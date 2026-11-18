@@ -3,6 +3,7 @@
 import { computed, ref, watch } from 'vue'
 import { store, actions, compassTargets, itemName, zoneName } from '../stores/star.js'
 import StoryBox from './StoryBox.vue'
+import RescueEnding from './RescueEnding.vue'
 import { MANUAL_SLOTS, AUTO_SLOT } from '../engine/storage.js'
 import { MERCHANTS, KEYS, ACTIVE } from '../game/star/data.js'
 import { ALTAR_TIER, altarPrice, altarGain } from '../game/star/rules.js'
@@ -18,12 +19,6 @@ const OPENING_HELP = [
   '门需要对应颜色的钥匙，没有钥匙时不会打开；假墙撞一次就变成空地；这两种情况、以及打怪，都不会让你移动。',
   '灼域：走完一步后，与灼域怪相邻会扣生命。星穹盾可以免疫。',
   '撤销最多 50 步。存档可以随时手动保存；换层时会自动存档。',
-]
-
-const ENDING_LINES = [
-  '星幕随着最后一道防线的倒下而熄灭。',
-  '星图重新落回天穹，塔顶的风第一次吹进地底的矿窖。',
-  '你把塔修好了，也把星空还给了它。',
 ]
 
 /* ---------- 对话 ---------- */
@@ -216,7 +211,7 @@ watch(modal, () => {
 
             <!-- 传送罗盘：只列出到过的楼层 -->
             <template v-else-if="modal.type === 'compass'">
-              <p class="note">选择一层，传送到它的入口。第 44、50 层不能作为目标。</p>
+              <p class="note">{{ g.hiddenMode ? '隐藏测试模式：可传送至任意楼层，包括第 44、50 层。' : '选择一层，传送到它的入口。第 44、50 层不能作为目标。' }}</p>
               <div v-if="!targets.length" class="note">还没有其他可以去的楼层。</div>
               <div class="rows">
                 <button v-for="f in targets" :key="f" class="row-btn" @click="travel(f)">
@@ -296,17 +291,7 @@ watch(modal, () => {
 
             <!-- 结局 -->
             <template v-else-if="modal.type === 'ending'">
-              <div class="ending-tag">星幕已关闭</div>
-              <div class="ending-lines">
-                <p v-for="(t, i) in ENDING_LINES" :key="i">{{ t }}</p>
-              </div>
-              <div class="ending-stats">
-                <div><span>层数</span><b>50 / 50</b></div>
-                <div><span>攻击</span><b>{{ g.hero.atk }}</b></div>
-                <div><span>防御</span><b>{{ g.hero.def }}</b></div>
-                <div><span>金币</span><b>{{ g.hero.gold }}</b></div>
-                <div><span>祭坛购买</span><b>{{ g.altarBuys }} 次</b></div>
-              </div>
+              <RescueEnding :hero="g.hero" />
               <button class="menu-row primary" @click="goTitle">返回标题</button>
             </template>
           </div>

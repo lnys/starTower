@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <defs>
+    <radialGradient id="aura"><stop stop-color="#d31355" stop-opacity=".6"/><stop offset="1" stop-color="#4a062b" stop-opacity="0"/></radialGradient>
+    <linearGradient id="armor" x2=".8" y2="1"><stop stop-color="#605074"/><stop offset=".45" stop-color="#201829"/><stop offset="1" stop-color="#080810"/></linearGradient>
+    <linearGradient id="horn" x2=".5" y2="1"><stop stop-color="#d6b5a5"/><stop offset=".5" stop-color="#79566b"/><stop offset="1" stop-color="#211327"/></linearGradient>
+    <linearGradient id="rift" x2="0" y2="1"><stop stop-color="#fff5ce"/><stop offset=".4" stop-color="#ff517a"/><stop offset="1" stop-color="#b60c4c"/></linearGradient>
+  </defs>
+  <ellipse cx="80" cy="89" rx="78" ry="70" fill="url(#aura)"/>
+  <g fill="none" stroke="#ad2358" opacity=".55"><circle cx="80" cy="80" r="59"/><circle cx="80" cy="80" r="65" stroke-dasharray="3 11"/><path d="M80 12 139 114 21 114Z"/></g>
+  <ellipse cx="80" cy="150" rx="59" ry="7" fill="#000" opacity=".65"/>
+  <!-- Torn wings and a jagged silhouette frame the armored fiend. -->
+  <path d="M56 65 30 40 7 30 15 64 4 83 23 79 12 111 34 100 27 137 58 115M104 65 130 40 153 30 145 64 156 83 137 79 148 111 126 100 133 137 102 115" fill="#170e21" stroke="#74405d" stroke-width="2"/>
+  <path d="M20 49 46 80 33 113M140 49 114 80 127 113" fill="none" stroke="#a33056" stroke-width="2"/>
+  <path d="M55 64 39 71 27 119 45 115 37 153 80 142 123 153 115 115 133 119 121 71 105 64Z" fill="url(#armor)" stroke="#8b6179" stroke-width="2"/>
+  <path d="m43 73-16-8 9 23-13 7 21 9 12-23M117 73l16-8-9 23 13 7-21 9-12-23" fill="#443047" stroke="#b47b8b" stroke-width="1.5"/>
+  <path d="M59 36Q42 57 49 85L37 111 60 100 67 69M101 36Q118 57 111 85L123 111 100 100 93 69" fill="#332039" stroke="#b47191" stroke-width="2"/>
+  <path d="M61 48C36 37 33 19 43 5 43 24 55 24 66 29M99 48C124 37 127 19 117 5 117 24 105 24 94 29" fill="url(#horn)" stroke="#bc9094" stroke-width="1.5"/>
+  <path d="m61 32 4-17 10 12 5-23 5 23 10-12 4 17 6 19-10 22H65L55 51Z" fill="url(#armor)" stroke="#a07a8b" stroke-width="2"/>
+  <path d="m60 45 16 5-5 7-10-5m39-7-16 5 5 7 10-5" fill="#ff335d"/>
+  <path d="m63 47 10 5m24-5-10 5" stroke="#fff1d2" stroke-width="2"/>
+  <path d="m80 45-5 17h10Z" fill="#08040b"/>
+  <path d="m66 65 14 4 14-4-4 14H70Z" fill="#08040b" stroke="#99536d"/>
+  <path d="m69 66 3 9 4-7 4 10 4-10 4 7 3-9" fill="#e2c8b3"/>
+  <path d="m52 91 22 7 6-14 6 14 22-7-13 25-15 21-15-21Z" fill="#0e0916" stroke="#93506f" stroke-width="2"/>
+  <path d="m80 92 7 17-7 20-7-20Z" fill="url(#rift)"/>
+  <path d="m59 121-5 26m16-19-4 17m35-24 5 26m-16-19 4 17" stroke="#9e3a61" stroke-width="2"/>
+  <path d="m31 114-7 20 9-5 1 12 8-10m87-17 7 20-9-5-1 12-8-10" fill="url(#horn)" stroke="#bd9298"/>
+  <g fill="#ff6483"><path d="m18 17 2 5 5 2-5 2-2 5-2-5-5-2 5-2Zm121 5 2 4 4 2-4 2-2 4-2-4-4-2 4-2Z"/><circle cx="16" cy="112" r="2"/><circle cx="145" cy="123" r="2"/></g>
+</svg>

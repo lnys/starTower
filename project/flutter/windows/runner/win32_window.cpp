@@ -31,12 +31,6 @@ static int g_active_window_count = 0;
 
 using EnableNonClientDpiScaling = BOOL __stdcall(HWND hwnd);
 
-// Scale helper to convert logical scaler values to physical using passed in
-// scale factor
-int Scale(int source, double scale_factor) {
-  return static_cast<int>(source * scale_factor);
-}
-
 // Dynamically loads the |EnableNonClientDpiScaling| from the User32 module.
 // This API is only needed for PerMonitor V1 awareness mode.
 void EnableFullDpiSupportIfAvailable(HWND hwnd) {
@@ -124,6 +118,7 @@ bool Win32Window::Create(const std::wstring& title,
                          const Point& origin,
                          const Size& size) {
   Destroy();
+  (void)size;  // Window dimensions follow the current screen.
 
   const wchar_t* window_class =
       WindowClassRegistrar::GetInstance()->GetWindowClass();
@@ -131,13 +126,16 @@ bool Win32Window::Create(const std::wstring& title,
   const POINT target_point = {static_cast<LONG>(origin.x),
                               static_cast<LONG>(origin.y)};
   HMONITOR monitor = MonitorFromPoint(target_point, MONITOR_DEFAULTTONEAREST);
-  UINT dpi = FlutterDesktopGetDpiForMonitor(monitor);
-  double scale_factor = dpi / 96.0;
-
+  MONITORINFO monitor_info = {sizeof(MONITORINFO)};
+  GetMonitorInfo(monitor, &monitor_info);
+  const RECT screen = monitor_info.rcMonitor;
+  const int screen_width = screen.right - screen.left;
+  const int screen_height = screen.bottom - screen.top;
+  constexpr DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
   HWND window = CreateWindow(
-      window_class, title.c_str(), WS_OVERLAPPEDWINDOW,
-      Scale(origin.x, scale_factor), Scale(origin.y, scale_factor),
-      Scale(size.width, scale_factor), Scale(size.height, scale_factor),
+      window_class, title.c_str(), style,
+      screen.left + screen_width * 3 / 8, screen.top + screen_height / 10,
+      screen_width / 4, screen_height * 4 / 5,
       nullptr, nullptr, GetModuleHandle(nullptr), this);
 
   if (!window) {
@@ -189,11 +187,15 @@ Win32Window::MessageHandler(HWND hwnd,
 
     case WM_DPICHANGED: {
       auto newRectSize = reinterpret_cast<RECT*>(lparam);
-      LONG newWidth = newRectSize->right - newRectSize->left;
-      LONG newHeight = newRectSize->bottom - newRectSize->top;
-
-      SetWindowPos(hwnd, nullptr, newRectSize->left, newRectSize->top, newWidth,
-                   newHeight, SWP_NOZORDER | SWP_NOACTIVATE);
+      const POINT point = {newRectSize->left, newRectSize->top};
+      MONITORINFO info = {sizeof(MONITORINFO)};
+      GetMonitorInfo(MonitorFromPoint(point, MONITOR_DEFAULTTONEAREST), &info);
+      const RECT screen = info.rcMonitor;
+      const int width = screen.right - screen.left;
+      const int height = screen.bottom - screen.top;
+      SetWindowPos(hwnd, nullptr, screen.left + width * 3 / 8,
+                   screen.top + height / 10, width / 4, height * 4 / 5,
+                   SWP_NOZORDER | SWP_NOACTIVATE);
 
       return 0;
     }

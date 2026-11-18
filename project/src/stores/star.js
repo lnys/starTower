@@ -31,13 +31,13 @@ export const zoneName = (floor) => ZONES[zoneOf(floor) - 1] ?? ''
 /** 道具中文名：在所有道具表中查找（怪物名也放在这里，供事件提示使用） */
 export function itemName(id) {
   return CONSUMABLES[id]?.name ?? KEYS[id]?.name ?? GEAR[id]?.name ?? HOLD[id]?.name
-    ?? ACTIVE[id]?.name ?? MONSTERS[id]?.name ?? id
+    ?? ACTIVE[id]?.name ?? MONSTERS[id]?.name ?? ({ goddess: '你的女神' }[id]) ?? id
 }
 
 const OPENING = [
   '很久以前，地底矿窖的尽头凿出了一座观星塔。塔一直修到星空里，顶端悬着一张星图。',
-  '守塔人把星图锁进了塔顶，塔里的造物也随之失控。你是受雇的修塔匠，要一路上到塔顶，把星幕关掉。',
-  '途中你会遇到一位被困的测绘员，她是引路人。她会给你提示，也会记下你走过的检查点。',
+  '终焉女妖将你心爱的女神囚禁在第五十层，让星幕封住了她的光芒。你带着重逢的约定，踏上登塔之路。',
+  '测绘员会为你指路。收集装备，破解机关，击破四根星柱，救回你的女神。',
 ]
 
 /* ---------------- 响应式状态 ---------------- */
@@ -245,12 +245,23 @@ export function nearNpc(g, id) {
 /** 罗盘可以去的楼层：到过的、不是当前层、不是 44 层与 50 层 */
 export function compassTargets(g) {
   if (!g) return []
+  if (g.hiddenMode) return Array.from({ length: 50 }, (_, i) => i + 1).filter(f => f !== g.floor)
+  if (g.floor === 50) return []
   return g.visited.filter((f) => f !== g.floor && f !== 44 && f !== 50).sort((a, b) => a - b)
 }
 
 /* ---------------- 动作 ---------------- */
 
 export const actions = {
+  unlockHiddenMode() {
+    const g = store.game
+    if (!g || store.modal || g.hiddenMode) return
+    g.hiddenMode = true
+    g.items.compass = Math.max(1, g.items.compass ?? 0)
+    g.history = []
+    autoSave()
+    toast('隐藏测试模式已开启：罗盘可传送至任意楼层', 'good')
+  },
   newGame() {
     unlockAudio()
     store.game = eng.createGame(DEFS)
@@ -281,7 +292,7 @@ export const actions = {
   loadSlot(name) {
     unlockAudio()
     const entry = storage.readSlot(name)
-    const st = entry ? eng.deserialize(entry.state) : null
+    const st = entry ? eng.deserialize(entry.state, DEFS) : null
     const valid = st && DEFS[st.floor] && Object.keys(st.world ?? {}).every((k) => DEFS[k])
     if (!valid) {
       toast('这个存档无法读取', 'warn')
@@ -290,7 +301,7 @@ export const actions = {
     st.history = []
     store.game = st
     store.screen = 'playing'
-    store.modal = null
+    store.modal = st.ended ? { type: 'ending' } : null
     store.toasts = []
     store.floats = []
     store.transition = null

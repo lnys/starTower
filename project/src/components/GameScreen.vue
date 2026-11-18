@@ -9,6 +9,12 @@ import { UI_ICON, ITEM_ART } from '../engine/star-art.js'
 import { ACTIVE } from '../game/star/data.js'
 import { zoneOf } from '../game/star/rules.js'
 
+let brandTaps = 0
+function tapBrand() {
+  if (store.modal || store.game.hiddenMode) return
+  if (++brandTaps === 10) actions.unlockHiddenMode()
+}
+watch(() => store.game, () => { brandTaps = 0 })
 const g = computed(() => store.game)
 const hero = computed(() => store.game.hero)
 // 血量进度条的满格：本局出现过的最高生命（祭坛、药水会抬高它）；读档或新局时重置
@@ -73,10 +79,10 @@ function openBag() {
         <span class="tag">第</span><b>{{ g.floor }}</b><span class="tag">层</span>
         <em>{{ zone }}</em>
       </div>
-      <div class="brand">
+      <button class="brand" @click="tapBrand" aria-label="星穹塔">
         <span class="logo-ring">星</span>
         <span class="brand-name">星穹塔</span>
-      </div>
+      </button>
       <span></span>
     </header>
 
@@ -186,7 +192,7 @@ function openBag() {
   text-shadow: 0 0 14px rgba(255, 213, 107, 0.4);
 }
 .floor-chip em { font-style: normal; font-size: 10px; color: var(--muted); margin-left: 4px; overflow: hidden; text-overflow: ellipsis; }
-.brand { display: flex; align-items: center; gap: 6px; }
+.brand { border: 0; background: transparent; padding: 0; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 .logo-ring {
   width: 26px;
   height: 26px;
@@ -453,6 +459,8 @@ function openBag() {
 }
 .side { display: flex; flex-direction: column; gap: 8px; width: 92px; }
 .btn {
+  white-space: nowrap;
+  padding-inline: 8px;
   height: 42px;
   border-radius: 12px;
   font: inherit;

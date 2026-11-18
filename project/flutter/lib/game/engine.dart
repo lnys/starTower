@@ -38,7 +38,13 @@ class GameEngine {
     ]) {
       if (data[table][id] != null) return data[table][id]['name'];
     }
-    return {'guide': '引路人', 'altar': '祭坛', 'merchant': '商人'}[id] ?? id;
+    return {
+          'guide': '引路人',
+          'altar': '祭坛',
+          'merchant': '商人',
+          'goddess': '你的女神'
+        }[id] ??
+        id;
   }
 
   void reset() {
@@ -92,7 +98,7 @@ class GameEngine {
                 ents['$x,$y'] = {
                   'kind': monsters[id] != null
                       ? 'monster'
-                      : ['guide', 'altar', 'merchant'].contains(id)
+                      : ['guide', 'altar', 'merchant', 'goddess'].contains(id)
                           ? 'npc'
                           : 'item',
                   'id': id
@@ -101,7 +107,29 @@ class GameEngine {
               }));
       state['world'][key] = {'terr': terr, 'ents': ents};
     }
-    return state['world'][key];
+    final w = state['world'][key];
+    if (n == 50 && defs[key]['sceneVersion'] == 2 && w['sceneVersion'] != 2) {
+      final def = defs[key];
+      final grid =
+          (def['grid'] as List).map((r) => (r as String).split('')).toList();
+      w['terr'] = List.generate(
+          11,
+          (y) => List.generate(
+              11, (x) => terrain.contains(grid[y][x]) ? grid[y][x] : '.'));
+      for (var y = 0; y < 11; y++) {
+        for (var x = 0; x < 11; x++) {
+          final id = def['legend'][grid[y][x]];
+          if (id != null && id != 'endLord') {
+            w['ents']['$x,$y'] = {
+              'kind': id == 'goddess' ? 'npc' : 'monster',
+              'id': id
+            };
+          }
+        }
+      }
+      w['sceneVersion'] = 2;
+    }
+    return w;
   }
 
   bool inBounds(int x, int y) => x >= 0 && y >= 0 && x < 11 && y < 11;
@@ -341,7 +369,10 @@ class GameEngine {
       return {'type': 'fight', 'id': e['id'], 'loss': p['loss'], 'gold': gold};
     }
     if (e?['kind'] == 'npc') {
-      if (e!['id'] == 'guide') {
+      if (e!['id'] == 'goddess') {
+        return {'type': 'blocked', 'reason': '击败门前的终焉女妖，即可解除封印、救回女神'};
+      }
+      if (e['id'] == 'guide') {
         checkEvents({'talked': 'guide'}, out);
         return {'type': 'talk'};
       }
@@ -458,15 +489,23 @@ class GameEngine {
     String text;
     switch (id) {
       case 'compass':
-        if (floor == 50) return result(false, '第 50 层不能使用传送罗盘');
-        if (!state['visited'].contains(target)) {
+        final hidden = state['hiddenMode'] == true;
+        if (target == null ||
+            target < 1 ||
+            target > 50 ||
+            defs['$target'] == null) {
+          return result(false, '楼层无效');
+        }
+        if (!hidden && floor == 50) return result(false, '第 50 层不能使用传送罗盘');
+        if (!hidden && !state['visited'].contains(target)) {
           return result(false, '只能传送到已到过的楼层');
         }
-        if (target == 44 || target == 50) {
+        if (!hidden && (target == 44 || target == 50)) {
           return result(false, '罗盘不能传送到第 44、50 层');
         }
-        ensureFloor(target!);
+        ensureFloor(target);
         state['floor'] = target;
+        if (!state['visited'].contains(target)) state['visited'].add(target);
         hero['x'] = defs['$target']['entry']['x'];
         hero['y'] = defs['$target']['entry']['y'];
         text = '传送到第 $target 层';
@@ -550,6 +589,7 @@ class GameEngine {
           !inBounds(h['x'], h['y'])) return false;
       obj['history'] = [];
       state = obj;
+      if (state['world']['50'] != null) ensureFloor(50);
       ensureFloor(floor);
       return true;
     } catch (_) {

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 550">
+<defs>
+ <radialGradient id="night"><stop stop-color="#493357"/><stop offset="1" stop-color="#0c122b"/></radialGradient>
+ <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#594664"/><stop offset="1" stop-color="#241e3e"/></linearGradient>
+ <linearGradient id="roof" x2="0" y2="1"><stop stop-color="#8163ac"/><stop offset="1" stop-color="#342b59"/></linearGradient>
+ <radialGradient id="warm"><stop stop-color="#ffeab4" stop-opacity=".7"/><stop offset="1" stop-color="#ffeab4" stop-opacity="0"/></radialGradient>
+ <pattern id="stars" width="72" height="67" patternUnits="userSpaceOnUse"><circle cx="13" cy="17" r="1" fill="#f6dbac" opacity=".6"/><circle cx="49" cy="46" r=".6" fill="#b9baff"/><path d="M58 7v6m-3-3h6" stroke="#d9c6ff" opacity=".4"/></pattern>
+ <pattern id="paving" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M1 1h48v48H1Z" fill="#312b48" stroke="#a48a9a" stroke-opacity=".12"/><path d="m25 19 6 6-6 6-6-6Z" fill="#d7bb8a" opacity=".12"/></pattern>
+ <g id="lamp"><circle r="23" fill="url(#warm)"/><path d="M-4 2h8l-1 20h-6Z" fill="#80664e"/><path d="m-7-9 7-7 7 7-2 12H-5Z" fill="#ffdf96" stroke="#c69a69" stroke-width="2"/></g>
+ <g id="rose"><path d="M0 6v14m0-7-7-5m7 8 7-7" stroke="#56817b" stroke-width="2"/><circle r="6" fill="#b87fa8"/><circle cy="-2" r="3" fill="#f5bbd5"/></g>
+</defs>
+<path fill="url(#night)" d="M0 0h550v550H0Z"/><path fill="url(#stars)" d="M0 0h550v550H0Z"/>
+<rect x="50" y="50" width="450" height="450" rx="38" fill="url(#stone)" stroke="#bba178" stroke-width="3"/>
+<rect x="62" y="62" width="426" height="426" rx="30" fill="url(#paving)" stroke="#d0b590" stroke-opacity=".35"/>
+<path d="M245 260h60v230h-60Z" fill="#673b60" stroke="#ba8a91" stroke-opacity=".5"/><path d="M252 270v210m46-210v210" stroke="#e0be87" stroke-dasharray="3 9" opacity=".55"/>
+<g fill="#223d42" stroke="#6b8b79"><rect x="77" y="290" width="125" height="160" rx="40"/><rect x="348" y="290" width="125" height="160" rx="40"/></g>
+<g fill="none" stroke="#8aa9ae" stroke-opacity=".45"><ellipse cx="140" cy="365" rx="35" ry="48"/><ellipse cx="410" cy="365" rx="35" ry="48"/></g>
+<g fill="#a1c6d3"><path d="m140 330 9 35-9 25-9-25Z"/><path d="m410 330 9 35-9 25-9-25Z"/></g>
+<g><use href="#rose" x="91" y="314"/><use href="#rose" x="181" y="411"/><use href="#rose" x="95" y="405"/><use href="#rose" x="371" y="416"/><use href="#rose" x="455" y="320"/><use href="#rose" x="455" y="409"/></g>
+<!-- Open-front moonlit cottage: the goddess stays visible inside. -->
+<path d="M204 96h142v84H204Z" fill="#2a2446" stroke="#d4b58a" stroke-width="3"/>
+<path d="M193 98 275 38 357 98Z" fill="url(#roof)" stroke="#cdb18b" stroke-width="3"/>
+<path d="m213 89 62-44 62 44m-102-4 40-29 40 29" fill="none" stroke="#aa8cbe" stroke-opacity=".5"/>
+<path d="M267 55a11 11 0 1 0 14 14 9 9 0 0 1-14-14" fill="#ffe8af"/>
+<ellipse cx="275" cy="129" rx="46" ry="50" fill="url(#warm)"/>
+<path d="M205 98h15v82h-15Zm125 0h15v82h-15Z" fill="#766482" stroke="#d7b98a" stroke-width="2"/>
+<path d="M222 100h106v48H222Z" fill="#c5a4e2" opacity=".08"/>
+<path d="M200 179h150m-143 8h136" stroke="#b5a0c6" stroke-width="4"/>
+<g stroke="#dc94ce" stroke-width="1.5" opacity=".65"><path d="M233 98v49m21-51v49m21-49v49m21-49v49m21-49v49"/><path d="M224 142h102"/></g>
+<g><use href="#lamp" x="100" y="100"/><use href="#lamp" x="450" y="100"/><use href="#lamp" x="100" y="250"/><use href="#lamp" x="450" y="250"/><use href="#lamp" x="225" y="460"/><use href="#lamp" x="325" y="460"/></g>
+<g fill="none" stroke="#d7ba87" opacity=".5"><path d="m275 295 30 30-30 30-30-30Z"/><circle cx="275" cy="325" r="19"/><path d="M80 475h100m190 0h100"/></g>
+</svg>

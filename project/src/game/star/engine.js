@@ -24,7 +24,7 @@ function instantiate(def) {
       if (TERRAIN.has(c)) return
       const id = def.legend[c]
       if (!id) throw new Error(`第 ${def.index} 层 (${x},${y}) 的字符 "${c}" 没有图例`)
-      const kind = MONSTERS[id] ? 'monster' : ['guide', 'merchant', 'altar'].includes(id) ? 'npc' : 'item'
+      const kind = MONSTERS[id] ? 'monster' : ['guide', 'merchant', 'altar', 'goddess'].includes(id) ? 'npc' : 'item'
       ents[key(x, y)] = { kind, id }
     })
   })
@@ -37,7 +37,18 @@ function ensureFloor(state, defs, n) {
     if (!def) throw new Error(`没有第 ${n} 层的定义`)
     state.world[n] = instantiate(def)
   }
-  return state.world[n]
+  const w = state.world[n]
+  if (n === 50 && defs[n]?.sceneVersion === 2 && w.sceneVersion !== 2) {
+    const fresh = instantiate(defs[n])
+    const defeated = !Object.values(w.ents).some(e => e.id === 'endLord')
+    w.terr = fresh.terr
+    for (const [k, e] of Object.entries(fresh.ents)) {
+      if (e.id !== 'endLord') w.ents[k] = e
+    }
+    if (defeated) delete w.ents['5,3']
+    w.sceneVersion = 2
+  }
+  return w
 }
 
 /** 目标层上与当前楼梯对应的另一端楼梯：坐标相同或相邻（§8.4 第 2 条） */
@@ -299,6 +310,7 @@ function step(state, defs, [dx, dy], out) {
 
   // 6. NPC：对话或交易，不移动
   if (e && e.kind === 'npc') {
+    if (e.id === 'goddess') return { type: 'blocked', reason: '击败门前的终焉女妖，即可解除封印、救回女神' }
     if (e.id === 'guide') {
       checkEvents(state, defs, { talked: 'guide' }, out)
       return { type: 'talk', npc: 'guide' }
@@ -407,11 +419,13 @@ export function useItem(state, defs, id, target = null) {
 
   switch (id) {
     case 'compass': {
-      if (state.floor === LAST_FLOOR) return { ok: false, text: '第 50 层不能使用传送罗盘' }
-      if (!state.visited.includes(target)) return { ok: false, text: '只能传送到已到过的楼层' }
-      if (target === 44 || target === LAST_FLOOR) return { ok: false, text: '罗盘不能传送到第 44、50 层' }
+      if (!Number.isInteger(target) || target < 1 || target > LAST_FLOOR || !defs[target]) return { ok: false, text: '楼层无效' }
+      if (!state.hiddenMode && state.floor === LAST_FLOOR) return { ok: false, text: '第 50 层不能使用传送罗盘' }
+      if (!state.hiddenMode && !state.visited.includes(target)) return { ok: false, text: '只能传送到已到过的楼层' }
+      if (!state.hiddenMode && (target === 44 || target === LAST_FLOOR)) return { ok: false, text: '罗盘不能传送到第 44、50 层' }
       ensureFloor(state, defs, target)
       state.floor = target
+      if (!state.visited.includes(target)) state.visited.push(target)
       hero.x = defs[target].entry.x
       hero.y = defs[target].entry.y
       text = `传送到第 ${target} 层`
@@ -476,10 +490,11 @@ export function serialize(state) {
   return JSON.stringify(state)
 }
 
-export function deserialize(text) {
+export function deserialize(text, defs = null) {
   try {
     const obj = typeof text === 'string' ? JSON.parse(text) : text
     if (!obj || obj.version !== 1 || !obj.hero || !obj.world) return null
+    if (defs && obj.world[50]) ensureFloor(obj, defs, 50)
     return obj
   } catch {
     return null

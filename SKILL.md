@@ -1,5 +1,7 @@
 ---
 name: star-tower
+metadata:
+  version: "1.0.3"
 description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关、修复地图资源瓶颈，支持 Vue/Electron 桌面版与 Flutter 原生游戏的开发、通关验证、Mac 通用版和 Windows x64 安装包构建。包含原创游戏源码快照、完整通关回放和桌面构建配置；用于星穹塔相关任务。
 ---
 
@@ -28,7 +30,7 @@ description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关
 在项目目录运行：
 
 ```bash
-npm test                  # 26 条引擎、17 条规则、地图检查、固定路线回放
+npm test                  # 28 条引擎、17 条规则、地图检查、固定路线回放
 npm run test:simulate     # 重新规划并模拟全程，耗时较长
 npm run test:no-altar     # 禁用祭坛的反向实验
 npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
@@ -42,11 +44,23 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 当前快照已修复后段主路黄钥匙瓶颈、46 层蓝钥匙补偿和失败操作消耗撤销记录的问题。已验证存在一条通关路线：3774 步，最终生命 791、攻击 378、防御 501。这不等于穷尽求解、任意路线可通关或规格全部通过；剩余地图规格偏差见通关报告。更新报告时写明实际运行的检查及未验证范围。
 
+## 营救场景与界面修改
+
+修改剧情、终层地图、素材或结局时先读 [游戏更新说明](project/游戏更新说明.md)，其中区分实现、验证与平台限制。最新玩法补充位于 `project/魔塔50层新玩法.md` 第 16 节。
+
+第 50 层中央小屋内的 `goddess` 是 NPC，四名 `pillarGuard` 可交战，击败 `endLord`（终焉女妖）直接通关。新增终层守卫不计入星幕；星幕仍只检查第 49 层。放大的首领图层不接收点击，勇者保持在前景。不要把女神判成可拾取道具，或额外要求清空守卫才能触发结局。
+
+`sceneVersion: 2` 用于旧终层存档迁移。修改时保留人物属性、已击败首领与已通关状态；迁移只执行一次，读档不能重复生成守卫。结局由 Vue `RescueEnding.vue` 与 Flutter `ui/rescue_ending.dart` 分别实现，已通关存档可直接重看。
+
+地图、数据和 SVG 更新后运行 `node flutter/tool/export-vue.mjs`；界面与引擎逻辑需要两端分别修改。增加素材需纳入 `project/` 和 `MANIFEST.sha256`，避免把本地存档、构建缓存或安装包加入快照。
+
 ## Flutter 原生版
 
 `project/flutter/` 为独立 Flutter 工程，仅包含游戏，不含 Vue 介绍页或手机外壳。运行与平台限制见 `project/flutter/README.md`，验证证据见 `project/flutter/通关测试.md`。已生成 iOS、Android、macOS、Windows 等平台工程；生成工程不代表该平台构建通过。
 
-在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；8 项测试含同一条 3774 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
+Web 游戏容器使用浏览器可视区域宽度的 1/4、高度的 4/5；桌面窗口按屏幕相同比例居中并关闭手动调整尺寸。NPC 对话、交易与普通提示固定在棋盘下方，长内容内部滚动，避免覆盖底部方向键。原生移动端仍使用手机适配布局。窗口逻辑分别位于各平台 runner，不能仅修改 Dart 布局就认定原生窗口行为已同步。
+
+在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；18 项测试含同一条 3774 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
 
 Mac 上 `flutter build macos --release` 后执行 `bash tool/packaging/macos.sh` 生成并验证 Universal DMG / ZIP。Windows 必须在 Windows + Visual Studio C++ 工具链环境构建，不能从 Mac 直接交叉编译。Windows 打包配置为 `tool/packaging/windows.iss`（Inno Setup 6），需包含构建目录全部 DLL、data 和 Visual C++ 运行库。
 

@@ -52,6 +52,7 @@ function go(fn) {
         <div class="logo-en">STAR DOME TOWER · 50 层</div>
       </div>
 
+      <p class="quest">登上五十层，救回你的女神。</p>
       <nav class="menu">
         <button class="menu-btn primary" @click="go(() => actions.newGame())">
           星穹塔
@@ -220,4 +221,8 @@ function go(fn) {
   .logo-cn { font-size: 72px; letter-spacing: 10px; padding-left: 10px; }
   .logo-ring { width: 200px; height: 200px; }
 }
+</style>
+
+<style scoped>
+.quest { color: #e8c6da; text-align: center; font-size: 13px; margin: 20px 0; }
 </style>

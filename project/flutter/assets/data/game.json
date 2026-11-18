@@ -39,7 +39,7 @@
           "effects": [
             {
               "op": "say",
-              "text": "这里的怪物会先伤你的血，先算清楚损失再打。打不动的怪先绕开，以后回来。"
+              "text": "你的女神被终焉女妖囚禁在第五十层，击破星幕才能救她。先算清楚战斗损失，打不动的怪可以以后回来。"
             }
           ]
         }
@@ -2241,7 +2241,7 @@
           "effects": [
             {
               "op": "say",
-              "text": "四根星柱支撑着星幕。每击破一根，终焉之主的防御就减少 125。"
+              "text": "四根星柱支撑着星幕。每击破一根，终焉女妖的防御就减少 125。"
             }
           ]
         }
@@ -2249,24 +2249,27 @@
     },
     "50": {
       "index": 50,
+      "sceneVersion": 2,
       "entry": {
         "x": 5,
         "y": 4
       },
       "legend": {
-        "@": "endLord"
+        "@": "endLord",
+        "G": "goddess",
+        "S": "pillarGuard"
       },
       "grid": [
         "***********",
-        "***********",
-        "**.......**",
-        "**...@...**",
-        "**.......**",
-        "**...v...**",
-        "**.......**",
-        "**.......**",
-        "**.......**",
-        "***********",
+        "*..S...S..*",
+        "*...#G#...*",
+        "*...#@#...*",
+        "*..S...S..*",
+        "*....v....*",
+        "*.........*",
+        "*.........*",
+        "*.........*",
+        "*.........*",
         "***********"
       ],
       "events": []
@@ -2885,7 +2888,7 @@
       "traits": []
     },
     "endLord": {
-      "name": "终焉之主",
+      "name": "终焉女妖",
       "hp": 4000,
       "atk": 720,
       "def": 280,
@@ -2919,6 +2922,28 @@
       "starShield": "items/shield"
     },
     "MONSTER_ART": {
+      "tideCrab": "monsters/tideCrab",
+      "cogPuppet": "monsters/cogPuppet",
+      "sharkGuard": "monsters/sharkGuard",
+      "deepWarrior": "monsters/deepWarrior",
+      "ironClam": "monsters/ironClam",
+      "twinBlade": "monsters/twinBlade",
+      "clawFiend": "monsters/clawFiend",
+      "tideBoss": "monsters/tideBoss",
+      "mirrorShade": "monsters/mirrorShade",
+      "echoMage": "monsters/echoMage",
+      "twinShade": "monsters/twinShade",
+      "glassGolem": "monsters/glassGolem",
+      "slagSoldier": "monsters/slagSoldier",
+      "forgeMage": "monsters/forgeMage",
+      "hammerLord": "monsters/hammerLord",
+      "stardustWraith": "monsters/stardustWraith",
+      "auraPriest": "monsters/auraPriest",
+      "voidBlade": "monsters/voidBlade",
+      "highAuraPriest": "monsters/highAuraPriest",
+      "astralMage": "monsters/astralMage",
+      "domeGuard": "monsters/domeGuard",
+      "pillarGuard": "monsters/pillarGuard",
       "mossBlob": "monsters/mon_1",
       "caveBat": "monsters/mon_3",
       "boneSoldier": "monsters/mon_4",
@@ -2934,10 +2959,13 @@
       "mirrorBoss": "monsters/mon_I",
       "lavaDrake": "monsters/mon_F",
       "forgeBoss": "monsters/mon_V",
-      "endLord": "monsters/mon_Q"
+      "endLord": "monsters/endLord"
     },
     "NPC_ART": {
-      "merchant": "tiles/shop"
+      "merchant": "tiles/shop",
+      "guide": "tiles/npc_guide",
+      "altar": "tiles/npc_altar",
+      "goddess": "hero/goddess"
     },
     "TERRAIN_ART": {
       "*": "tiles/floor_void",

@@ -48,7 +48,7 @@ export const MONSTERS = {
   astralMage: { name: '星辉法皇', hp: 500, atk: 160, def: 220, gold: 120, traits: [{ type: 'magic' }] },
   domeGuard: { name: '穹顶铁卫', hp: 200, atk: 480, def: 360, gold: 200, traits: [] },
   pillarGuard: { name: '星柱守卫', hp: 600, atk: 520, def: 250, gold: 200, traits: [] },
-  endLord: { name: '终焉之主', hp: 4000, atk: 720, def: 280, gold: 2000, boss: true, traits: [{ type: 'starVeil' }] },
+  endLord: { name: '终焉女妖', hp: 4000, atk: 720, def: 280, gold: 2000, boss: true, traits: [{ type: 'starVeil' }] },
 }
 
 /** 晶石与药水：效果随区变化，见 rules.js consumableEffect() */

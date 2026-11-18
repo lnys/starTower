@@ -1,6 +1,6 @@
 // 《星穹塔》素材对照表：星穹的实体 id -> images/ 下已有的 SVG 键名。
-// 没有对应图的 id 不在表里，界面会用「文字占位」（取名称首字，带颜色）。
-// 注意：怪物图是按外形借用的近似图（旧版怪物的造型），不是星穹怪物的专属图，待补。
+// NPC 与全部怪物均有图标；部分怪物使用现有造型的配色变体。
+// 图标仅影响展示，怪物属性和战斗规则不变。
 
 /** 地形主题：按区（1–5）选择地面与墙面。潮汐机关城暂无专用图，借用石面。 */
 export const ZONE_TILES = {
@@ -24,10 +24,35 @@ export const TERRAIN_ART = {
 
 export const NPC_ART = {
   merchant: 'tiles/shop',
-  // altar、guide 缺图，走文字占位
+  guide: 'tiles/npc_guide',
+  altar: 'tiles/npc_altar',
+  goddess: 'hero/goddess',
 }
 
 export const MONSTER_ART = {
+  tideCrab: 'monsters/tideCrab',
+  cogPuppet: 'monsters/cogPuppet',
+  sharkGuard: 'monsters/sharkGuard',
+  deepWarrior: 'monsters/deepWarrior',
+  ironClam: 'monsters/ironClam',
+  twinBlade: 'monsters/twinBlade',
+  clawFiend: 'monsters/clawFiend',
+  tideBoss: 'monsters/tideBoss',
+  mirrorShade: 'monsters/mirrorShade',
+  echoMage: 'monsters/echoMage',
+  twinShade: 'monsters/twinShade',
+  glassGolem: 'monsters/glassGolem',
+  slagSoldier: 'monsters/slagSoldier',
+  forgeMage: 'monsters/forgeMage',
+  hammerLord: 'monsters/hammerLord',
+  stardustWraith: 'monsters/stardustWraith',
+  auraPriest: 'monsters/auraPriest',
+  voidBlade: 'monsters/voidBlade',
+  highAuraPriest: 'monsters/highAuraPriest',
+  astralMage: 'monsters/astralMage',
+  domeGuard: 'monsters/domeGuard',
+  pillarGuard: 'monsters/pillarGuard',
+
   mossBlob: 'monsters/mon_1',
   caveBat: 'monsters/mon_3',
   boneSoldier: 'monsters/mon_4',
@@ -43,7 +68,7 @@ export const MONSTER_ART = {
   mirrorBoss: 'monsters/mon_I',
   lavaDrake: 'monsters/mon_F',
   forgeBoss: 'monsters/mon_V',
-  endLord: 'monsters/mon_Q',
+  endLord: 'monsters/endLord',
 }
 
 export const ITEM_ART = {

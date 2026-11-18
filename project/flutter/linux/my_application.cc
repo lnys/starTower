@@ -47,7 +47,14 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "star_tower");
   }
 
-  gtk_window_set_default_size(window, 1280, 720);
+  GdkDisplay* display = gtk_widget_get_display(GTK_WIDGET(window));
+  GdkMonitor* monitor = gdk_display_get_primary_monitor(display);
+  if (monitor == nullptr) monitor = gdk_display_get_monitor(display, 0);
+  GdkRectangle screen;
+  gdk_monitor_get_geometry(monitor, &screen);
+  gtk_window_set_default_size(window, screen.width / 4, screen.height * 4 / 5);
+  gtk_window_move(window, screen.x + screen.width * 3 / 8, screen.y + screen.height / 10);
+  gtk_window_set_resizable(window, FALSE);
   gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();

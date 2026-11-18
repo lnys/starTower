@@ -2,6 +2,8 @@
 import assert from 'node:assert/strict'
 import { createGame, moveHero, buyAltar, merchantBuy, useItem, undo, serialize, deserialize, preview } from '../src/game/star/engine.js'
 
+import finalFloors from '../src/game/star/maps/floors-40-50.js'
+
 const cases = []
 const t = (name, fn) => cases.push([name, fn])
 
@@ -342,6 +344,58 @@ t('同一层的两座上楼梯可以通往不同的楼层（stairTo，第 43 层
   const ev = moveHero(s, defs, 'left')
   assert.equal(ev[0].type, 'stairs')
   assert.equal(s.floor, 45, '应通往 45 层而不是 44 层')
+})
+
+t('隐藏罗盘：可往返全部楼层，校验目标并保留存档与撤销', () => {
+  const defs = Object.fromEntries(Array.from({ length: 50 }, (_, i) => [i + 1, floor(i + 1)]))
+  const s = play(defs, { items: { compass: 1 } })
+  assert.equal(useItem(s, defs, 'compass', 44).ok, false)
+  s.visited.push(44, 50)
+  assert.equal(useItem(s, defs, 'compass', 44).ok, false)
+  assert.equal(useItem(s, defs, 'compass', 50).ok, false)
+  s.floor = 50
+  assert.equal(useItem(s, defs, 'compass', 1).ok, false)
+  s.floor = 1
+  s.hiddenMode = true
+  for (const f of [35, 44, 50, 1]) {
+    assert.equal(useItem(s, defs, 'compass', f).ok, true)
+    assert.equal(s.floor, f)
+    assert.ok(s.visited.includes(f))
+    assert.deepEqual([s.hero.x, s.hero.y], [defs[f].entry.x, defs[f].entry.y])
+  }
+  for (const f of [null, 0, 51, 1.5, '2']) {
+    const before = serialize(s)
+    assert.equal(useItem(s, defs, 'compass', f).ok, false)
+    assert.equal(serialize(s), before)
+  }
+  assert.equal(deserialize(serialize(s)).hiddenMode, true)
+  undo(s)
+  assert.equal(s.floor, 50)
+  assert.equal(s.hiddenMode, true)
+})
+
+t('终层营救：中央女神、四守卫、女妖胜利和旧存档升级', () => {
+  const def = finalFloors.find(f => f.index === 50)
+  const defs = { 50: def }
+  const s = play(defs, { startFloor: 50, x: 5, y: 1, hp: 10000, atk: 10000, def: 10000 })
+  const w = s.world[50]
+  assert.equal(w.ents['5,2'].kind, 'npc')
+  assert.equal(Object.values(w.ents).filter(e => e.id === 'pillarGuard').length, 4)
+  assert.equal(moveHero(s, defs, 'down')[0].type, 'blocked')
+  delete w.sceneVersion
+  w.ents = { '5,3': { kind: 'monster', id: 'endLord' } }
+  const upgraded = deserialize(serialize(s), defs)
+  assert.equal(upgraded.world[50].ents['5,2'].id, 'goddess')
+  assert.equal(upgraded.hero.hp, s.hero.hp)
+  delete upgraded.world[50].ents['3,4']
+  assert.equal(deserialize(serialize(upgraded), defs).world[50].ents['3,4'], undefined)
+  upgraded.hero.x = 5; upgraded.hero.y = 4
+  assert.ok(moveHero(upgraded, defs, 'up').some(ev => ev.type === 'win'))
+  assert.equal(upgraded.ended, true)
+  delete upgraded.world[50].sceneVersion
+  const completed = deserialize(serialize(upgraded), defs)
+  assert.equal(completed.world[50].ents['5,3'], undefined)
+  assert.equal(completed.ended, true)
 })
 
 let pass = 0

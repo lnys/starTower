@@ -7,7 +7,7 @@ import { ZONE_TILES, TERRAIN_ART, NPC_ART, MONSTER_ART, ITEM_ART, UI_ICON } from
 import { zoneOf } from '../game/star/rules.js'
 import { MONSTERS } from '../game/star/data.js'
 
-const NPC_PH = { guide: '引', altar: '祭', merchant: '商' }
+const NPC_PH = { guide: '🧙', altar: '💎', merchant: '🏪' }
 const TERRAIN_LABEL = { '%': '裂', a: '机关' }
 const WALL_CH = new Set(['#', 'w', '%', 'a'])
 
@@ -31,6 +31,7 @@ function entityView(ent) {
     return {
       kind: 'monster',
       boss: !!MONSTERS[ent.id]?.boss,
+      finalBoss: ent.id === 'endLord',
       art: img(MONSTER_ART[ent.id] ?? ''),
       ph: phChar(name),
       title: name + (MONSTERS[ent.id]?.boss ? '（BOSS）' : ''),
@@ -85,8 +86,8 @@ const cells = computed(() => {
         y,
         wall: WALL_CH.has(ch),
         cls,
-        bg: `url("${img(base)}")`,
-        overlay: img(TERRAIN_ART[ch] ?? ''),
+        bg: g.floor === 50 ? 'none' : `url("${img(base)}")`,
+        overlay: g.floor === 50 && ch === '*' ? '' : img(TERRAIN_ART[ch] ?? ''),
         label: TERRAIN_LABEL[ch] ?? '',
         ent: ev,
         badge,
@@ -96,6 +97,12 @@ const cells = computed(() => {
   }
   return out
 })
+
+const finalBoss = computed(() => cells.value.find(c => c.ent?.finalBoss))
+const finalBossStyle = computed(() => finalBoss.value ? {
+  left: `calc(${finalBoss.value.x - .75} * var(--cw))`,
+  top: `calc(${finalBoss.value.y - .3} * var(--ch))`,
+} : {})
 
 const heroSrc = computed(() => img(UI_ICON.hero))
 const heroStyle = computed(() => ({
@@ -159,7 +166,7 @@ function onTouchEnd(e) {
 
 <template>
   <div class="board-frame" :class="`zone-${zone}`" v-if="store.game">
-    <div class="board" :class="{ shake: shaking }" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+    <div class="board" :class="{ shake: shaking, 'rescue-garden': store.game.floor === 50 }" :style="store.game.floor === 50 ? { backgroundImage: `url(${img('bg/rescue-garden')})` } : {}" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
       <div class="grid">
         <div
           v-for="c in cells"
@@ -175,18 +182,21 @@ function onTouchEnd(e) {
           <span v-if="c.label" class="terr-label">{{ c.label }}</span>
           <template v-if="c.ent">
             <img
-              v-if="c.ent.art"
+              v-if="c.ent.art && !c.ent.finalBoss"
               :src="c.ent.art"
               :class="c.ent.kind === 'monster' ? 'mon' : 'pop'"
               :title="c.ent.title"
               alt=""
               draggable="false"
             />
-            <span v-else class="ph" :class="[c.ent.kind, { boss: c.ent.boss }]">{{ c.ent.ph }}</span>
+            <span v-else-if="!c.ent.finalBoss" class="ph" :class="[c.ent.kind, { boss: c.ent.boss }]">{{ c.ent.ph }}</span>
           </template>
         </div>
       </div>
 
+      <div v-if="finalBoss" class="final-boss" :style="finalBossStyle" aria-label="终焉女妖">
+        <img :src="finalBoss.ent.art" alt="终焉女妖" draggable="false" />
+      </div>
       <img class="hero" :src="heroSrc" :style="heroStyle" alt="勇者" draggable="false" />
 
       <div v-for="f in store.floats" :key="f.id" class="float" :class="f.kind" :style="floatStyle(f)">
@@ -247,6 +257,8 @@ function onTouchEnd(e) {
   align-items: center;
   justify-content: center;
 }
+.rescue-garden { background-size: 100% 100%; }
+.rescue-garden .cell { background-color: transparent; }
 .cell.wall { cursor: default; }
 .cell:hover:not(.wall) { box-shadow: inset 0 0 0 2px rgba(255, 213, 107, 0.35); }
 .cell.lava { box-shadow: inset 0 0 10px rgba(255, 110, 40, 0.7); }
@@ -306,6 +318,15 @@ function onTouchEnd(e) {
 .ph.item { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 55%), #2f7a8a; }
 .ph.boss { box-shadow: 0 0 0 2px #ffd54a, 0 0 10px rgba(255, 213, 107, 0.7); }
 
+.final-boss {
+  position: absolute;
+  width: calc(var(--cw) * 2.5);
+  height: calc(var(--ch) * 2.2);
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px #a6174c);
+}
+.final-boss img { width: 100%; height: 100%; object-fit: contain; }
 .hero {
   position: absolute;
   width: var(--cw);

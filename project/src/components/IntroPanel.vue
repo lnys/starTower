@@ -25,7 +25,7 @@ const route = [
   { f: '11–20 层', t: '潮汐机关城 · 潮汐司钟' },
   { f: '21–30 层', t: '镜廊 · 镜廊之主' },
   { f: '31–40 层', t: '熔炉深处 · 熔炉督主' },
-  { f: '41–50 层', t: '星穹 · 终焉之主' },
+  { f: '41–50 层', t: '星穹 · 终焉女妖' },
 ]
 </script>
 
@@ -34,7 +34,7 @@ const route = [
     <header class="intro-head">
       <h1 class="brand-cn">星穹塔</h1>
       <div class="brand-en">STAR DOME TOWER · 50 层</div>
-      <p class="tagline">一座从地底矿窖修到星空里的观星塔。守塔人把星图锁进了塔顶，你要一路上去，把星幕关掉。</p>
+      <p class="tagline">一座从地底矿窖修到星空里的观星塔。你的女神被囚禁在第五十层，登上塔顶，打破星幕，带她回家。</p>
     </header>
 
     <section class="block intro-story">
@@ -85,7 +85,7 @@ const route = [
 
       <section class="block">
         <h3>结局</h3>
-        <p class="plain">击败第 50 层的终焉之主即为通关。它的防御随第 49 层的星柱守卫减少。</p>
+        <p class="plain">击败第 50 层的终焉女妖即为通关。它的防御随第 49 层的星柱守卫减少。</p>
       </section>
     </div>
 

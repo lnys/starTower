@@ -32,6 +32,106 @@ void main() {
     expect(e.load('{"version":1}'), false);
     expect(e.serialize(), before);
   });
+  test('NPC和全部怪物都有实际图标文件', () {
+    final e = fresh();
+    for (final id in e.monsters.keys) {
+      final sprite = e.data['art']['MONSTER_ART'][id];
+      expect(sprite, isNotNull, reason: '$id 缺少图标');
+      expect(File('assets/images/$sprite.svg').existsSync(), isTrue);
+    }
+    for (final id in ['guide', 'altar', 'merchant']) {
+      final sprite = e.data['art']['NPC_ART'][id];
+      expect(sprite, isNotNull, reason: '$id 缺少图标');
+      expect(File('assets/images/$sprite.svg').existsSync(), isTrue);
+    }
+  });
+  test('隐藏罗盘可往返未到过及禁用层，普通模式限制保留', () {
+    final e = fresh();
+    e.state['items']['compass'] = 1;
+    e.state['visited'].addAll([44, 50]);
+    for (final f in [35, 44, 50]) {
+      expect(e.useItem('compass', f)['ok'], false);
+    }
+    e.state['floor'] = 50;
+    expect(e.useItem('compass', 1)['ok'], false);
+    e.state['hiddenMode'] = true;
+    for (final f in [35, 44, 50, 1]) {
+      expect(e.useItem('compass', f)['ok'], true);
+      expect(e.floor, f);
+      expect(e.state['visited'], contains(f));
+      expect(e.hero['x'], e.defs['$f']['entry']['x']);
+      expect(e.hero['y'], e.defs['$f']['entry']['y']);
+    }
+    for (final f in [null, 0, 51]) {
+      final before = e.serialize();
+      expect(e.useItem('compass', f)['ok'], false);
+      expect(e.serialize(), before);
+    }
+    final copy = fresh();
+    expect(copy.load(e.serialize()), true);
+    expect(copy.state['hiddenMode'], true);
+    e.undo();
+    expect(e.floor, 50);
+    expect(e.state['hiddenMode'], true);
+    e.reset();
+    expect(e.state['hiddenMode'], isNot(true));
+  });
+  test('终层女神不可拾取，守卫可战斗，击败女妖即可营救', () {
+    final e = fresh();
+    e.state['floor'] = 50;
+    e.ensureFloor(50);
+    e.hero['x'] = 5;
+    e.hero['y'] = 4;
+    e.hero['hp'] = 10000;
+    e.hero['atk'] = 10000;
+    e.hero['def'] = 10000;
+    expect(e.entity(5, 2)?['kind'], 'npc');
+    expect(
+        (e.world['ents'] as Map)
+            .values
+            .where((v) => v['id'] == 'pillarGuard')
+            .length,
+        4);
+    e.hero['x'] = 5;
+    e.hero['y'] = 1;
+    expect(e.move('down').first['type'], 'blocked');
+    expect(e.entity(5, 2)?['id'], 'goddess');
+    e.hero['x'] = 2;
+    e.hero['y'] = 4;
+    expect(e.move('right').first['type'], 'fight');
+    expect(e.entity(3, 4), isNull);
+    e.hero['x'] = 5;
+    e.hero['y'] = 4;
+    expect(e.move('up').any((ev) => ev['type'] == 'win'), true);
+    expect(e.state['ended'], true);
+  });
+  test('旧终层存档升级场景，保留属性及击败状态且不重复生成守卫', () {
+    final e = fresh();
+    e.state['floor'] = 50;
+    e.ensureFloor(50);
+    e.hero['x'] = 5;
+    e.hero['y'] = 4;
+    final oldWorld = e.world;
+    oldWorld.remove('sceneVersion');
+    oldWorld['ents'] = {
+      '5,3': {'kind': 'monster', 'id': 'endLord'}
+    };
+    final hp = e.hero['hp'];
+    expect(e.load(e.serialize()), true);
+    expect(e.hero['hp'], hp);
+    expect(e.entity(5, 2)?['id'], 'goddess');
+    expect(e.entity(5, 3)?['id'], 'endLord');
+    e.world['ents'].remove('3,4');
+    expect(e.load(e.serialize()), true);
+    expect(e.entity(3, 4), isNull);
+    final completedWorld = e.world;
+    completedWorld.remove('sceneVersion');
+    completedWorld['ents'].remove('5,3');
+    e.state['ended'] = true;
+    expect(e.load(e.serialize()), true);
+    expect(e.entity(5, 3), isNull);
+    expect(e.state['ended'], true);
+  });
   test('全部 50 层可实例化', () {
     final e = fresh();
     for (var floor = 1; floor <= 50; floor++) {

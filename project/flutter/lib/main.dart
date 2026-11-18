@@ -2,11 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'game/engine.dart';
+import 'ui/rescue_ending.dart';
+
+bool get fixedGameViewport =>
+    kIsWeb ||
+    {TargetPlatform.macOS, TargetPlatform.windows, TargetPlatform.linux}
+        .contains(defaultTargetPlatform);
 
 const gold = Color(0xffffd56b),
     muted = Color(0xffaaa7b8),
@@ -69,8 +76,25 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   double volume = .6;
   int peak = 1000;
   int dialogCount = 0;
+  int brandTaps = 0;
+
+  void tapBrand() {
+    if (modal || e.state['hiddenMode'] == true) return;
+    if (++brandTaps < 10) return;
+    setState(() {
+      e.state['hiddenMode'] = true;
+      e.state['items']['compass'] =
+          math.max<int>(1, (e.state['items']['compass'] ?? 0) as int);
+      e.history.clear();
+    });
+    save('auto', quiet: true);
+    toast('隐藏测试模式已开启：罗盘可传送至任意楼层');
+  }
+
   Offset swipe = Offset.zero;
   String message = '';
+  String npcMessage = '';
+  String? activeShop;
   Timer? toastTimer, repeat;
   final focus = FocusNode();
   final music = AudioPlayer(), sound = AudioPlayer();
@@ -147,10 +171,13 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
 
   void start() {
     e.reset();
+    brandTaps = 0;
     setState(() {
       playing = true;
       peak = 1000;
       message = '';
+      npcMessage = '';
+      activeShop = null;
     });
     bgm(1);
     save('auto', quiet: true);
@@ -158,6 +185,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   }
 
   bool load(String slot) {
+    brandTaps = 0;
     final text = prefs.getString('save_$slot');
     if (text == null || !e.load(text)) {
       toast('这个存档无法读取');
@@ -169,7 +197,29 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     });
     bgm(e.floor);
     toast('已读取存档 · 第 ${e.floor} 层');
+    if (e.state['ended'] == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) showRescueEnding();
+      });
+    }
     return true;
+  }
+
+  Future<void> showRescueEnding() async {
+    stopHold();
+    setState(() => modal = true);
+    await Navigator.of(context).push<void>(MaterialPageRoute(
+        builder: (ctx) => RescueEnding(
+            hp: e.hero['hp'],
+            atk: e.hero['atk'],
+            def: e.hero['def'],
+            onReturn: () => Navigator.pop(ctx))));
+    if (!mounted) return;
+    setState(() {
+      playing = false;
+      modal = false;
+    });
+    bgm(0);
   }
 
   Future<void> dialog(
@@ -245,6 +295,9 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
         case 'say':
           says.add(ev['text']);
           break;
+        case 'talk':
+          says.add('引路人：愿星光照亮你的前路。');
+          break;
         case 'shop':
           shop = ev['npc'];
           break;
@@ -256,28 +309,13 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     if (won) {
       music.stop();
       sfx('win');
-      dialog(
-          '星幕落下',
-          (refresh) => [
-                const Icon(Icons.auto_awesome, color: gold, size: 56),
-                const SizedBox(height: 16),
-                const Text('你登上了第五十层，击败终焉之主，关闭星幕。'),
-                const SizedBox(height: 12),
-                Text(
-                    '最终生命 ${e.hero['hp']} · 攻击 ${e.hero['atk']} · 防御 ${e.hero['def']}'),
-                button('返回标题', () {
-                  Navigator.pop(context);
-                  setState(() => playing = false);
-                  bgm(0);
-                })
-              ]);
+      showRescueEnding();
     } else if (says.isNotEmpty) {
-      dialog(
-          '引路人',
-          (refresh) => says
-              .map((s) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12), child: Text(s)))
-              .toList());
+      stopHold();
+      setState(() {
+        activeShop = null;
+        npcMessage = says.join('\n');
+      });
     } else if (shop != null) {
       openShop(shop);
     }
@@ -286,6 +324,10 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   bool move(String dir) {
     if (!playing || modal || e.state['ended'] == true) return false;
     final x = e.hero['x'], y = e.hero['y'], floor = e.floor;
+    setState(() {
+      activeShop = null;
+      npcMessage = '';
+    });
     final events = e.move(dir);
     setState(() => peak = math.max(peak, e.hero['hp'] as int));
     feedback(events);
@@ -328,72 +370,79 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: OutlinedButton(
           onPressed: action,
+          style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8)),
           child: Text(text,
+              maxLines: 1,
+              softWrap: false,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 12))));
   void openShop(String id) {
-    dialog(id == 'altar' ? '祭坛' : '商人', (refresh) {
-      if (id == 'altar') {
-        return [
-          Text('金币 ${e.hero['gold']} · 本次价格 ${e.altarPrice}'),
-          for (final c in ['hp', 'atk', 'def'])
-            button(
-                '${{
-                  'hp': '生命',
-                  'atk': '攻击',
-                  'def': '防御'
-                }[c]} +${e.altarGain(c)}', () {
-              final r = e.buyAltar(c);
-              refresh(() {});
-              setState(() => peak = math.max(peak, e.hero['hp'] as int));
-              toast(r['text']);
-              if (r['ok'] == true) {
-                sfx('buy');
-                save('auto', quiet: true);
-              }
-            })
-        ];
-      }
-      final list = e.data['MERCHANTS']['${e.floor}'] as List? ?? [];
-      return [
-        Text('金币 ${e.hero['gold']}'),
-        for (final item in list)
-          button(
-              item['recycle'] != null
-                  ? '回收${e.name(item['recycle'])} · +${item['gold']} 金币'
-                  : '${item['hp'] != null ? '生命 +${item['hp']}' : (item['items'] as Map).entries.map((v) => '${e.name(v.key)} ×${v.value}').join('、')} · ${item['price']} 金币${e.state['soldOut'].contains(item['id']) ? '（售完）' : ''}',
-              e.state['soldOut'].contains(item['id'])
-                  ? null
-                  : () {
-                      final r = e.merchantBuy(item['id']);
-                      refresh(() {});
-                      setState(
-                          () => peak = math.max(peak, e.hero['hp'] as int));
-                      toast(r['text']);
-                      if (r['ok'] == true) {
-                        sfx('buy');
-                        save('auto', quiet: true);
-                      }
-                    })
-      ];
+    stopHold();
+    setState(() {
+      activeShop = id;
+      npcMessage = '';
     });
   }
 
+  List<Widget> shopContent(String id, StateSetter refresh) {
+    if (id == 'altar') {
+      return [
+        Text('金币 ${e.hero['gold']} · 本次价格 ${e.altarPrice}'),
+        for (final c in ['hp', 'atk', 'def'])
+          button(
+              '${{'hp': '生命', 'atk': '攻击', 'def': '防御'}[c]} +${e.altarGain(c)}',
+              () {
+            final r = e.buyAltar(c);
+            refresh(() {});
+            setState(() => peak = math.max(peak, e.hero['hp'] as int));
+            toast(r['text']);
+            if (r['ok'] == true) {
+              sfx('buy');
+              save('auto', quiet: true);
+            }
+          })
+      ];
+    }
+    final list = e.data['MERCHANTS']['${e.floor}'] as List? ?? [];
+    return [
+      Text('金币 ${e.hero['gold']}'),
+      for (final item in list)
+        button(
+            item['recycle'] != null
+                ? '回收${e.name(item['recycle'])} · +${item['gold']} 金币'
+                : '${item['hp'] != null ? '生命 +${item['hp']}' : (item['items'] as Map).entries.map((v) => '${e.name(v.key)} ×${v.value}').join('、')} · ${item['price']} 金币${e.state['soldOut'].contains(item['id']) ? '（售完）' : ''}',
+            e.state['soldOut'].contains(item['id'])
+                ? null
+                : () {
+                    final r = e.merchantBuy(item['id']);
+                    refresh(() {});
+                    setState(() => peak = math.max(peak, e.hero['hp'] as int));
+                    toast(r['text']);
+                    if (r['ok'] == true) {
+                      sfx('buy');
+                      save('auto', quiet: true);
+                    }
+                  })
+    ];
+  }
+
   void compass() {
+    final hidden = e.state['hiddenMode'] == true;
+    final floors = hidden
+        ? List.generate(50, (i) => i + 1)
+        : ((e.state['visited'] as List).cast<int>().toList()..sort());
     dialog(
-        '传送罗盘',
+        hidden ? '传送罗盘 · 隐藏测试模式' : '传送罗盘',
         (refresh) => [
               (e.state['items']['compass'] ?? 0) <= 0
                   ? const Text('还未获得传送罗盘')
-                  : e.floor == 50
+                  : !hidden && e.floor == 50
                       ? const Text('第 50 层不能使用罗盘')
                       : Wrap(spacing: 8, children: [
-                          for (final f
-                              in (e.state['visited'] as List)
-                                  .cast<int>()
-                                  .toList()
-                                ..sort())
-                            if (f != e.floor && f != 44 && f != 50)
+                          for (final f in floors)
+                            if (f != e.floor &&
+                                (hidden || (f != 44 && f != 50)))
                               OutlinedButton(
                                   onPressed: () {
                                     Navigator.pop(context);
@@ -561,10 +610,11 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           body: SafeArea(
               child: Center(
                   child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 600),
+                      constraints: BoxConstraints(
+                          maxWidth: fixedGameViewport ? double.infinity : 600),
                       child: Stack(children: [
                         Positioned.fill(child: playing ? game() : title()),
-                        if (message.isNotEmpty)
+                        if (!playing && message.isNotEmpty)
                           Positioned(
                               left: 16,
                               right: 16,
@@ -612,7 +662,10 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                       const Text('STAR DOME TOWER · 50 层',
                           style: TextStyle(
                               color: muted, fontSize: 12, letterSpacing: 2)),
-                      const SizedBox(height: 44),
+                      const SizedBox(height: 16),
+                      const Text('登上五十层，救回你的女神。',
+                          style: TextStyle(color: Color(0xffe8c6da))),
+                      const SizedBox(height: 28),
                       SizedBox(
                           width: 280,
                           child: Column(
@@ -638,14 +691,71 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                           style: TextStyle(color: muted, fontSize: 11))
                     ]))))
       ]);
+  Widget noticePanel() => Container(
+      key: const ValueKey('board-notice'),
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+          color: panel,
+          border: Border.all(color: gold.withOpacity(.35)),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (activeShop != null || npcMessage.isNotEmpty)
+          Row(children: [
+            Expanded(
+                child: Text(
+                    activeShop == null
+                        ? '引路人'
+                        : activeShop == 'altar'
+                            ? '祭坛'
+                            : '商人',
+                    style: const TextStyle(color: gold, fontSize: 12))),
+            InkWell(
+                onTap: () => setState(() {
+                      activeShop = null;
+                      npcMessage = '';
+                    }),
+                child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Text('收起', style: TextStyle(fontSize: 12))))
+          ]),
+        Expanded(
+            child: SingleChildScrollView(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+              if (activeShop != null) ...shopContent(activeShop!, setState),
+              if (npcMessage.isNotEmpty)
+                Text(npcMessage, style: const TextStyle(fontSize: 13)),
+              if (message.isNotEmpty)
+                Text(message,
+                    style: const TextStyle(color: gold, fontSize: 12)),
+              if (activeShop == null && npcMessage.isEmpty && message.isEmpty)
+                const Text('旅途提示将显示在这里',
+                    style: TextStyle(color: muted, fontSize: 12))
+            ])))
+      ]));
+
   Widget game() => LayoutBuilder(builder: (context, box) {
+        if (box.maxWidth < 320) {
+          return FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(width: 320, height: box.maxHeight * 320 / box.maxWidth,
+                  child: game()));
+        }
         final compact = box.maxHeight < 650;
         final headerHeight = compact ? 112.0 : 130.0,
-            controlsHeight = compact ? 130.0 : 164.0;
+            controlsHeight = compact ? 130.0 : 164.0,
+            hintHeight = compact ? 92.0 : 156.0;
         final boardSize = math.max(
             110.0,
-            math.min(box.maxWidth - 12,
-                box.maxHeight - headerHeight - controlsHeight - 20));
+            math.min(
+                box.maxWidth - 12,
+                box.maxHeight -
+                    headerHeight -
+                    controlsHeight -
+                    hintHeight -
+                    20));
         return Column(children: [
           SizedBox(
               height: headerHeight,
@@ -662,15 +772,25 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                                   fontSize: 23,
                                   fontWeight: FontWeight.bold)),
                           const SizedBox(width: 8),
-                          Text(e.zoneName,
-                              style:
-                                  const TextStyle(color: muted, fontSize: 11)),
+                          Flexible(
+                              child: Text(e.zoneName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      color: muted, fontSize: 11))),
                           const Spacer(),
-                          const Text('✦ 星穹塔',
-                              style: TextStyle(
-                                  color: gold,
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold))
+                          Semantics(
+                              button: true,
+                              label: '星穹塔',
+                              child: GestureDetector(
+                                  key: const ValueKey('hidden-mode-trigger'),
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: tapBrand,
+                                  child: const Text('✦ 星穹塔',
+                                      style: TextStyle(
+                                          color: gold,
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.bold))))
                         ]),
                         Row(children: [
                           art('hero/hero', size: 46),
@@ -738,8 +858,13 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           Expanded(
               child: Center(
                   child: SizedBox(
-                      width: boardSize, height: boardSize, child: board()))),
+                      key: const ValueKey('game-board'),
+                      width: boardSize,
+                      height: boardSize,
+                      child: board()))),
+          SizedBox(height: hintHeight, child: noticePanel()),
           SizedBox(
+              key: const ValueKey('game-controls'),
               height: controlsHeight,
               child: Padding(
                   padding:
@@ -748,7 +873,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
-                            width: 85,
+                            width: box.maxWidth < 320 ? 65 : 85,
                             child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -756,9 +881,10 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                                   button('快速存档', () => saves(true)),
                                   button('菜单', menu)
                                 ])),
-                        pad(compact ? 122 : 148),
+                        pad(math.min(compact ? 122 : 148,
+                            box.maxWidth - (box.maxWidth < 320 ? 150 : 190))),
                         SizedBox(
-                            width: 85,
+                            width: box.maxWidth < 320 ? 65 : 85,
                             child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -873,7 +999,13 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                 borderRadius: BorderRadius.circular(4)),
             child: LayoutBuilder(builder: (context, constraints) {
               final cell = constraints.maxWidth / 11;
+              final bosses = (e.world['ents'] as Map)
+                  .entries
+                  .where((entry) => entry.value['id'] == 'endLord');
               return Stack(children: [
+                if (e.floor == 50)
+                  Positioned.fill(
+                      child: IgnorePointer(child: art('bg/rescue-garden'))),
                 for (var y = 0; y < 11; y++)
                   for (var x = 0; x < 11; x++)
                     Positioned(
@@ -881,7 +1013,23 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                         top: y * cell,
                         width: cell + .2,
                         height: cell + .2,
-                        child: tile(x, y, tiles, cell))
+                        child: tile(x, y, tiles, cell)),
+                for (final boss in bosses)
+                  Positioned(
+                      left: (int.parse(boss.key.split(',')[0]) - .75) * cell,
+                      top: (int.parse(boss.key.split(',')[1]) - .3) * cell,
+                      width: cell * 2.5,
+                      height: cell * 2.2,
+                      child: IgnorePointer(
+                          child: Semantics(
+                              label: '终焉女妖', child: art('monsters/endLord')))),
+                if (bosses.isNotEmpty)
+                  Positioned(
+                      left: e.hero['x'] * cell,
+                      top: e.hero['y'] * cell,
+                      width: cell,
+                      height: cell,
+                      child: IgnorePointer(child: art('hero/hero')))
               ]);
             })));
   }
@@ -929,12 +1077,16 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           }
         },
         child: Stack(fit: StackFit.expand, children: [
-          art(['#', 'w', '%', 'a'].contains(t)
-              ? tiles['wall']
-              : tiles['floor']),
-          if (overlay != null) art(overlay),
-          if (sprite != null)
-            Padding(padding: EdgeInsets.all(size * .06), child: art(sprite)),
+          if (e.floor != 50)
+            art(['#', 'w', '%', 'a'].contains(t)
+                ? tiles['wall']
+                : tiles['floor']),
+          if (overlay != null && !(e.floor == 50 && t == '*')) art(overlay),
+          if (sprite != null && entity?['id'] != 'endLord')
+            Semantics(
+                label: e.name(entity!['id']),
+                child: Padding(
+                    padding: EdgeInsets.all(size * .06), child: art(sprite))),
           if (label != null)
             Center(
                 child: Container(
