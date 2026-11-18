@@ -10,6 +10,17 @@
 
 **直接点击上方链接即可开始游戏，无需下载、无需安装。** 手机与电脑浏览器均可打开。
 
+## 💻 电脑客户端下载（Flutter v1.0.2）
+
+| 平台 | 安装版 | 解压即玩 |
+| --- | --- | --- |
+| Mac（Intel / Apple 芯片） | [下载 DMG 安装包](https://github.com/lnys/starTower/releases/download/v1.0.2/StarDomeTower-Flutter-1.0.2-mac-universal.dmg) | [下载 ZIP](https://github.com/lnys/starTower/releases/download/v1.0.2/StarDomeTower-Flutter-1.0.2-mac-universal.zip) |
+| Windows（x64） | [下载 EXE 安装包](https://github.com/lnys/starTower/releases/download/v1.0.2/StarDomeTower-Flutter-1.0.2-windows-x64-setup.exe) | [下载便携 ZIP](https://github.com/lnys/starTower/releases/download/v1.0.2/StarDomeTower-Flutter-1.0.2-windows-x64-portable.zip) |
+
+Mac 打开 DMG 后将“星穹塔”拖入 Applications；Windows 运行安装包，或完整解压便携 ZIP 后打开 `star_tower.exe`。客户端可离线游玩。
+
+[安装说明](https://github.com/lnys/starTower/releases/download/v1.0.2/INSTALL.md) · [SHA256 校验清单](https://github.com/lnys/starTower/releases/download/v1.0.2/SHA256SUMS.txt) · [版本发布页](https://github.com/lnys/starTower/releases/tag/v1.0.2)
+
 > 🤖 本项目由 AI 驱动开发。
 
 ![星穹塔界面与玩法介绍](bg/bfde9003e6f131855c59b340e078aa1f.png)
