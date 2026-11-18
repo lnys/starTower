@@ -4,6 +4,12 @@
 
 > 一座从地底矿窟修到星空的 50 层观星塔，一段原创冒险。
 
+> 🤖 本项目由 AI 驱动开发。
+
+![星穹塔界面与玩法介绍](bg/bfde9003e6f131855c59b340e078aa1f.png)
+
+《星穹塔》是一款魔塔风格游戏，提供 Vue 3 + Vite 网页版、Electron 桌面版和 Flutter 原生版。守塔人把星图锁进了塔顶，你要一路上去，把星幕关掉。
+
 ## 💻 电脑客户端下载（Flutter v1.0.2）
 
 | 平台 | 安装版 | 解压即玩 |
@@ -23,12 +29,6 @@ Mac 打开 DMG 后将“星穹塔”拖入 Applications；Windows 运行安装�
 | Windows（x64） | [下载 EXE 安装包](https://github.com/lnys/starTower/releases/download/v0.1.0/StarDomeTower-0.1.0-windows-x64-setup.exe) | [下载便携 EXE](https://github.com/lnys/starTower/releases/download/v0.1.0/StarDomeTower-0.1.0-windows-x64-portable.exe) |
 
 [Mac 安装说明](https://github.com/lnys/starTower/releases/download/v0.1.0/Mac-Install.md) · [Windows 安装说明](https://github.com/lnys/starTower/releases/download/v0.1.0/Windows-Install.md) · [SHA256 校验清单](https://github.com/lnys/starTower/releases/download/v0.1.0/SHA256SUMS.txt) · [版本发布页](https://github.com/lnys/starTower/releases/tag/v0.1.0)
-
-> 🤖 本项目由 AI 驱动开发。
-
-![星穹塔界面与玩法介绍](bg/bfde9003e6f131855c59b340e078aa1f.png)
-
-《星穹塔》是一款魔塔风格游戏，提供 Vue 3 + Vite 网页版、Electron 桌面版和 Flutter 原生版。守塔人把星图锁进了塔顶，你要一路上去，把星幕关掉。
 
 ## 游戏特色
 
