@@ -1,14 +1,8 @@
 # 星穹塔 Star Dome Tower
 
-> 📱 手机也可以玩，打开链接就能上塔，不用下载。
-
 > 💰 成本：100 元 ｜ ⏱️ 时间：3 小时以上（一路写到凌晨 3 点）
 
 > 一座从地底矿窟修到星空的 50 层观星塔，一段原创冒险。
-
-## 🎮 [免费内部测试 →](https://www.fastmini.cn/gameMt/)
-
-**直接点击上方链接即可开始游戏，无需下载、无需安装。** 手机与电脑浏览器均可打开。
 
 ## 💻 电脑客户端下载（Flutter v1.0.2）
 
@@ -20,6 +14,15 @@
 Mac 打开 DMG 后将“星穹塔”拖入 Applications；Windows 运行安装包，或完整解压便携 ZIP 后打开 `star_tower.exe`。客户端可离线游玩。
 
 [安装说明](https://github.com/lnys/starTower/releases/download/v1.0.2/INSTALL.md) · [SHA256 校验清单](https://github.com/lnys/starTower/releases/download/v1.0.2/SHA256SUMS.txt) · [版本发布页](https://github.com/lnys/starTower/releases/tag/v1.0.2)
+
+### Electron 版下载（v0.1.0）
+
+| 平台 | 安装版 | 免安装版 |
+| --- | --- | --- |
+| Mac（Intel / Apple 芯片） | [下载 DMG 安装包](https://github.com/lnys/starTower/releases/download/v0.1.0/StarDomeTower-0.1.0-mac-universal.dmg) | [下载 ZIP](https://github.com/lnys/starTower/releases/download/v0.1.0/StarDomeTower-0.1.0-mac-universal.zip) |
+| Windows（x64） | [下载 EXE 安装包](https://github.com/lnys/starTower/releases/download/v0.1.0/StarDomeTower-0.1.0-windows-x64-setup.exe) | [下载便携 EXE](https://github.com/lnys/starTower/releases/download/v0.1.0/StarDomeTower-0.1.0-windows-x64-portable.exe) |
+
+[Mac 安装说明](https://github.com/lnys/starTower/releases/download/v0.1.0/Mac-Install.md) · [Windows 安装说明](https://github.com/lnys/starTower/releases/download/v0.1.0/Windows-Install.md) · [SHA256 校验清单](https://github.com/lnys/starTower/releases/download/v0.1.0/SHA256SUMS.txt) · [版本发布页](https://github.com/lnys/starTower/releases/tag/v0.1.0)
 
 > 🤖 本项目由 AI 驱动开发。
 
@@ -162,7 +165,6 @@ npm run dist:win
 - ⚔️ 战斗预判：与怪物相邻时显示预计损失、回合数与所需生命。
 - 🏪 祭坛与商人系统，撤销（最多 50 步）与自动 / 手动存档。
 - 📱 适配手机屏幕的方向盘式操作区，PC 端提供手机外壳预览。
-- 🎮 [免费内部测试](https://www.fastmini.cn/gameMt/)，无需下载安装。
 
 已知问题请见上文 “已知问题” 一节。
 

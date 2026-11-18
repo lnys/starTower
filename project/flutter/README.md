@@ -32,6 +32,12 @@ export LC_ALL=en_US.UTF-8
 flutter run -d <iPhone设备ID>
 ```
 
+## 手机图标与启动页
+
+iOS 和 Android 使用星穹塔金色塔楼图标，原生启动页采用深色背景；iOS 显示塔楼与“星穹塔”标题，Android 12 以上使用系统品牌启动画面。Android 同时提供自适应图标和旧版密度图标。
+
+图标源图为 `tool/branding/icon-source.png`，修改后运行 `python3 tool/generate_branding.py`（需 Pillow），重新构建并安装应用。热重载不会更新原生图标或启动页。
+
 ## 操作
 
 - 手机：方向盘点击／长按移动，棋盘滑动移动；点击怪物查看完整战斗预判。点击相邻格也可执行移动／交互。
