@@ -194,7 +194,7 @@ npm run dist:win
 
 扫码加入微信交流群，分享攻略、反馈问题、聊聊星穹塔。
 
-<img src="https://i.imgur.com/bm6RKQo.jpeg" alt="微信交流群二维码" width="200" />
+<img src="https://fm-mochat-test.oss-cn-hangzhou.aliyuncs.com/images/start-qrcode.jpg" alt="微信交流群二维码" width="200" />
 
 ## 许可证
 
