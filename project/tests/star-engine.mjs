@@ -176,11 +176,11 @@ t('事件 allDefeated：指定格上的怪全部被击败后，机关门打开',
   assert.ok(s.firedEvents.includes('gate'))
 })
 
-t('事件 talked：与引路人对话只触发一次，勇者不移动', () => {
+t('事件 talked：可重复查看引路人提示，奖励只发一次，勇者不移动', () => {
   const defs = world([[6, 5, 'G']], [], {
     f1: {
       legend: { G: 'guide' },
-      events: [{ id: 'g1', floor: 1, trigger: { op: 'talked', npc: 'guide' }, effects: [{ op: 'say', text: 'hi' }] }],
+      events: [{ id: 'g1', floor: 1, trigger: { op: 'talked', npc: 'guide' }, effects: [{ op: 'say', text: 'hi' }, { op: 'grantItem', id: 'yellowKey' }] }],
     },
   })
   const s = play(defs, { x: 5, y: 5 })
@@ -188,7 +188,10 @@ t('事件 talked：与引路人对话只触发一次，勇者不移动', () => {
   assert.equal(ev[0].type, 'talk')
   assert.equal(s.hero.x, 5)
   assert.ok(ev.some((e) => e.type === 'say'))
-  moveHero(s, defs, 'right')
+  const keys = s.hero.keys.yellowKey
+  assert.equal(moveHero(s, defs, 'right').find((e) => e.type === 'say')?.text, 'hi')
+  assert.equal(keys, 1)
+  assert.equal(s.hero.keys.yellowKey, keys)
   assert.equal(s.firedEvents.filter((i) => i === 'g1').length, 1)
 })
 

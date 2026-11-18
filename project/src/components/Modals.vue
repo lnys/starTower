@@ -2,6 +2,8 @@
 // 弹窗集合：对话（引路人与事件）、祭坛、商人、罗盘、背包、存档、设置、菜单、结局
 import { computed, ref, watch } from 'vue'
 import { store, actions, compassTargets, itemName, zoneName } from '../stores/star.js'
+import { img } from '../engine/images.js'
+import { ITEM_ART } from '../engine/star-art.js'
 import StoryBox from './StoryBox.vue'
 import RescueEnding from './RescueEnding.vue'
 import { MANUAL_SLOTS, AUTO_SLOT } from '../engine/storage.js'
@@ -227,7 +229,7 @@ watch(modal, () => {
               <div class="rows">
                 <div v-for="r in bagRows" :key="r.id" class="row">
                   <div class="row-main">
-                    <b>{{ r.name }} ×{{ r.count === Infinity ? '∞' : r.count }}</b>
+                    <b class="bag-item-label"><img :src="img(ITEM_ART[r.id])" alt="" width="24" height="24" />{{ r.name }} ×{{ r.count === Infinity ? '∞' : r.count }}</b>
                     <span class="sub">{{ r.desc }}</span>
                   </div>
                   <button class="buy" @click="useBag(r.id)">{{ r.id === 'compass' ? '前往' : '使用' }}</button>
@@ -302,6 +304,8 @@ watch(modal, () => {
 </template>
 
 <style scoped>
+.bag-item-label { display: flex; align-items: center; gap: 6px; }
+
 .backdrop {
   position: absolute;
   inset: 0;

@@ -72,6 +72,15 @@ export const MONSTER_ART = {
 }
 
 export const ITEM_ART = {
+  tideSpear: 'items/tideSpear',
+  charm: 'items/charm',
+  dragonFang: 'items/dragonFang',
+  compass: 'items/compass',
+  pickaxe: 'items/pickaxe',
+  flask: 'items/flask',
+  mirrorJump: 'items/mirrorJump',
+  frostCore: 'items/frostCore',
+  bomb: 'items/bomb',
   redCrystal: 'items/gem_a',
   blueCrystal: 'items/gem_p',
   redPotion: 'items/potion_s',
@@ -91,7 +100,7 @@ export const ITEM_ART = {
   starShield: 'items/shield',
 }
 
-/** 使用图标：仅供按钮与背包显示。缺图的道具用占位 */
+/** 状态栏与勇者图标。 */
 export const UI_ICON = {
   gold: 'ui/icon_gold',
   hp: 'ui/icon_hp',

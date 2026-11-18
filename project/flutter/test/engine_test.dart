@@ -7,7 +7,24 @@ import '../tool/replay.dart' as replay;
 void main() {
   GameEngine fresh() =>
       GameEngine(jsonDecode(File('assets/data/game.json').readAsStringSync()));
-  test('完整 3774 步真实通关，与 Vue 数值一致', replay.main);
+  test('完整 3779 步真实通关，与 Vue 数值一致', replay.main);
+  test('旧存档仍可复读引路人对白，且不会重复领取奖励', () {
+    final e = fresh();
+    e.state['floor'] = 3;
+    final guide = (e.world['ents'] as Map)
+        .entries
+        .firstWhere((entry) => entry.value['id'] == 'guide');
+    final xy = (guide.key as String).split(',').map(int.parse).toList();
+    e.hero['x'] = xy[0] - 1;
+    e.hero['y'] = xy[1];
+    final message = e.move('right').singleWhere((ev) => ev['type'] == 'say');
+    expect(e.state['items']['compass'], 1);
+    expect(e.load(e.serialize()), isTrue);
+    expect(e.move('right').singleWhere((ev) => ev['type'] == 'say'), message);
+    expect(e.state['items']['compass'], 1);
+    expect(
+        e.state['firedEvents'].where((id) => id == 'f3-guide'), hasLength(1));
+  });
   test('撞墙不占用或丢失撤销记录', () {
     final e = fresh();
     e.move('left');

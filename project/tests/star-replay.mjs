@@ -31,4 +31,5 @@ for (const [i, a] of route.entries()) {
 }
 assert.equal(s.floor, 50)
 assert.equal(s.ended, true)
+assert.deepEqual([s.hero.hp, s.hero.atk, s.hero.def], [1241, 378, 501])
 console.log(`真实引擎回放通关：${route.length} 步，生命 ${s.hero.hp}，攻击 ${s.hero.atk}，防御 ${s.hero.def}`)

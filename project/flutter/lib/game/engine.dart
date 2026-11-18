@@ -213,8 +213,17 @@ class GameEngine {
 
   void checkEvents(Json ctx, List<Json> out) {
     for (final ev in defs['$floor']['events'] ?? []) {
-      if ((state['firedEvents'] as List).contains(ev['id'])) continue;
       final t = ev['trigger'];
+      if ((state['firedEvents'] as List).contains(ev['id'])) {
+        if (t['op'] == 'talked' && ctx['talked'] == t['npc']) {
+          for (final eff in ev['effects']) {
+            if (eff['op'] == 'say') {
+              out.add({'type': 'say', 'text': eff['text']});
+            }
+          }
+        }
+        continue;
+      }
       bool ok = false;
       switch (t['op']) {
         case 'talked':

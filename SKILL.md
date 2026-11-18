@@ -1,7 +1,7 @@
 ---
 name: star-tower
 metadata:
-  version: "1.0.3"
+  version: "1.0.4"
 description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关、修复地图资源瓶颈，支持 Vue/Electron 桌面版与 Flutter 原生游戏的开发、通关验证、Mac 通用版和 Windows x64 安装包构建。包含原创游戏源码快照、完整通关回放和桌面构建配置；用于星穹塔相关任务。
 ---
 
@@ -38,11 +38,11 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 引擎位于 `src/game/star/engine.js`，战斗公式位于 `rules.js`，地图位于 `maps/`，数据位于 `data.js`。界面预判与实战使用同一规则。第 43、45 层的特殊楼梯通过 `stairTo` 定向。
 
-验证必须从初始状态通过真实引擎执行移动、战斗、交易和道具使用，检查动作成功、生命始终大于 0，最终到达 50 层并触发通关。不能通过直接改属性、注入钥匙或赋值通关状态来证明正常游戏可通关。`tests/fixtures/star-route.json` 保存 3774 步合法路线；`tests/star-replay.mjs` 是快速回归验证。
+验证必须从初始状态通过真实引擎执行移动、战斗、交易和道具使用，检查动作成功、生命始终大于 0，最终到达 50 层并触发通关。不能通过直接改属性、注入钥匙或赋值通关状态来证明正常游戏可通关。`tests/fixtures/star-route.json` 保存 3779 步合法路线；`tests/star-replay.mjs` 是快速回归验证。
 
 若卡住，记录楼层、坐标、生命、钥匙和可达资源，区分机器人策略不足与地图资源断路。用户已要求优化时，在授权范围内修复瓶颈并重新模拟，不额外要求批准常规可逆修改。保留可选资源分支的成本，优先修复主路资源依赖。规则、地图变更后固定路线可能失效，应重新规划而不是跳过失败动作。
 
-当前快照已修复后段主路黄钥匙瓶颈、46 层蓝钥匙补偿和失败操作消耗撤销记录的问题。已验证存在一条通关路线：3774 步，最终生命 791、攻击 378、防御 501。这不等于穷尽求解、任意路线可通关或规格全部通过；剩余地图规格偏差见通关报告。更新报告时写明实际运行的检查及未验证范围。
+当前快照已修复后段主路黄钥匙瓶颈、46 层蓝钥匙补偿和失败操作消耗撤销记录的问题。已验证存在一条通关路线：3779 步，最终生命 1241、攻击 378、防御 501。这不等于穷尽求解、任意路线可通关或规格全部通过；验证范围见通关报告。更新报告时写明实际运行的检查及未验证范围。
 
 ## 营救场景与界面修改
 
@@ -60,7 +60,7 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 Web 游戏容器使用浏览器可视区域宽度的 1/4、高度的 4/5；桌面窗口按屏幕相同比例居中并关闭手动调整尺寸。NPC 对话、交易与普通提示固定在棋盘下方，长内容内部滚动，避免覆盖底部方向键。原生移动端仍使用手机适配布局。窗口逻辑分别位于各平台 runner，不能仅修改 Dart 布局就认定原生窗口行为已同步。
 
-在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；18 项测试含同一条 3774 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
+在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；20 项测试含同一条 3779 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
 
 Mac 上 `flutter build macos --release` 后执行 `bash tool/packaging/macos.sh` 生成并验证 Universal DMG / ZIP。Windows 必须在 Windows + Visual Studio C++ 工具链环境构建，不能从 Mac 直接交叉编译。Windows 打包配置为 `tool/packaging/windows.iss`（Inno Setup 6），需包含构建目录全部 DLL、data 和 Visual C++ 运行库。
 

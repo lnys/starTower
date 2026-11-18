@@ -45,12 +45,12 @@ void main() {
   }
   if (engine.floor != 50 ||
       engine.state['ended'] != true ||
-      engine.hero['hp'] != 791 ||
+      engine.hero['hp'] != 1241 ||
       engine.hero['atk'] != 378 ||
       engine.hero['def'] != 501) throw StateError('通关结果不一致：${engine.hero}');
   final saved = engine.serialize();
   if (!engine.load(saved) || engine.history.isNotEmpty) {
     throw StateError('存档往返失败');
   }
-  stdout.writeln('Dart 引擎通关：${route.length} 步；生命 791，攻击 378，防御 501；存档往返通过。');
+  stdout.writeln('Dart 引擎通关：${route.length} 步；生命 1241，攻击 378，防御 501；存档往返通过。');
 }

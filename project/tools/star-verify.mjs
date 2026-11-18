@@ -86,5 +86,20 @@ for (let n = 1; n < 50; n++) {
   }
 }
 
-console.log(problems.length ? `发现 ${problems.length} 个问题：\n  ${problems.join('\n  ')}` : '全塔校验通过（楼梯链、入口、楼梯四邻、机关门配对）')
+// 明确锁定 1.0.4 修正的地图库存，避免误改支路数量。
+const yellowDoors = {4: 4, 8: 5, 14: 5, 15: 4, 16: 5, 17: 4, 18: 5, 19: 5, 22: 4, 25: 3, 28: 4}
+const crackWalls = {19: 1, 28: 1, 37: 4, 41: 1, 44: 1, 46: 1, 48: 1}
+for (const [n, def] of byIndex) {
+  const tiles = [...def.grid.join('')]
+  const count = (value) => tiles.filter((c) => c === value || def.legend[c] === value).length
+  const expected = { '%': crackWalls[n] ?? 0 }
+  if (n in yellowDoors) expected.y = yellowDoors[n]
+  if (n === 39) expected.bluePotion = 1
+  if (n === 48) Object.assign(expected, { bluePotion: 4, blueKey: 2 })
+  for (const [value, total] of Object.entries(expected)) {
+    if (count(value) !== total) problems.push(`第 ${n} 层 ${value} 为 ${count(value)}，应为 ${total}`)
+  }
+}
+
+console.log(problems.length ? `发现 ${problems.length} 个问题：\n  ${problems.join('\n  ')}` : '全塔校验通过（楼梯链、入口、楼梯四邻、机关门配对、地图库存）')
 if (problems.length) process.exitCode = 1

@@ -257,7 +257,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   void feedback(List<Json> events) {
     final says = <String>[];
     String? shop;
-    bool won = false;
+    bool won = false, talked = false;
     for (final ev in events) {
       switch (ev['type']) {
         case 'fight':
@@ -296,7 +296,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           says.add(ev['text']);
           break;
         case 'talk':
-          says.add('引路人：愿星光照亮你的前路。');
+          talked = true;
           break;
         case 'shop':
           shop = ev['npc'];
@@ -310,11 +310,11 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
       music.stop();
       sfx('win');
       showRescueEnding();
-    } else if (says.isNotEmpty) {
+    } else if (says.isNotEmpty || talked) {
       stopHold();
       setState(() {
         activeShop = null;
-        npcMessage = says.join('\n');
+        npcMessage = says.isEmpty ? '愿星光照亮你的前路。' : says.join('\n');
       });
     } else if (shop != null) {
       openShop(shop);
@@ -366,17 +366,21 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     }
   }
 
-  Widget button(String text, VoidCallback? action) => Padding(
+  Widget button(String text, VoidCallback? action, {Widget? icon}) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: OutlinedButton(
           onPressed: action,
           style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 8)),
-          child: Text(text,
-              maxLines: 1,
-              softWrap: false,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12))));
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (icon != null) ...[icon, const SizedBox(width: 6)],
+            Flexible(
+                child: Text(text,
+                    maxLines: 1,
+                    softWrap: false,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12)))
+          ])));
   void openShop(String id) {
     stopHold();
     setState(() {
@@ -468,12 +472,16 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     } else {
                       use(id);
                     }
-                  }),
+                  }, icon: art(e.data['art']['ITEM_ART'][id], size: 22)),
               for (final id in (e.data['HOLD'] as Map).keys)
                 if (e.hero['flags'][e.data['HOLD'][id]['flag']] == true)
                   Padding(
                       padding: const EdgeInsets.all(8),
-                      child: Text('${e.name(id)} · 持有生效')),
+                      child: Row(children: [
+                        art(e.data['art']['ITEM_ART'][id], size: 22),
+                        const SizedBox(width: 6),
+                        Text('${e.name(id)} · 持有生效')
+                      ])),
               if ((e.state['items'] as Map).values.every((v) => v == 0))
                 const Text('主动道具会在冒险中获得。')
             ]);
@@ -740,7 +748,9 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
         if (box.maxWidth < 320) {
           return FittedBox(
               fit: BoxFit.contain,
-              child: SizedBox(width: 320, height: box.maxHeight * 320 / box.maxWidth,
+              child: SizedBox(
+                  width: 320,
+                  height: box.maxHeight * 320 / box.maxWidth,
                   child: game()));
         }
         final compact = box.maxHeight < 650;

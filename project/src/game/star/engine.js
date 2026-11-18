@@ -154,13 +154,18 @@ export function preview(state, defs, x, y) {
 /**
  * 检查本层的事件。ctx 可以包含：
  *   talked: 对话的 NPC id；entered: {x,y} 走到的格子；defeated: {x,y} 被击败的怪物格。
- * allDefeated 在每次检查时都会判断。每个事件只触发一次。
+ * allDefeated 在每次检查时都会判断。事件奖励只发一次，对话文字可以重读。
  */
 function checkEvents(state, defs, ctx, out) {
   const events = defs[state.floor]?.events ?? []
   for (const ev of events) {
-    if (state.firedEvents.includes(ev.id)) continue
     const t = ev.trigger
+    if (state.firedEvents.includes(ev.id)) {
+      if (t.op === 'talked' && ctx.talked === t.npc) {
+        for (const eff of ev.effects) if (eff.op === 'say') applyEffect(state, defs, eff, out)
+      }
+      continue
+    }
     let ok = false
     if (t.op === 'talked') ok = ctx.talked === t.npc
     if (t.op === 'enterTile') ok = !!ctx.entered && ctx.entered.x === t.at.x && ctx.entered.y === t.at.y

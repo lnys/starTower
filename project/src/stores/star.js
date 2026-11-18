@@ -200,8 +200,7 @@ function afterAction(g, before, events) {
       then: null,
     }
   } else if (talked) {
-    // 引路人的对话只在第一次触发（引擎的事件只触发一次），之后没有新话
-    toast('引路人：……这里我已经都告诉你了。')
+    toast('引路人：愿星光照亮你的前路。')
   } else if (shop) {
     store.modal = { type: shop === 'altar' ? 'altar' : 'merchant' }
   }

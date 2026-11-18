@@ -12,7 +12,7 @@ onMounted(async () => {
   try {
     qr.value = await QRCode.toDataURL(QR_URL, {
       width: 240,
-      margin: 1,
+      margin: 4,
       color: { dark: '#14142e', light: '#ffffff' },
     })
   } catch {

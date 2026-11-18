@@ -48,9 +48,9 @@ export default [
     legend: { t: 'hammerLord', s: 'ironKnight', u: 'coreGolem', p: 'magmaHound', P: 'redPotion', Q: 'bluePotion', R: 'redCrystal', U: 'blueCrystal', Y: 'yellowKey', E: 'redKey' },
     grid: [
       '#####v#####',
-      '#..s..yp~Q#',
-      '#Y##Yy###Q#',
-      '#.yt#sY##Q#',
+      '#..s..yp~.#',
+      '#Y##Yy###.#',
+      '#.yt#sY##.#',
       '#.#P#######',
       '#t###E####^',
       '#.#R#a##U#.',
