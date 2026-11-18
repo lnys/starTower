@@ -121,13 +121,13 @@ project/
 
 ## 更新说明
 
-### v1.0.2 — 2026-11-17
+### v1.0.2 — 2026-11-18
 
 - 📱 Skill 新增 `project/flutter/` 原生游戏源码，保留 50 层游戏、离线素材、音乐及本地存档，不包含网页介绍和手机外壳。
 - ✅ Dart 引擎 3774 步通关回放结果与 Vue 一致：生命 791、攻击 378、防御 501；8 项引擎和多尺寸界面测试通过。
 - 📦 新增 Flutter Mac Universal DMG／ZIP、Windows x64 安装包／便携 ZIP 的 GitHub Actions 构建发布流程；双平台通过后发布，附校验值和安装说明。
 - 🛠️ `verify.sh` 校验同时覆盖 Vue 和 Flutter 源码。`rebuild.sh` 继续还原完整项目并验证 Vue；Flutter 另按上文命令运行。
-- 🧪 Intel Mac 和 iPhone 模拟器已启动验证；Windows 发布流程包含安装、启动和卸载检查。Apple 芯片与移动端真机尚未实测，构建状态以 Actions 记录为准。
+- 🧪 Intel Mac 和 iPhone 模拟器已启动验证；Windows 发布流程包含安装、启动和卸载检查。Apple 芯片与移动端真机尚未实测，双平台正式构建、Mac 包完整性及 Windows 安装／启动／卸载检查均已通过，见 [v1.0.2 下载](https://github.com/lnys/starTower/releases/tag/v1.0.2)。
 
 ### v1.0.1 — 2026-11-17
 
