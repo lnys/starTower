@@ -1,4 +1,4 @@
 interface:
   display_name: "星穹塔开发与桌面打包"
-  short_description: "还原星穹塔源码、验证完整通关路线，并打包 Mac 和 Windows 桌面游戏"
-  default_prompt: "使用 $star-tower 根据项目快照验证魔塔通关，并生成 Mac 与 Windows 桌面安装包。"
+  short_description: "还原 Vue 与 Flutter 星穹塔源码、验证通关，并构建 Mac 与 Windows 安装包"
+  default_prompt: "使用 $star-tower 根据 Vue 或 Flutter 项目快照验证魔塔通关，并生成 Mac 与 Windows 桌面安装包。"

@@ -1,6 +1,6 @@
 ---
 name: star-tower
-description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关、修复地图资源瓶颈，并将 Vue 项目打包为 Electron Mac 通用版与 Windows x64 安装版、便携版。包含原创游戏源码快照、完整通关回放和桌面构建配置；用于星穹塔相关任务。
+description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关、修复地图资源瓶颈，支持 Vue/Electron 桌面版与 Flutter 原生游戏的开发、通关验证、Mac 通用版和 Windows x64 安装包构建。包含原创游戏源码快照、完整通关回放和桌面构建配置；用于星穹塔相关任务。
 ---
 
 # 星穹塔
@@ -42,6 +42,16 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 当前快照已修复后段主路黄钥匙瓶颈、46 层蓝钥匙补偿和失败操作消耗撤销记录的问题。已验证存在一条通关路线：3774 步，最终生命 791、攻击 378、防御 501。这不等于穷尽求解、任意路线可通关或规格全部通过；剩余地图规格偏差见通关报告。更新报告时写明实际运行的检查及未验证范围。
 
+## Flutter 原生版
+
+`project/flutter/` 为独立 Flutter 工程，仅包含游戏，不含 Vue 介绍页或手机外壳。运行与平台限制见 `project/flutter/README.md`，验证证据见 `project/flutter/通关测试.md`。已生成 iOS、Android、macOS、Windows 等平台工程；生成工程不代表该平台构建通过。
+
+在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；8 项测试含同一条 3774 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
+
+Mac 上 `flutter build macos --release` 后执行 `bash tool/packaging/macos.sh` 生成并验证 Universal DMG / ZIP。Windows 必须在 Windows + Visual Studio C++ 工具链环境构建，不能从 Mac 直接交叉编译。Windows 打包配置为 `tool/packaging/windows.iss`（Inno Setup 6），需包含构建目录全部 DLL、data 和 Visual C++ 运行库。
+
+Skill 仓库 `.github/workflows/flutter-release.yml` 在推送版本标签时构建双平台；两者通过才发布 Release，版本标签必须匹配 Flutter pubspec。用户授权发布后才推送发布标签。工作流将安装、启动及卸载 Windows 安装包；启动存活检查不代表人工完整游玩。iOS 真机与商店发布、Android 正式发行另需各自签名配置。Flutter 存档与 Vue/Electron 不自动互通。
+
 ## Electron 桌面版
 
 打包时阅读 `project/docs/桌面版打包.md`（已有项目使用对应文件）。在项目目录执行：
@@ -65,6 +75,6 @@ Mac 的 DMG 工具下载失败时，可用系统 `hdiutil` 封装已签名应用
 
 - 游戏或规则修改：运行相关回归检查与构建；需要证明新路线时重新全程模拟并更新通关报告。
 - Mac：检查 Universal 包含 `x86_64 arm64`，执行 `codesign --verify --deep --strict`，在可用硬件上启动最终应用。校验 DMG 和 ZIP 完整性。
-- Windows：检查应用为 x64 PE，内置 ASAR 页面及主进程与构建结果一致；用 7-Zip 校验两个 NSIS EXE。安装器外壳可能为 32 位，不能据此认定内置应用不是 x64。
+- Electron Windows：检查应用为 x64 PE，内置 ASAR 页面及主进程与构建结果一致；用 7-Zip 校验两个 NSIS EXE。安装器外壳可能为 32 位，不能据此认定内置应用不是 x64。
 - 产物放 `release/`；安装版与便携版分别使用 `-setup.exe`、`-portable.exe`，避免文件名覆盖。更新 SHA256 和安装说明，给用户可点击的实际文件路径。
 - 明确区分测试通过、打包成功和实机验证。当前快照的历史验证：Intel Mac 启动通过，Apple 芯片及 Windows 尚无实机运行结果。

@@ -1,0 +1,91 @@
+name: Flutter desktop release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-14]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: project/flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build macOS Universal
+        if: runner.os == 'macOS'
+        run: flutter build macos --release
+      - name: Package macOS
+        if: runner.os == 'macOS'
+        run: bash tool/packaging/macos.sh
+      - name: Build Windows
+        if: runner.os == 'Windows'
+        run: flutter build windows --release
+      - name: Package and smoke test Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = ((Select-String '^version: (.+)\+' pubspec.yaml).Matches.Groups[1].Value)
+          $bundle = 'build/windows/x64/runner/Release'
+          # Include the redistributable runtime next to the executable for offline installs.
+          $vs = & "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -property installationPath
+          $crt = Get-ChildItem "$vs/VC/Redist/MSVC/*/x64/Microsoft.VC143.CRT" -Directory | Sort-Object FullName | Select-Object -Last 1
+          if (!$crt) { throw 'Visual C++ runtime not found' }
+          Copy-Item "$($crt.FullName)/*.dll" $bundle
+          New-Item -ItemType Directory -Force release | Out-Null
+          & "${env:ProgramFiles(x86)}/Inno Setup 6/ISCC.exe" "/DAppVersion=$version" tool/packaging/windows.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup failed' }
+          Compress-Archive -Path "$bundle/*" -DestinationPath "release/StarDomeTower-Flutter-$version-windows-x64-portable.zip"
+          $installer = Get-ChildItem release/*-setup.exe | Select-Object -First 1
+          $installDir = Join-Path $env:RUNNER_TEMP 'StarTowerInstall'
+          $install = Start-Process $installer.FullName -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$installDir") -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "Installation failed: $($install.ExitCode)" }
+          $app = Start-Process "$installDir/star_tower.exe" -PassThru
+          Start-Sleep -Seconds 15
+          if ($app.HasExited) { throw "App exited early: $($app.ExitCode)" }
+          Stop-Process -Id $app.Id
+          $uninstall = Start-Process "$installDir/unins000.exe" -ArgumentList '/VERYSILENT' -Wait -PassThru
+          if ($uninstall.ExitCode -ne 0) { throw 'Uninstall failed' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flutter-${{ runner.os }}
+          path: project/flutter/release/*
+          if-no-files-found: error
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: flutter-*
+          merge-multiple: true
+          path: release
+      - name: Verify version and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(sed -n 's/^version: \([^+]*\).*/\1/p' project/flutter/pubspec.yaml)"
+          test "$GITHUB_REF_NAME" = "v$VERSION"
+          cp project/flutter/tool/packaging/INSTALL.md release/INSTALL.md
+          (cd release && sha256sum *.dmg *.zip *.exe INSTALL.md > SHA256SUMS.txt)
+          gh release create "$GITHUB_REF_NAME" release/* --verify-tag --title "星穹塔 v$VERSION · Flutter 桌面版" --notes-file project/flutter/tool/packaging/RELEASE.md

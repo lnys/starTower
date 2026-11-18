@@ -14,7 +14,7 @@
 
 ![星穹塔界面与玩法介绍](bg/bfde9003e6f131855c59b340e078aa1f.png)
 
-《星穹塔》是一款用 Vue 3 + Vite 制作的魔塔风格网页游戏。守塔人把星图锁进了塔顶，你要一路上去，把星幕关掉。
+《星穹塔》是一款魔塔风格游戏，提供 Vue 3 + Vite 网页版、Electron 桌面版和 Flutter 原生版。守塔人把星图锁进了塔顶，你要一路上去，把星幕关掉。
 
 ## 游戏特色
 
@@ -70,6 +70,17 @@ npm test
 
 `npm test` 会依次运行 26 条引擎测试、17 条规则测试、全塔地图校验和 3774 步真实引擎通关回放。
 
+## Flutter 原生版
+
+源码位于 [project/flutter](project/flutter/README.md)，仅包含游戏画面，无介绍页或手机外壳。包含 Windows、macOS、iOS、Android 平台工程；移动端构建和签名状态见 Flutter README。安装包见 [GitHub Releases](https://github.com/lnys/starTower/releases)。
+
+```bash
+cd project/flutter
+flutter pub get --enforce-lockfile
+flutter test
+flutter run -d macos
+```
+
 ## 项目结构
 
 ```
@@ -109,6 +120,14 @@ project/
 - **部分平台未充分测试。** 二维码未用真机扫码验证；窄屏（375 / 430 宽）只做了部分截图检查；音效与通关结局画面尚未完整验证。
 
 ## 更新说明
+
+### v1.0.2 — 2026-11-17
+
+- 📱 Skill 新增 `project/flutter/` 原生游戏源码，保留 50 层游戏、离线素材、音乐及本地存档，不包含网页介绍和手机外壳。
+- ✅ Dart 引擎 3774 步通关回放结果与 Vue 一致：生命 791、攻击 378、防御 501；8 项引擎和多尺寸界面测试通过。
+- 📦 新增 Flutter Mac Universal DMG／ZIP、Windows x64 安装包／便携 ZIP 的 GitHub Actions 构建发布流程；双平台通过后发布，附校验值和安装说明。
+- 🛠️ `verify.sh` 校验同时覆盖 Vue 和 Flutter 源码。`rebuild.sh` 继续还原完整项目并验证 Vue；Flutter 另按上文命令运行。
+- 🧪 Intel Mac 和 iPhone 模拟器已启动验证；Windows 发布流程包含安装、启动和卸载检查。Apple 芯片与移动端真机尚未实测，构建状态以 Actions 记录为准。
 
 ### v1.0.1 — 2026-11-17
 

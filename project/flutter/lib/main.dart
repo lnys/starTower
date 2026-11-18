@@ -1,0 +1,1005 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'game/engine.dart';
+
+const gold = Color(0xffffd56b),
+    muted = Color(0xffaaa7b8),
+    panel = Color(0xff201a29);
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+  final data =
+      jsonDecode(await rootBundle.loadString('assets/data/game.json')) as Json;
+  final prefs = await SharedPreferences.getInstance();
+  runApp(TowerApp(engine: GameEngine(data), prefs: prefs));
+}
+
+class TowerApp extends StatelessWidget {
+  final GameEngine engine;
+  final SharedPreferences prefs;
+  const TowerApp({super.key, required this.engine, required this.prefs});
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+      title: '星穹塔',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: const Color(0xff0d0b16),
+          colorScheme: const ColorScheme.dark(
+              primary: gold, secondary: gold, surface: panel),
+          useMaterial3: true,
+          fontFamilyFallback: const [
+            'PingFang SC',
+            'Microsoft YaHei',
+            'Noto Sans CJK SC'
+          ],
+          textTheme:
+              const TextTheme(bodyMedium: TextStyle(color: Color(0xffeee6d5))),
+          filledButtonTheme: FilledButtonThemeData(
+              style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xff4b3820),
+                  foregroundColor: gold,
+                  minimumSize: const Size(0, 44))),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                  foregroundColor: gold,
+                  side: const BorderSide(color: Color(0xff6f5732)),
+                  minimumSize: const Size(0, 44)))),
+      home: TowerScreen(engine: engine, prefs: prefs));
+}
+
+class TowerScreen extends StatefulWidget {
+  final GameEngine engine;
+  final SharedPreferences prefs;
+  const TowerScreen({super.key, required this.engine, required this.prefs});
+  @override
+  State<TowerScreen> createState() => _TowerScreenState();
+}
+
+class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
+  GameEngine get e => widget.engine;
+  SharedPreferences get prefs => widget.prefs;
+  bool playing = false, modal = false, mutedAudio = false;
+  double volume = .6;
+  int peak = 1000;
+  int dialogCount = 0;
+  Offset swipe = Offset.zero;
+  String message = '';
+  Timer? toastTimer, repeat;
+  final focus = FocusNode();
+  final music = AudioPlayer(), sound = AudioPlayer();
+  int? track;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    mutedAudio = prefs.getBool('muted') ?? false;
+    volume = prefs.getDouble('volume') ?? .6;
+  }
+
+  Future<void> bgm(int floor) async {
+    if (track == floor) return;
+    track = floor;
+    try {
+      await music.setReleaseMode(ReleaseMode.loop);
+      await music.setVolume(mutedAudio ? 0 : volume * .45);
+      await music.play(AssetSource('audio/bgm_$floor.wav'));
+    } catch (_) {}
+  }
+
+  Future<void> sfx(String id) async {
+    if (mutedAudio) return;
+    try {
+      await sound.play(AssetSource('audio/$id.wav'), volume: volume);
+    } catch (_) {}
+  }
+
+  void stopHold() {
+    repeat?.cancel();
+    repeat = null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      stopHold();
+      if (playing) save('auto', quiet: true);
+      music.pause();
+    } else if (track != null) {
+      music.resume();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    stopHold();
+    toastTimer?.cancel();
+    focus.dispose();
+    music.dispose();
+    sound.dispose();
+    super.dispose();
+  }
+
+  void toast(String text) {
+    if (!mounted) return;
+    setState(() => message = text);
+    toastTimer?.cancel();
+    toastTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => message = '');
+    });
+  }
+
+  Future<void> save(String slot, {bool quiet = false}) async {
+    try {
+      final ok = await prefs.setString('save_$slot', e.serialize());
+      if (!quiet) toast(ok ? '存档成功' : '存档失败');
+    } catch (_) {
+      if (!quiet) toast('存档失败，请检查存储空间');
+    }
+  }
+
+  void start() {
+    e.reset();
+    setState(() {
+      playing = true;
+      peak = 1000;
+      message = '';
+    });
+    bgm(1);
+    save('auto', quiet: true);
+    focus.requestFocus();
+  }
+
+  bool load(String slot) {
+    final text = prefs.getString('save_$slot');
+    if (text == null || !e.load(text)) {
+      toast('这个存档无法读取');
+      return false;
+    }
+    setState(() {
+      playing = true;
+      peak = e.hero['hp'];
+    });
+    bgm(e.floor);
+    toast('已读取存档 · 第 ${e.floor} 层');
+    return true;
+  }
+
+  Future<void> dialog(
+      String title, List<Widget> Function(StateSetter) content) async {
+    stopHold();
+    dialogCount++;
+    setState(() => modal = true);
+    try {
+      await showDialog<void>(
+          context: context,
+          builder: (ctx) => StatefulBuilder(
+              builder: (ctx, refresh) => AlertDialog(
+                      title: Text(title, style: const TextStyle(color: gold)),
+                      content: SizedBox(
+                          width: 360,
+                          child: SingleChildScrollView(
+                              child:
+                                  Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: content(refresh)))),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('关闭'))
+                      ])));
+    } finally {
+      dialogCount--;
+      if (mounted) setState(() => modal = dialogCount > 0);
+      focus.requestFocus();
+    }
+  }
+
+  void feedback(List<Json> events) {
+    final says = <String>[];
+    String? shop;
+    bool won = false;
+    for (final ev in events) {
+      switch (ev['type']) {
+        case 'fight':
+          toast(
+              '击败 ${e.name(ev['id'])} · 生命 -${ev['loss']} · 金币 +${ev['gold']}');
+          sfx('hit');
+          break;
+        case 'pickup':
+          toast('获得 ${e.name(ev['id'])}');
+          sfx('pick');
+          break;
+        case 'false-wall':
+          toast('这面墙是假的，已经打通');
+          sfx('door');
+          break;
+        case 'door':
+          sfx('door');
+          break;
+        case 'locked':
+        case 'nofight':
+          toast(ev['reason']);
+          sfx('denied');
+          break;
+        case 'blocked':
+          if (!['边界外', '前方不能通行'].contains(ev['reason'])) toast(ev['reason']);
+          break;
+        case 'stairs':
+          toast('第 ${e.floor} 层 · ${e.zoneName}');
+          sfx('stairs');
+          bgm(e.floor);
+          break;
+        case 'aura':
+          toast('灼域灼伤 -${ev['damage']} 生命');
+          break;
+        case 'say':
+          says.add(ev['text']);
+          break;
+        case 'shop':
+          shop = ev['npc'];
+          break;
+        case 'win':
+          won = true;
+          break;
+      }
+    }
+    if (won) {
+      music.stop();
+      sfx('win');
+      dialog(
+          '星幕落下',
+          (refresh) => [
+                const Icon(Icons.auto_awesome, color: gold, size: 56),
+                const SizedBox(height: 16),
+                const Text('你登上了第五十层，击败终焉之主，关闭星幕。'),
+                const SizedBox(height: 12),
+                Text(
+                    '最终生命 ${e.hero['hp']} · 攻击 ${e.hero['atk']} · 防御 ${e.hero['def']}'),
+                button('返回标题', () {
+                  Navigator.pop(context);
+                  setState(() => playing = false);
+                  bgm(0);
+                })
+              ]);
+    } else if (says.isNotEmpty) {
+      dialog(
+          '引路人',
+          (refresh) => says
+              .map((s) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12), child: Text(s)))
+              .toList());
+    } else if (shop != null) {
+      openShop(shop);
+    }
+  }
+
+  bool move(String dir) {
+    if (!playing || modal || e.state['ended'] == true) return false;
+    final x = e.hero['x'], y = e.hero['y'], floor = e.floor;
+    final events = e.move(dir);
+    setState(() => peak = math.max(peak, e.hero['hp'] as int));
+    feedback(events);
+    if (events.first['type'] != 'blocked') save('auto', quiet: true);
+    return !modal && (e.hero['x'] != x || e.hero['y'] != y || e.floor != floor);
+  }
+
+  void hold(String dir) {
+    stopHold();
+    if (!move(dir)) return;
+    repeat = Timer(const Duration(milliseconds: 320), () {
+      repeat = Timer.periodic(const Duration(milliseconds: 130), (_) {
+        if (!move(dir)) stopHold();
+      });
+    });
+  }
+
+  void undo() {
+    if (modal) return;
+    final r = e.undo();
+    setState(() {});
+    toast(r['text']);
+    bgm(e.floor);
+    save('auto', quiet: true);
+  }
+
+  void use(String id, [int? target]) {
+    final r = e.useItem(id, target);
+    setState(() => peak = math.max(peak, e.hero['hp'] as int));
+    toast(r['text']);
+    if (r['ok'] == true) {
+      sfx('pick');
+      save('auto', quiet: true);
+      bgm(e.floor);
+      feedback((r['events'] as List).cast<Json>());
+    }
+  }
+
+  Widget button(String text, VoidCallback? action) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: OutlinedButton(
+          onPressed: action,
+          child: Text(text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12))));
+  void openShop(String id) {
+    dialog(id == 'altar' ? '祭坛' : '商人', (refresh) {
+      if (id == 'altar') {
+        return [
+          Text('金币 ${e.hero['gold']} · 本次价格 ${e.altarPrice}'),
+          for (final c in ['hp', 'atk', 'def'])
+            button(
+                '${{
+                  'hp': '生命',
+                  'atk': '攻击',
+                  'def': '防御'
+                }[c]} +${e.altarGain(c)}', () {
+              final r = e.buyAltar(c);
+              refresh(() {});
+              setState(() => peak = math.max(peak, e.hero['hp'] as int));
+              toast(r['text']);
+              if (r['ok'] == true) {
+                sfx('buy');
+                save('auto', quiet: true);
+              }
+            })
+        ];
+      }
+      final list = e.data['MERCHANTS']['${e.floor}'] as List? ?? [];
+      return [
+        Text('金币 ${e.hero['gold']}'),
+        for (final item in list)
+          button(
+              item['recycle'] != null
+                  ? '回收${e.name(item['recycle'])} · +${item['gold']} 金币'
+                  : '${item['hp'] != null ? '生命 +${item['hp']}' : (item['items'] as Map).entries.map((v) => '${e.name(v.key)} ×${v.value}').join('、')} · ${item['price']} 金币${e.state['soldOut'].contains(item['id']) ? '（售完）' : ''}',
+              e.state['soldOut'].contains(item['id'])
+                  ? null
+                  : () {
+                      final r = e.merchantBuy(item['id']);
+                      refresh(() {});
+                      setState(
+                          () => peak = math.max(peak, e.hero['hp'] as int));
+                      toast(r['text']);
+                      if (r['ok'] == true) {
+                        sfx('buy');
+                        save('auto', quiet: true);
+                      }
+                    })
+      ];
+    });
+  }
+
+  void compass() {
+    dialog(
+        '传送罗盘',
+        (refresh) => [
+              (e.state['items']['compass'] ?? 0) <= 0
+                  ? const Text('还未获得传送罗盘')
+                  : e.floor == 50
+                      ? const Text('第 50 层不能使用罗盘')
+                      : Wrap(spacing: 8, children: [
+                          for (final f
+                              in (e.state['visited'] as List)
+                                  .cast<int>()
+                                  .toList()
+                                ..sort())
+                            if (f != e.floor && f != 44 && f != 50)
+                              OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    use('compass', f);
+                                  },
+                                  child: Text('$f 层'))
+                        ])
+            ]);
+  }
+
+  void bag() {
+    dialog(
+        '背包',
+        (refresh) => [
+              for (final id in (e.data['ACTIVE'] as Map).keys)
+                if ((e.state['items'][id] ?? 0) > 0)
+                  button(
+                      '${e.name(id)}${e.data['ACTIVE'][id]['uses'] == 'unlimited' ? '' : ' ×${e.state['items'][id]}'}',
+                      () {
+                    Navigator.pop(context);
+                    if (id == 'compass') {
+                      Future.microtask(compass);
+                    } else {
+                      use(id);
+                    }
+                  }),
+              for (final id in (e.data['HOLD'] as Map).keys)
+                if (e.hero['flags'][e.data['HOLD'][id]['flag']] == true)
+                  Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text('${e.name(id)} · 持有生效')),
+              if ((e.state['items'] as Map).values.every((v) => v == 0))
+                const Text('主动道具会在冒险中获得。')
+            ]);
+  }
+
+  void saves(bool saving) {
+    dialog(
+        saving ? '保存进度' : '读取存档',
+        (refresh) => [
+              for (final slot in ['auto', '1', '2', '3']) ...[
+                Builder(builder: (context) {
+                  final text = prefs.getString('save_$slot');
+                  Json? state;
+                  try {
+                    if (text != null) state = jsonDecode(text);
+                  } catch (_) {}
+                  return Text(
+                      '${slot == 'auto' ? '自动存档' : '存档 $slot'} · ${state == null ? '空' : '第 ${state['floor']} 层 · 生命 ${state['hero']['hp']}'}');
+                }),
+                button(
+                    saving
+                        ? '保存到${slot == 'auto' ? '自动存档' : '存档 $slot'}'
+                        : '读取${slot == 'auto' ? '自动存档' : '存档 $slot'}',
+                    saving
+                        ? () {
+                            save(slot);
+                            refresh(() {});
+                          }
+                        : prefs.getString('save_$slot') == null
+                            ? null
+                            : () {
+                                Navigator.pop(context);
+                                load(slot);
+                              }),
+                const SizedBox(height: 8)
+              ]
+            ]);
+  }
+
+  void settings() {
+    dialog(
+        '设置',
+        (refresh) => [
+              SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('静音'),
+                  value: mutedAudio,
+                  onChanged: (v) {
+                    refresh(() => mutedAudio = v);
+                    prefs.setBool('muted', v);
+                    music.setVolume(v ? 0 : volume * .45);
+                  }),
+              const Text('音量'),
+              Slider(
+                  value: volume,
+                  onChanged: (v) {
+                    refresh(() => volume = v);
+                    prefs.setDouble('volume', v);
+                    music.setVolume(mutedAudio ? 0 : v * .45);
+                  })
+            ]);
+  }
+
+  void help() {
+    dialog(
+        '操作说明',
+        (refresh) => [
+              const Text(
+                  '点击方向盘、滑动棋盘，或使用键盘方向键 / WASD 移动。方向盘中间和 Z 键可以撤销，最多保留 50 步。\n\n碰到怪物先战斗、碰到门先开门，再走一步才会进入。无法破防或会死亡时禁止战斗。点击怪物可查看完整预判。\n\n撞击引路人触发剧情；在祭坛或商人旁边交易。背包中使用主动道具，罗盘可返回到过的楼层。每次操作自动保存，菜单可手动存读档。\n\n快捷键：B 背包，C 罗盘，Esc 菜单。')
+            ]);
+  }
+
+  void menu() {
+    dialog(
+        '暂停',
+        (refresh) => [
+              button('保存进度', () {
+                Navigator.pop(context);
+                Future.microtask(() => saves(true));
+              }),
+              button('读取存档', () {
+                Navigator.pop(context);
+                Future.microtask(() => saves(false));
+              }),
+              button('设置', () {
+                Navigator.pop(context);
+                Future.microtask(settings);
+              }),
+              button('操作说明', () {
+                Navigator.pop(context);
+                Future.microtask(help);
+              }),
+              button('返回标题', () {
+                save('auto', quiet: true);
+                Navigator.pop(context);
+                setState(() => playing = false);
+                bgm(0);
+              })
+            ]);
+  }
+
+  KeyEventResult key(FocusNode node, KeyEvent event) {
+    if (modal || !playing || event is KeyUpEvent) return KeyEventResult.ignored;
+    final map = {
+      LogicalKeyboardKey.arrowUp: 'up',
+      LogicalKeyboardKey.keyW: 'up',
+      LogicalKeyboardKey.arrowDown: 'down',
+      LogicalKeyboardKey.keyS: 'down',
+      LogicalKeyboardKey.arrowLeft: 'left',
+      LogicalKeyboardKey.keyA: 'left',
+      LogicalKeyboardKey.arrowRight: 'right',
+      LogicalKeyboardKey.keyD: 'right'
+    };
+    final dir = map[event.logicalKey];
+    if (dir != null) {
+      move(dir);
+      return KeyEventResult.handled;
+    }
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.keyZ) undo();
+      if (event.logicalKey == LogicalKeyboardKey.keyB) bag();
+      if (event.logicalKey == LogicalKeyboardKey.keyC) compass();
+      if (event.logicalKey == LogicalKeyboardKey.escape) menu();
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) => Focus(
+      focusNode: focus,
+      autofocus: true,
+      onKeyEvent: key,
+      child: Scaffold(
+          body: SafeArea(
+              child: Center(
+                  child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 600),
+                      child: Stack(children: [
+                        Positioned.fill(child: playing ? game() : title()),
+                        if (message.isNotEmpty)
+                          Positioned(
+                              left: 16,
+                              right: 16,
+                              bottom: 12,
+                              child: IgnorePointer(
+                                  child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xf02d2432),
+                                          border: Border.all(
+                                              color: gold.withOpacity(.5)),
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      child: Padding(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Text(message,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  color: gold,
+                                                  fontSize: 12))))))
+                      ]))))));
+  Widget art(String path, {double? size}) =>
+      SvgPicture.asset('assets/images/$path.svg',
+          width: size, height: size, fit: BoxFit.contain);
+  Widget title() => Stack(fit: StackFit.expand, children: [
+        SvgPicture.asset('assets/images/bg/menu.svg', fit: BoxFit.cover),
+        const DecoratedBox(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0x330d0b16), Color(0xf20d0b16)]))),
+        Center(
+            child: SingleChildScrollView(
+                child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      const Icon(Icons.auto_awesome, color: gold, size: 48),
+                      const SizedBox(height: 24),
+                      const Text('星穹塔',
+                          style: TextStyle(
+                              color: gold,
+                              fontSize: 54,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 10)),
+                      const Text('STAR DOME TOWER · 50 层',
+                          style: TextStyle(
+                              color: muted, fontSize: 12, letterSpacing: 2)),
+                      const SizedBox(height: 44),
+                      SizedBox(
+                          width: 280,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                FilledButton(
+                                    onPressed: start,
+                                    child: const Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Text('新的冒险',
+                                            style: TextStyle(fontSize: 18)))),
+                                button(
+                                    '继续冒险',
+                                    prefs.getString('save_auto') != null
+                                        ? () => load('auto')
+                                        : null),
+                                button('读取存档', () => saves(false)),
+                                button('设置', settings),
+                                button('操作说明', help)
+                              ])),
+                      const SizedBox(height: 24),
+                      const Text('方向键 / 滑动移动 · 预判战斗损失',
+                          style: TextStyle(color: muted, fontSize: 11))
+                    ]))))
+      ]);
+  Widget game() => LayoutBuilder(builder: (context, box) {
+        final compact = box.maxHeight < 650;
+        final headerHeight = compact ? 112.0 : 130.0,
+            controlsHeight = compact ? 130.0 : 164.0;
+        final boardSize = math.max(
+            110.0,
+            math.min(box.maxWidth - 12,
+                box.maxHeight - headerHeight - controlsHeight - 20));
+        return Column(children: [
+          SizedBox(
+              height: headerHeight,
+              child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(children: [
+                          Text('第 ${e.floor} 层',
+                              style: const TextStyle(
+                                  color: gold,
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(width: 8),
+                          Text(e.zoneName,
+                              style:
+                                  const TextStyle(color: muted, fontSize: 11)),
+                          const Spacer(),
+                          const Text('✦ 星穹塔',
+                              style: TextStyle(
+                                  color: gold,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold))
+                        ]),
+                        Row(children: [
+                          art('hero/hero', size: 46),
+                          const SizedBox(width: 10),
+                          Expanded(
+                              child: Column(children: [
+                            Row(children: [
+                              const Text('生命 ', style: TextStyle(fontSize: 12)),
+                              Expanded(
+                                  child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                    ClipRRect(
+                                        borderRadius: BorderRadius.circular(6),
+                                        child: LinearProgressIndicator(
+                                            value: e.hero['hp'] /
+                                                math.max(
+                                                    peak, e.hero['hp'] as int),
+                                            minHeight: 19,
+                                            color: const Color(0xffbd4359),
+                                            backgroundColor:
+                                                const Color(0xff3a1a2c))),
+                                    Text('${e.hero['hp']} / $peak',
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold))
+                                  ]))
+                            ]),
+                            const SizedBox(height: 5),
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('⚔ 攻击 ${e.hero['atk']}',
+                                      style: const TextStyle(
+                                          color: Color(0xffff9d89),
+                                          fontSize: 12)),
+                                  Text('◈ 防御 ${e.hero['def']}',
+                                      style: const TextStyle(
+                                          color: Color(0xff9ecbff),
+                                          fontSize: 12)),
+                                  Text('撤销 ${e.history.length}/50',
+                                      style: const TextStyle(
+                                          color: muted, fontSize: 10))
+                                ])
+                          ]))
+                        ]),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              resource(
+                                  'ui/icon_gold', '${e.hero['gold']}', gold),
+                              resource('items/key_y',
+                                  '${e.hero['keys']['yellowKey']}', gold),
+                              resource(
+                                  'items/key_b',
+                                  '${e.hero['keys']['blueKey']}',
+                                  const Color(0xff8ec8ff)),
+                              resource(
+                                  'items/key_r',
+                                  '${e.hero['keys']['redKey']}',
+                                  const Color(0xffff919b))
+                            ])
+                      ]))),
+          Expanded(
+              child: Center(
+                  child: SizedBox(
+                      width: boardSize, height: boardSize, child: board()))),
+          SizedBox(
+              height: controlsHeight,
+              child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                            width: 85,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  button('快速存档', () => saves(true)),
+                                  button('菜单', menu)
+                                ])),
+                        pad(compact ? 122 : 148),
+                        SizedBox(
+                            width: 85,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  smallButton(
+                                      '罗盘',
+                                      (e.state['items']['compass'] ?? 0) > 0
+                                          ? compass
+                                          : null),
+                                  smallButton(
+                                      e.near('altar') ? '祭坛' : '商人',
+                                      e.near('altar')
+                                          ? () => openShop('altar')
+                                          : e.near('merchant')
+                                              ? () => openShop('merchant')
+                                              : null),
+                                  smallButton('背包', bag)
+                                ]))
+                      ])))
+        ]);
+      });
+  Widget resource(String path, String value, Color color) => Row(children: [
+        art(path, size: 19),
+        const SizedBox(width: 4),
+        Text(value,
+            style: TextStyle(
+                color: color, fontSize: 13, fontWeight: FontWeight.bold))
+      ]);
+  Widget smallButton(String text, VoidCallback? action) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+              minimumSize: const Size(0, 34),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              padding: const EdgeInsets.symmetric(horizontal: 8)),
+          onPressed: action,
+          child: Text(text, style: const TextStyle(fontSize: 12))));
+  Widget pad(double size) => Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: gold.withOpacity(.45)),
+          gradient: const RadialGradient(
+              colors: [Color(0xff3a3030), Color(0xff141018)])),
+      child: Stack(children: [
+        Positioned(
+            top: 0,
+            left: size / 3,
+            width: size / 3,
+            height: size / 3,
+            child: padKey('up', Icons.arrow_drop_up)),
+        Positioned(
+            bottom: 0,
+            left: size / 3,
+            width: size / 3,
+            height: size / 3,
+            child: padKey('down', Icons.arrow_drop_down)),
+        Positioned(
+            left: 0,
+            top: size / 3,
+            width: size / 3,
+            height: size / 3,
+            child: padKey('left', Icons.arrow_left)),
+        Positioned(
+            right: 0,
+            top: size / 3,
+            width: size / 3,
+            height: size / 3,
+            child: padKey('right', Icons.arrow_right)),
+        Positioned(
+            left: size / 3,
+            top: size / 3,
+            width: size / 3,
+            height: size / 3,
+            child: IconButton(
+                tooltip: '撤销一步',
+                onPressed: undo,
+                icon: const Icon(Icons.undo, color: gold, size: 22)))
+      ]));
+  Widget padKey(String dir, IconData icon) => Semantics(
+      label: {'up': '上', 'down': '下', 'left': '左', 'right': '右'}[dir],
+      button: true,
+      child: Listener(
+          onPointerDown: (_) => hold(dir),
+          onPointerUp: (_) => stopHold(),
+          onPointerCancel: (_) => stopHold(),
+          child: MouseRegion(
+              onExit: (_) => stopHold(),
+              child: Container(
+                  color: Colors.transparent,
+                  child: Icon(icon, color: gold, size: 38)))));
+  Widget board() {
+    final tiles = e.data['art']['ZONE_TILES']['${e.zone}'];
+    return GestureDetector(
+        onPanStart: (_) => swipe = Offset.zero,
+        onPanUpdate: (details) => swipe += details.delta,
+        onPanEnd: (details) {
+          final v =
+              swipe.distance > 18 ? swipe : details.velocity.pixelsPerSecond;
+          if (v.distance < 18) return;
+          move(v.dx.abs() > v.dy.abs()
+              ? (v.dx > 0 ? 'right' : 'left')
+              : (v.dy > 0 ? 'down' : 'up'));
+        },
+        child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff7b5b36), width: 3),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black54, blurRadius: 18)
+                ],
+                borderRadius: BorderRadius.circular(4)),
+            child: LayoutBuilder(builder: (context, constraints) {
+              final cell = constraints.maxWidth / 11;
+              return Stack(children: [
+                for (var y = 0; y < 11; y++)
+                  for (var x = 0; x < 11; x++)
+                    Positioned(
+                        left: x * cell,
+                        top: y * cell,
+                        width: cell + .2,
+                        height: cell + .2,
+                        child: tile(x, y, tiles, cell))
+              ]);
+            })));
+  }
+
+  Widget tile(int x, int y, Json tiles, double size) {
+    final t = e.world['terr'][y][x],
+        entity = e.entity(x, y),
+        isHero = e.hero['x'] == x && e.hero['y'] == y;
+    final artData = e.data['art'];
+    String? overlay = artData['TERRAIN_ART'][t];
+    String? sprite;
+    String? label;
+    Color color = gold;
+    if (entity != null) {
+      final id = entity['id'];
+      sprite = artData[entity['kind'] == 'monster'
+          ? 'MONSTER_ART'
+          : entity['kind'] == 'npc'
+              ? 'NPC_ART'
+              : 'ITEM_ART'][id];
+      if (sprite == null) {
+        label = e.name(id).substring(0, 1);
+        color = entity['kind'] == 'monster'
+            ? const Color(0xffff8292)
+            : entity['kind'] == 'npc'
+                ? const Color(0xffa9e3ef)
+                : gold;
+      }
+    }
+    if (t == '%' || t == 'a') label = t == '%' ? '裂' : '机';
+    final pv = entity?['kind'] == 'monster' ? e.preview(x, y) : null;
+    return GestureDetector(
+        onTap: () {
+          if (modal) return;
+          if (pv != null) {
+            inspect(pv);
+          } else if ((x - e.hero['x']).abs() + (y - e.hero['y']).abs() == 1) {
+            move(x > e.hero['x']
+                ? 'right'
+                : x < e.hero['x']
+                    ? 'left'
+                    : y > e.hero['y']
+                        ? 'down'
+                        : 'up');
+          }
+        },
+        child: Stack(fit: StackFit.expand, children: [
+          art(['#', 'w', '%', 'a'].contains(t)
+              ? tiles['wall']
+              : tiles['floor']),
+          if (overlay != null) art(overlay),
+          if (sprite != null)
+            Padding(padding: EdgeInsets.all(size * .06), child: art(sprite)),
+          if (label != null)
+            Center(
+                child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Text(label,
+                        style: TextStyle(
+                            color: color,
+                            fontSize: size * .44,
+                            fontWeight: FontWeight.bold)))),
+          if (pv != null)
+            Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    decoration: BoxDecoration(
+                        color: pv['canFight'] == true
+                            ? const Color(0xe825814d)
+                            : const Color(0xe8ae3149),
+                        borderRadius: BorderRadius.circular(3)),
+                    child: Text(pv['loss'] == null ? '×' : '${pv['loss']}',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: math.max(7, size * .27),
+                            fontWeight: FontWeight.bold)))),
+          if (isHero) art('hero/hero')
+        ]));
+  }
+
+  void inspect(Json pv) {
+    final m = pv['monster'];
+    dialog(
+        e.name(pv['id']),
+        (refresh) => [
+              Text('生命 ${m['hp']} · 攻击 ${m['atk']} · 防御 ${pv['def']}'),
+              const SizedBox(height: 12),
+              Text(
+                  pv['canFight'] == true
+                      ? '可以击败'
+                      : pv['reason'] == 'unpierceable'
+                          ? '无法破防'
+                          : '会死亡',
+                  style: TextStyle(
+                      color: pv['canFight'] == true
+                          ? Colors.greenAccent
+                          : Colors.redAccent,
+                      fontSize: 20)),
+              const SizedBox(height: 8),
+              Text('预计损失 ${pv['loss'] ?? '—'} · 回合数 ${pv['rounds'] ?? '—'}'),
+              Text('我方每回合 ${pv['perHit']} · 怪物每回合 ${pv['perRound'] ?? '—'}'),
+              if (pv['loss'] != null)
+                Text('至少需要 ${pv['loss'] + 1} 生命（当前 ${e.hero['hp']}）'),
+              if ((m['traits'] as List).isNotEmpty)
+                Text('特性：${(m['traits'] as List).map((t) => {
+                      'magic': '魔攻',
+                      'firstStrike': '先攻',
+                      'doubleHit': '连击',
+                      'aura': '灼域',
+                      'sea': '海兽',
+                      'dragon': '龙',
+                      'starVeil': '星幕'
+                    }[t['type']]).join('、')}')
+            ]);
+  }
+}

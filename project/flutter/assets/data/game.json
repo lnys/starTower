@@ -1,0 +1,2981 @@
+{
+  "defs": {
+    "1": {
+      "index": 1,
+      "entry": {
+        "x": 5,
+        "y": 10
+      },
+      "legend": {
+        "1": "mossBlob",
+        "2": "caveBat",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Y": "yellowKey",
+        "G": "guide"
+      },
+      "grid": [
+        "^##########",
+        ".##########",
+        "....#######",
+        "2.1P#######",
+        ".#2........",
+        "y##########",
+        ".#YR.######",
+        "Yy..1######",
+        ".#PYU######",
+        ".##########",
+        "...1....1.G"
+      ],
+      "events": [
+        {
+          "id": "f1-guide",
+          "floor": 1,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "这里的怪物会先伤你的血，先算清楚损失再打。打不动的怪先绕开，以后回来。"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "index": 2,
+      "entry": {
+        "x": 1,
+        "y": 0
+      },
+      "legend": {
+        "1": "mossBlob",
+        "2": "caveBat",
+        "3": "boneSoldier",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey"
+      },
+      "grid": [
+        "v.Y..3.y..^",
+        "####y###y##",
+        "###1.P#1.R#",
+        "###Y2.#P2.#",
+        "###12Y#.UQ#",
+        "###########",
+        "###########",
+        "###########",
+        "###########",
+        "###########",
+        "###########"
+      ],
+      "events": []
+    },
+    "3": {
+      "index": 3,
+      "entry": {
+        "x": 10,
+        "y": 1
+      },
+      "legend": {
+        "2": "caveBat",
+        "3": "boneSoldier",
+        "4": "sporeMage",
+        "5": "stoneBeetle",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "G": "guide"
+      },
+      "grid": [
+        "##########v",
+        "######GP.#.",
+        "######Y3.y.",
+        "######R2.#.",
+        "##########.",
+        "##########2",
+        "##########Y",
+        "###P..5.3#y",
+        "##2...LY.yY",
+        "#####y..U#.",
+        "^.....4...."
+      ],
+      "events": [
+        {
+          "id": "f3-guide",
+          "floor": 3,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "grantItem",
+              "id": "compass"
+            },
+            {
+              "op": "say",
+              "text": "这是传送罗盘，可以回到去过的楼层。石甲虫守着蓝钥匙，等拿到剑再回来。"
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "index": 4,
+      "entry": {
+        "x": 0,
+        "y": 9
+      },
+      "altar": true,
+      "legend": {
+        "1": "mossBlob",
+        "3": "boneSoldier",
+        "4": "sporeMage",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "A": "altar"
+      },
+      "grid": [
+        "^#..R######",
+        ".y.4.######",
+        ".##########",
+        ".#YPQ######",
+        ".b.3.######",
+        "3#1UY######",
+        ".##########",
+        "y#41.######",
+        "Yy..A######",
+        ".#P.3######",
+        "v##########"
+      ],
+      "events": []
+    },
+    "5": {
+      "index": 5,
+      "entry": {
+        "x": 1,
+        "y": 0
+      },
+      "legend": {
+        "2": "caveBat",
+        "3": "boneSoldier",
+        "4": "sporeMage",
+        "5": "stoneBeetle",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Y": "yellowKey",
+        "T": "oldIronSword",
+        "G": "guide"
+      },
+      "grid": [
+        "v.Y2Yy.....",
+        "####y##y##.",
+        "Y2G..#..P#.",
+        "..5..#.4.#.",
+        "U....#R.Y#.",
+        "##y#######^",
+        ".....######",
+        ".3.3.######",
+        "P....wT####",
+        "..3..######",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f5-guide",
+          "floor": 5,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "墙不全是实心的。有的墙是空心的，多看几眼它的厚度。"
+            }
+          ]
+        },
+        {
+          "id": "f5-guide",
+          "floor": 5,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "有的墙是空心的。留意墙面上不一样的地方。"
+            }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "index": 6,
+      "entry": {
+        "x": 9,
+        "y": 5
+      },
+      "legend": {
+        "3": "boneSoldier",
+        "4": "sporeMage",
+        "5": "stoneBeetle",
+        "6": "boneGuard",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "N": "merchant"
+      },
+      "grid": [
+        "###########",
+        "YN3#..5####",
+        "..P#R.L####",
+        "4..#Y..####",
+        "#y###y#####",
+        "^..3.y.YY.v",
+        "#y###b##y##",
+        ".P.#...#..#",
+        "3.4#U.Q#.P#",
+        ".5.#.6.#..#",
+        "###########"
+      ],
+      "events": []
+    },
+    "7": {
+      "index": 7,
+      "entry": {
+        "x": 1,
+        "y": 5
+      },
+      "legend": {
+        "3": "boneSoldier",
+        "4": "sporeMage",
+        "5": "stoneBeetle",
+        "6": "boneGuard",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "G": "guide"
+      },
+      "grid": [
+        "###########",
+        "#Y.4#.#.YR#",
+        "#...#.y5..#",
+        "#.5.#.#####",
+        "##y#G.#P.U#",
+        "v..Y..y.6Y#",
+        "##y##.#####",
+        "#3..#.#..Q#",
+        "#.6.#3y.6.#",
+        "#..P#.#####",
+        "#####.....^"
+      ],
+      "events": [
+        {
+          "id": "f7-guide",
+          "floor": 7,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "祭坛优先买防御。攻击只要够破防就行，别把金币全压在攻击上。"
+            }
+          ]
+        }
+      ]
+    },
+    "8": {
+      "index": 8,
+      "entry": {
+        "x": 9,
+        "y": 10
+      },
+      "legend": {
+        "4": "sporeMage",
+        "5": "stoneBeetle",
+        "6": "boneGuard",
+        "7": "jailer",
+        "P": "redPotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "E": "redKey"
+      },
+      "grid": [
+        "###########",
+        "R..#...#..P",
+        "..4#..P#...",
+        "Y..#...#...",
+        "#y###y###y#",
+        ".5.#...#...",
+        "..6#.6.#YEU",
+        "Y..#...#...",
+        "#y###b###a#",
+        "...Y4P.77..",
+        "#####^.6..v"
+      ],
+      "events": [
+        {
+          "id": "f8-machine",
+          "floor": 8,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 7,
+                "y": 9
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 9,
+              "y": 8,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "9": {
+      "index": 9,
+      "entry": {
+        "x": 4,
+        "y": 10
+      },
+      "legend": {
+        "3": "boneSoldier",
+        "4": "sporeMage",
+        "6": "boneGuard",
+        "7": "jailer",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "H": "woodShield"
+      },
+      "grid": [
+        "###########",
+        "##..#.6.#.R",
+        "^#3.#..Ly..",
+        ".#..yY..#..",
+        ".#Y.#.4Uw7H",
+        ".y..####b..",
+        ".#4.y..3#..",
+        "6#.P#.6.y6Q",
+        ".#..#P..#..",
+        ".##########",
+        "..YY.v#####"
+      ],
+      "events": []
+    },
+    "10": {
+      "index": 10,
+      "entry": {
+        "x": 1,
+        "y": 2
+      },
+      "legend": {
+        "6": "boneGuard",
+        "7": "jailer",
+        "8": "wardenBoss",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        "###########",
+        "###########",
+        "v.#.....###",
+        "#.#.....###",
+        "#6#.....###",
+        "#.#..8..###",
+        "#6###r#####",
+        "#...7..y7.#",
+        "##y#####.6#",
+        "#..6.######",
+        "#Q...######"
+      ],
+      "events": [
+        {
+          "id": "f10-boss",
+          "floor": 10,
+          "trigger": {
+            "op": "defeated",
+            "at": {
+              "x": 5,
+              "y": 5
+            }
+          },
+          "effects": [
+            {
+              "op": "addStair",
+              "x": 5,
+              "y": 4,
+              "dir": "up"
+            },
+            {
+              "op": "spawnItem",
+              "x": 5,
+              "y": 5,
+              "id": "redCrystal"
+            },
+            {
+              "op": "spawnItem",
+              "x": 4,
+              "y": 5,
+              "id": "blueCrystal"
+            }
+          ]
+        }
+      ]
+    },
+    "11": {
+      "index": 11,
+      "entry": {
+        "x": 6,
+        "y": 4
+      },
+      "legend": {
+        "0": "cogPuppet",
+        "9": "tideCrab",
+        "G": "guide",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "c": "tideWitch"
+      },
+      "grid": [
+        "#####GP#P#.",
+        "#####Y.#Y#R",
+        "#####.9#0#c",
+        "######y#y#y",
+        "#####v.Y9..",
+        "######yb##.",
+        "######Q9##Y",
+        "######09##.",
+        "######U9##^",
+        "###########",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f11-guide",
+          "floor": 11,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "二区到此过半。海里来的东西怕一把枪，那把枪藏在 14 层的假墙后面。"
+            }
+          ]
+        }
+      ]
+    },
+    "12": {
+      "index": 12,
+      "entry": {
+        "x": 10,
+        "y": 7
+      },
+      "altar": true,
+      "legend": {
+        "0": "cogPuppet",
+        "9": "tideCrab",
+        "c": "tideWitch",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "A": "altar",
+        "N": "merchant"
+      },
+      "grid": [
+        "###########",
+        "..P#####R..",
+        ".0.#9..#.9.",
+        "c..#.A.#Y..",
+        ".Y.#N..#..c",
+        "...##.##...",
+        "#y###y###y#",
+        "...Y..Y.9..",
+        "^#y#####y#v",
+        "#0.L###9.0#",
+        "#UP.###.Q.#"
+      ],
+      "events": []
+    },
+    "13": {
+      "index": 13,
+      "entry": {
+        "x": 0,
+        "y": 7
+      },
+      "legend": {
+        "0": "cogPuppet",
+        "9": "tideCrab",
+        "c": "tideWitch",
+        "d": "sharkGuard",
+        "Y": "yellowKey",
+        "P": "redPotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "B": "tideShield"
+      },
+      "grid": [
+        "###########",
+        "###########",
+        ".y9Ydy....^",
+        ".##y###b#y#",
+        "Y##..#0.#..",
+        ".##P.#..#U.",
+        "Y##.0#.c#.c",
+        ".##..#..#P.",
+        "v##9.#9.#0.",
+        "###..#..#PR",
+        "###..#.B#.."
+      ],
+      "events": []
+    },
+    "14": {
+      "index": 14,
+      "entry": {
+        "x": 9,
+        "y": 2
+      },
+      "legend": {
+        "0": "cogPuppet",
+        "c": "tideWitch",
+        "d": "sharkGuard",
+        "f": "ironClam",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "E": "redKey",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "I": "tideSpear"
+      },
+      "grid": [
+        "###########",
+        "#YdcP######",
+        "#UR.0y.d..v",
+        "##y###.####",
+        "#L0PY#Y####",
+        "######.####",
+        "#.cfEb.wdI#",
+        "##y###.y..#",
+        "#Q.0.#Y#..#",
+        "#####..####",
+        "#####^#####"
+      ],
+      "events": []
+    },
+    "15": {
+      "index": 15,
+      "entry": {
+        "x": 5,
+        "y": 9
+      },
+      "legend": {
+        "0": "cogPuppet",
+        "d": "sharkGuard",
+        "c": "tideWitch",
+        "h": "clawFiend",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "M": "pickaxe",
+        "N": "merchant"
+      },
+      "grid": [
+        "###########",
+        "##P.R#....#",
+        "##c0.#...c#",
+        "##..Y#.hM.#",
+        "##.U.#....#",
+        "^.y###.d..#",
+        "#.#Pd#..0.#",
+        "#.yQN#....#",
+        "#.####....#",
+        "#.YdY.y####",
+        "#####v#####"
+      ],
+      "events": []
+    },
+    "16": {
+      "index": 16,
+      "entry": {
+        "x": 1,
+        "y": 5
+      },
+      "legend": {
+        "d": "sharkGuard",
+        "e": "deepWarrior",
+        "g": "twinBlade",
+        "c": "tideWitch",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "V": "flask"
+      },
+      "grid": [
+        "###########",
+        "#.d.###e.P#",
+        "#.P.###.Rg#",
+        "#...###.Y.#",
+        "###y#.y..L#",
+        "v.Yy..#####",
+        "#####d#...#",
+        "#U.Qb.r.V.#",
+        "#.c.#e#..P#",
+        "#.Yd#.#####",
+        "#####.Yyc.^"
+      ],
+      "events": []
+    },
+    "17": {
+      "index": 17,
+      "entry": {
+        "x": 9,
+        "y": 10
+      },
+      "legend": {
+        "e": "deepWarrior",
+        "g": "twinBlade",
+        "d": "sharkGuard",
+        "f": "ironClam",
+        "Y": "yellowKey",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "S": "tideSword"
+      },
+      "grid": [
+        "^..#####...",
+        "...#d#g#.YS",
+        "...ad#ga...",
+        "####...####",
+        "P#.#...##.R",
+        ".y.y...by..",
+        "Q#.#...##PU",
+        "####...####",
+        "...ae#.aeY.",
+        ".Y.#f###e..",
+        "...######.v"
+      ],
+      "events": [
+        {
+          "id": "f17-nw-gate",
+          "floor": 17,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 4,
+                "y": 2
+              },
+              {
+                "x": 4,
+                "y": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 3,
+              "y": 2,
+              "terrain": "."
+            }
+          ]
+        },
+        {
+          "id": "f17-ne-gate",
+          "floor": 17,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 6,
+                "y": 2
+              },
+              {
+                "x": 6,
+                "y": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 7,
+              "y": 2,
+              "terrain": "."
+            }
+          ]
+        },
+        {
+          "id": "f17-sw-gate",
+          "floor": 17,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 4,
+                "y": 8
+              },
+              {
+                "x": 4,
+                "y": 9
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 3,
+              "y": 8,
+              "terrain": "."
+            }
+          ]
+        },
+        {
+          "id": "f17-se-gate",
+          "floor": 17,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 8,
+                "y": 8
+              },
+              {
+                "x": 8,
+                "y": 9
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 7,
+              "y": 8,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "18": {
+      "index": 18,
+      "entry": {
+        "x": 1,
+        "y": 0
+      },
+      "legend": {
+        "c": "tideWitch",
+        "e": "deepWarrior",
+        "f": "ironClam",
+        "g": "twinBlade",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        "v.Yy.^#####",
+        "####Yy..Y.#",
+        "####f#ccLP#",
+        "####e######",
+        "####.y.ggP#",
+        "####e#R.Y.#",
+        "####y######",
+        "####.bffU.#",
+        "####.#.P..#",
+        "####erQQQY#",
+        "####.#YYY.#"
+      ],
+      "events": []
+    },
+    "19": {
+      "index": 19,
+      "entry": {
+        "x": 4,
+        "y": 0
+      },
+      "legend": {
+        "e": "deepWarrior",
+        "g": "twinBlade",
+        "f": "ironClam",
+        "d": "sharkGuard",
+        "Y": "yellowKey",
+        "E": "redKey",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        ".....v#####",
+        "Y##y#######",
+        "Y#PY.######",
+        ".#d..######",
+        "y##########",
+        ".b...#####^",
+        "e%Eee#####.",
+        ".#U.Q#Rgg#.",
+        "d#####PYgy.",
+        ".#########.",
+        "..f.ef.y..."
+      ],
+      "events": []
+    },
+    "20": {
+      "index": 20,
+      "entry": {
+        "x": 9,
+        "y": 5
+      },
+      "legend": {
+        "i": "tideBoss",
+        "e": "deepWarrior",
+        "g": "twinBlade",
+        "Y": "yellowKey",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        "###########",
+        "###.....###",
+        "###.....###",
+        "###.....###",
+        "###.....###",
+        "###..i..#.v",
+        "#####r###.#",
+        "#.........#",
+        "#b##b#y##y#",
+        "#.e#e#ge#eg",
+        "#Y.#Q#.Q#.Y"
+      ],
+      "events": [
+        {
+          "id": "f20-boss-down",
+          "floor": 20,
+          "trigger": {
+            "op": "defeated",
+            "at": {
+              "x": 5,
+              "y": 5
+            }
+          },
+          "effects": [
+            {
+              "op": "addStair",
+              "x": 5,
+              "y": 4,
+              "dir": "up"
+            },
+            {
+              "op": "spawnItem",
+              "x": 5,
+              "y": 5,
+              "id": "redCrystal"
+            },
+            {
+              "op": "spawnItem",
+              "x": 6,
+              "y": 5,
+              "id": "blueCrystal"
+            }
+          ]
+        }
+      ]
+    },
+    "21": {
+      "index": 21,
+      "entry": {
+        "x": 5,
+        "y": 3
+      },
+      "altar": true,
+      "legend": {
+        "G": "guide",
+        "A": "altar",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        "...........",
+        "...........",
+        "..R.....U..",
+        "...........",
+        ".....v.....",
+        "...........",
+        "....G.A....",
+        "...........",
+        "^.......Q..",
+        "...........",
+        "..........."
+      ],
+      "events": [
+        {
+          "id": "f21-guide",
+          "floor": 21,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "这里是镜廊的第一个安全层。三区的怪不多，但每一层都有一个机关：全灭一组镜影，门就会开。打不动的怪先绕开，祭坛在这里。"
+            }
+          ]
+        }
+      ]
+    },
+    "22": {
+      "index": 22,
+      "entry": {
+        "x": 1,
+        "y": 8
+      },
+      "legend": {
+        "j": "mirrorShade",
+        "k": "echoMage",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Y": "yellowKey",
+        ":": "charm"
+      },
+      "grid": [
+        "###########",
+        "#####.#####",
+        "#####:#####",
+        "#####.#####",
+        "#####a#####",
+        "#.R.#.j.#.^",
+        "#PYk#U..#.#",
+        "##y###y##.#",
+        "v..Y.y.k..#",
+        "##y###y####",
+        "#P.j#jYj###"
+      ],
+      "events": [
+        {
+          "id": "f22-gate",
+          "floor": 22,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 6,
+                "y": 5
+              },
+              {
+                "x": 3,
+                "y": 10
+              },
+              {
+                "x": 5,
+                "y": 10
+              },
+              {
+                "x": 7,
+                "y": 10
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 5,
+              "y": 4,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "23": {
+      "index": 23,
+      "entry": {
+        "x": 9,
+        "y": 5
+      },
+      "legend": {
+        "j": "mirrorShade",
+        "P": "redPotion",
+        "/": "mirrorJump"
+      },
+      "grid": [
+        "^##########",
+        "Pwjw.w#####",
+        "#####j#####",
+        "####/PwP###",
+        "#######w###",
+        "#######.w.v",
+        "###########",
+        "###########",
+        "###########",
+        "###########",
+        "###########"
+      ],
+      "events": []
+    },
+    "24": {
+      "index": 24,
+      "entry": {
+        "x": 1,
+        "y": 0
+      },
+      "legend": {
+        "k": "echoMage",
+        "l": "twinShade",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey"
+      },
+      "grid": [
+        "v.#.#~#.#.#",
+        "..yY.~.l..#",
+        "#.#k#~#.#.#",
+        "#...#~R.#.#",
+        "..#L#~.kU#.",
+        "#.y..~..b..",
+        "##y##~##.##",
+        "..Q.#~.Y...",
+        "#.#.#~.#.#.",
+        "..#.#~#.l.#",
+        "..###^...##"
+      ],
+      "events": []
+    },
+    "25": {
+      "index": 25,
+      "entry": {
+        "x": 6,
+        "y": 10
+      },
+      "legend": {
+        "j": "mirrorShade",
+        "k": "echoMage",
+        "m": "glassGolem",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "J": "mirrorShield"
+      },
+      "grid": [
+        "###########",
+        "#.j.j.j#..#",
+        "#.....k.aJ#",
+        "#.m...P.###",
+        "#QY.m.P.#.#",
+        "#QY...y.#.#",
+        "#..k....Y.#",
+        "#########.#",
+        "#########.#",
+        "#########.#",
+        "#####v.Yy.^"
+      ],
+      "events": [
+        {
+          "id": "f25-gate",
+          "floor": 25,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 2,
+                "y": 1
+              },
+              {
+                "x": 4,
+                "y": 1
+              },
+              {
+                "x": 6,
+                "y": 1
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 8,
+              "y": 2,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "26": {
+      "index": 26,
+      "entry": {
+        "x": 9,
+        "y": 10
+      },
+      "legend": {
+        "j": "mirrorShade",
+        "l": "twinShade",
+        "Y": "yellowKey",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal"
+      },
+      "grid": [
+        "###########",
+        "###########",
+        "###########",
+        "###########",
+        "###########",
+        "###########",
+        "#Y.P#R..#Q#",
+        "#.l.#.jl#j#",
+        "#...#P..#U#",
+        "##y###b##y#",
+        "^..l.yYjY.#"
+      ],
+      "events": []
+    },
+    "27": {
+      "index": 27,
+      "entry": {
+        "x": 1,
+        "y": 10
+      },
+      "legend": {
+        "k": "echoMage",
+        "l": "twinShade",
+        "Y": "yellowKey",
+        "P": "redPotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "N": "merchant",
+        "G": "guide"
+      },
+      "grid": [
+        "...#.^.#...",
+        "..Ry...y.U.",
+        ".P.#l..#...",
+        "####...####",
+        ".........l.",
+        ".k...N.....",
+        "...........",
+        "####k..##.#",
+        "..G#.Y.#k..",
+        ".Y.#...#.P.",
+        "v..y...#..."
+      ],
+      "events": [
+        {
+          "id": "f27-guide",
+          "floor": 27,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "这里是中盘检查点。镜廊的怪一层比一层难，别硬拼。多出来的黄钥匙可以卖给这层的商人。"
+            }
+          ]
+        }
+      ]
+    },
+    "28": {
+      "index": 28,
+      "entry": {
+        "x": 5,
+        "y": 1
+      },
+      "legend": {
+        "j": "mirrorShade",
+        "l": "twinShade",
+        "m": "glassGolem",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "Q": "bluePotion",
+        "K": "mirrorSword"
+      },
+      "grid": [
+        "#####v#####",
+        "#####.#####",
+        "#####.j...^",
+        "#####.###%#",
+        "#####.###K#",
+        "..yY...b...",
+        "#.###y###y#",
+        "Ym.#.m.#.l.",
+        "...#Y..#l.Q",
+        "Lm.#.j.#...",
+        "###########"
+      ],
+      "events": []
+    },
+    "29": {
+      "index": 29,
+      "entry": {
+        "x": 9,
+        "y": 2
+      },
+      "legend": {
+        "m": "glassGolem",
+        "k": "echoMage",
+        "l": "twinShade",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "E": "redKey"
+      },
+      "grid": [
+        "######PR#PU",
+        "#######y#b#",
+        "#.mykYy.Y.v",
+        "#.#######y#",
+        "#..k...#lll",
+        "^...m..##a#",
+        "##.Y.kP#.E.",
+        "##.m...#..Q",
+        "###########",
+        "###########",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f29-gate",
+          "floor": 29,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 8,
+                "y": 4
+              },
+              {
+                "x": 9,
+                "y": 4
+              },
+              {
+                "x": 10,
+                "y": 4
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 9,
+              "y": 5,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "30": {
+      "index": 30,
+      "entry": {
+        "x": 1,
+        "y": 5
+      },
+      "legend": {
+        "j": "mirrorShade",
+        "n": "mirrorBoss",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        "###########",
+        "Q.#.....###",
+        "Q.#.....###",
+        "..#.....###",
+        "..#.....###",
+        "v.#..n..###",
+        "#r###a#####",
+        "#.j.j.j.j.#",
+        "#.........#",
+        "#..j...j..#",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f30-gate",
+          "floor": 30,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 2,
+                "y": 7
+              },
+              {
+                "x": 4,
+                "y": 7
+              },
+              {
+                "x": 6,
+                "y": 7
+              },
+              {
+                "x": 8,
+                "y": 7
+              },
+              {
+                "x": 3,
+                "y": 9
+              },
+              {
+                "x": 7,
+                "y": 9
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 5,
+              "y": 6,
+              "terrain": "."
+            }
+          ]
+        },
+        {
+          "id": "f30-boss",
+          "floor": 30,
+          "trigger": {
+            "op": "defeated",
+            "at": {
+              "x": 5,
+              "y": 5
+            }
+          },
+          "effects": [
+            {
+              "op": "addStair",
+              "x": 5,
+              "y": 4,
+              "dir": "up"
+            },
+            {
+              "op": "spawnItem",
+              "x": 5,
+              "y": 5,
+              "id": "redCrystal"
+            },
+            {
+              "op": "spawnItem",
+              "x": 4,
+              "y": 4,
+              "id": "blueCrystal"
+            }
+          ]
+        }
+      ]
+    },
+    "31": {
+      "index": 31,
+      "entry": {
+        "x": 5,
+        "y": 3
+      },
+      "legend": {
+        "o": "slagSoldier",
+        "p": "magmaHound",
+        "q": "forgeMage",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "G": "guide",
+        "N": "merchant"
+      },
+      "grid": [
+        "###########",
+        "######.R#PU",
+        "#G..N##y#b#",
+        "#.....YyYo.",
+        "#..Y.vy#y#.",
+        "#.o..#P#Q#y",
+        "#Y..o#p#o#p",
+        "#.....####.",
+        "#.qo.#####^",
+        "#....######",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f31-guide",
+          "floor": 31,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "这里是四区检查点。墙上有裂纹的地方，后面多半藏着东西，三十七层尤其多。"
+            }
+          ]
+        }
+      ]
+    },
+    "32": {
+      "index": 32,
+      "entry": {
+        "x": 9,
+        "y": 8
+      },
+      "legend": {
+        "o": "slagSoldier",
+        "p": "magmaHound",
+        "q": "forgeMage",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "A": "altar"
+      },
+      "grid": [
+        "#####P#####",
+        "#####.#####",
+        "#####p#####",
+        "#####Y#####",
+        "#####y#####",
+        "#RP#...#YU#",
+        "#..#qAo#.o#",
+        "##y#.p.#y##",
+        "^..o..Yp..v",
+        "##y#####y##",
+        "#P.o###qYL#"
+      ],
+      "events": []
+    },
+    "33": {
+      "index": 33,
+      "entry": {
+        "x": 0,
+        "y": 9
+      },
+      "legend": {
+        "o": "slagSoldier",
+        "p": "magmaHound",
+        "q": "forgeMage",
+        "s": "ironKnight",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey"
+      },
+      "grid": [
+        "###########",
+        "###########",
+        "##########^",
+        "##.R.#Pp.#.",
+        "##..o#Q..yY",
+        "##...y..q#.",
+        "###y##o..#p",
+        "##...##y##.",
+        "v#Pq.#Usp#Y",
+        ".##y###b##.",
+        "..Y..o..Y.."
+      ],
+      "events": []
+    },
+    "34": {
+      "index": 34,
+      "entry": {
+        "x": 10,
+        "y": 3
+      },
+      "legend": {
+        "o": "slagSoldier",
+        "p": "magmaHound",
+        "q": "forgeMage",
+        "s": "ironKnight",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "F": "furnaceShield"
+      },
+      "grid": [
+        "###########",
+        "#.F#P.#RU##",
+        "#..#.q#.P#v",
+        "##a#..#p.#.",
+        "#ss##y##b#L",
+        "#o.Y..Yp.Y.",
+        "##y##y##y##",
+        "#..#..#...#",
+        "#.o#..#q.p#",
+        "#P.#q.#..Q#",
+        "#####^#####"
+      ],
+      "events": [
+        {
+          "id": "f34-knights",
+          "floor": 34,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 1,
+                "y": 4
+              },
+              {
+                "x": 2,
+                "y": 4
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 2,
+              "y": 3,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "35": {
+      "index": 35,
+      "entry": {
+        "x": 5,
+        "y": 9
+      },
+      "legend": {
+        "o": "slagSoldier",
+        "x": "lavaDrake",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Q": "bluePotion",
+        "Y": "yellowKey"
+      },
+      "grid": [
+        "###########",
+        "###########",
+        "###########",
+        "####..R####",
+        "...#.o.####",
+        "^..x...####",
+        "...#...####",
+        "#o##..U####",
+        "#w###y#####",
+        "#..Y....Q.#",
+        "#....v....#"
+      ],
+      "events": [
+        {
+          "id": "f35-dragon",
+          "floor": 35,
+          "trigger": {
+            "op": "defeated",
+            "at": {
+              "x": 3,
+              "y": 5
+            }
+          },
+          "effects": [
+            {
+              "op": "spawnItem",
+              "x": 3,
+              "y": 5,
+              "id": "frostCore"
+            },
+            {
+              "op": "say",
+              "text": "熔岩巨龙倒下了，它守护的霜核落在原地。"
+            }
+          ]
+        }
+      ]
+    },
+    "36": {
+      "index": 36,
+      "entry": {
+        "x": 1,
+        "y": 5
+      },
+      "legend": {
+        "s": "ironKnight",
+        "q": "forgeMage",
+        "p": "magmaHound",
+        "t": "hammerLord",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey"
+      },
+      "grid": [
+        "###########",
+        "#R..#.#..Q.",
+        "#..s#.#.Y..",
+        "##y##.#q...",
+        "#.Y.~Y~.p..",
+        "v...ypy....",
+        "#Y..#.#....",
+        "##y##t##y#s",
+        "#Pq.#b#.P#.",
+        "#..s#U#pq#.",
+        "#######P.#^"
+      ],
+      "events": []
+    },
+    "37": {
+      "index": 37,
+      "entry": {
+        "x": 9,
+        "y": 10
+      },
+      "legend": {
+        "s": "ironKnight",
+        "t": "hammerLord",
+        "u": "coreGolem",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey"
+      },
+      "grid": [
+        "^##########",
+        ".##########",
+        ".#R.#######",
+        ".#RR#u#UUU#",
+        ".##%#.#%###",
+        "..YPyYytRU#",
+        "t##%#y#%###",
+        ".#QQ#s#YYYY",
+        ".#QQ#P#YYLL",
+        ".##########",
+        ".......s..v"
+      ],
+      "events": [
+        {
+          "id": "f37-dragon",
+          "floor": 37,
+          "trigger": {
+            "op": "defeated",
+            "at": {
+              "x": 5,
+              "y": 3
+            }
+          },
+          "effects": [
+            {
+              "op": "spawnItem",
+              "x": 5,
+              "y": 3,
+              "id": "dragonFang"
+            }
+          ]
+        }
+      ]
+    },
+    "38": {
+      "index": 38,
+      "entry": {
+        "x": 0,
+        "y": 1
+      },
+      "legend": {
+        "s": "ironKnight",
+        "t": "hammerLord",
+        "q": "forgeMage",
+        "u": "coreGolem",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "W": "meltSword",
+        "N": "merchant"
+      },
+      "grid": [
+        "v####^#####",
+        ".#P##.##W##",
+        "Y#R##.##b##",
+        "s#t##s##P##",
+        "y#y##.##b##",
+        ".q..q.yt.LN",
+        "###y####y##",
+        "###u####s##",
+        "##YU####Y##",
+        "###Q#######",
+        "###########"
+      ],
+      "events": []
+    },
+    "39": {
+      "index": 39,
+      "entry": {
+        "x": 5,
+        "y": 1
+      },
+      "legend": {
+        "t": "hammerLord",
+        "s": "ironKnight",
+        "u": "coreGolem",
+        "p": "magmaHound",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "E": "redKey"
+      },
+      "grid": [
+        "#####v#####",
+        "#..s..yp~Q#",
+        "#Y##Yy###Q#",
+        "#.yt#sY##Q#",
+        "#.#P#######",
+        "#t###E####^",
+        "#.#R#a##U#.",
+        "#y#t#u##s#.",
+        "#.#y#u##b#.",
+        "#.P.Y.P.pQ.",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f39-gate",
+          "floor": 39,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 5,
+                "y": 8
+              },
+              {
+                "x": 5,
+                "y": 7
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 5,
+              "y": 6,
+              "terrain": "."
+            }
+          ]
+        }
+      ]
+    },
+    "40": {
+      "index": 40,
+      "entry": {
+        "x": 9,
+        "y": 5
+      },
+      "legend": {
+        "t": "hammerLord",
+        "s": "ironKnight",
+        "z": "forgeBoss",
+        "Q": "bluePotion"
+      },
+      "grid": [
+        "###########",
+        "##.......##",
+        "##.......##",
+        "##.......##",
+        "##.......##",
+        "#####z###.v",
+        "#####r.t..#",
+        "##.#.s.s..#",
+        "#..#.s...Q#",
+        "#s....#.Q.#",
+        "###.#t#.###"
+      ],
+      "events": [
+        {
+          "id": "f40-boss-down",
+          "floor": 40,
+          "trigger": {
+            "op": "defeated",
+            "at": {
+              "x": 5,
+              "y": 5
+            }
+          },
+          "effects": [
+            {
+              "op": "addStair",
+              "x": 5,
+              "y": 4,
+              "dir": "up"
+            },
+            {
+              "op": "spawnItem",
+              "x": 5,
+              "y": 5,
+              "id": "redCrystal"
+            },
+            {
+              "op": "spawnItem",
+              "x": 4,
+              "y": 4,
+              "id": "blueCrystal"
+            },
+            {
+              "op": "say",
+              "text": "熔炉督主倒下，王座深处升起通往 41 层的阶梯。"
+            }
+          ]
+        }
+      ]
+    },
+    "41": {
+      "index": 41,
+      "entry": {
+        "x": 5,
+        "y": 3
+      },
+      "legend": {
+        "!": "stardustWraith",
+        "?": "auraPriest",
+        "&": "voidBlade",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "G": "guide"
+      },
+      "grid": [
+        "##G###P#L##",
+        "##P###Y#P##",
+        "^#y###y#y##",
+        "...!Y..!.yQ",
+        "##y?#v#?b#Y",
+        "##!#####!##",
+        "##R#####U##",
+        "##&########",
+        "###########",
+        "###########",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f41-guide",
+          "floor": 41,
+          "trigger": {
+            "op": "talked",
+            "npc": "guide"
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "五区检查点：祭司身边每走一步都会被灼伤，绕着它走。43 层有一面墙不对劲。"
+            }
+          ]
+        }
+      ]
+    },
+    "42": {
+      "index": 42,
+      "entry": {
+        "x": 0,
+        "y": 3
+      },
+      "legend": {
+        "!": "stardustWraith",
+        "?": "auraPriest",
+        "&": "voidBlade",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "A": "altar"
+      },
+      "grid": [
+        "#####U#####",
+        "#YP.#.#Y#.#",
+        "v#..#b#.!.#",
+        ".#!.#.#.yY#",
+        ".##y#.Ay##?",
+        "..!........",
+        "###y?.?y##.",
+        "#.&.#.#&.#.",
+        "#.R.#b#.P#^",
+        "#####.#####",
+        "#####Q#####"
+      ],
+      "events": []
+    },
+    "43": {
+      "index": 43,
+      "entry": {
+        "x": 9,
+        "y": 8
+      },
+      "legend": {
+        "?": "auraPriest",
+        "+": "highAuraPriest",
+        "&": "voidBlade",
+        "!": "stardustWraith",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "L": "blueKey"
+      },
+      "grid": [
+        "###########",
+        "#L.......?#",
+        "#.###.###.#",
+        "#PyP#w#Yy.#",
+        "#.##.^.##.#",
+        "#&byQ.&##P#",
+        "#.##&U+##.#",
+        "#YyY###Ry.#",
+        "^.#######.v",
+        "#?...!.!.?#",
+        "###########"
+      ],
+      "events": [],
+      "stairTo": {
+        "0,8": 45
+      }
+    },
+    "44": {
+      "index": 44,
+      "entry": {
+        "x": 5,
+        "y": 3
+      },
+      "legend": {
+        "=": "domeGuard",
+        "P": "redPotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "X": "starShield"
+      },
+      "grid": [
+        "###########",
+        "#P.......P#",
+        "#.........#",
+        "#.........#",
+        "#....v....#",
+        "#.........#",
+        "#......=.=#",
+        "########a##",
+        "######PP.%X",
+        "######RU.##",
+        "###########"
+      ],
+      "events": [
+        {
+          "id": "f44-domeguards",
+          "floor": 44,
+          "trigger": {
+            "op": "allDefeated",
+            "at": [
+              {
+                "x": 7,
+                "y": 6
+              },
+              {
+                "x": 9,
+                "y": 6
+              }
+            ]
+          },
+          "effects": [
+            {
+              "op": "setTerrain",
+              "x": 8,
+              "y": 7,
+              "terrain": "."
+            },
+            {
+              "op": "say",
+              "text": "两名穹顶铁卫倒下，机关门缓缓升起。"
+            }
+          ]
+        }
+      ]
+    },
+    "45": {
+      "index": 45,
+      "entry": {
+        "x": 1,
+        "y": 8
+      },
+      "legend": {
+        "+": "highAuraPriest",
+        "?": "auraPriest",
+        "&": "voidBlade",
+        "$": "astralMage",
+        "N": "merchant",
+        "C": "bomb",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey"
+      },
+      "grid": [
+        "###########",
+        "###########",
+        "#&Ny#.#.U$#",
+        "#P.Ry.b&.Q#",
+        "#.?.#y#####",
+        "#####.w?w.^",
+        "#####.#####",
+        "##+Py&b+y.#",
+        "v.###.#.#C#",
+        "#.YYY.#####",
+        "###########"
+      ],
+      "events": [],
+      "stairTo": {
+        "0,8": 43
+      }
+    },
+    "46": {
+      "index": 46,
+      "entry": {
+        "x": 9,
+        "y": 5
+      },
+      "legend": {
+        "!": "stardustWraith",
+        "$": "astralMage",
+        "+": "highAuraPriest",
+        "&": "voidBlade",
+        "A": "altar",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "R": "redCrystal",
+        "U": "blueCrystal",
+        "Y": "yellowKey",
+        "L": "blueKey",
+        "Z": "starSword"
+      },
+      "grid": [
+        "###########",
+        "#PAR###PU.#",
+        "#.!.%Z#yyP#",
+        "#.$$###+..#",
+        "##y#####b##",
+        "#...&LYY..v",
+        "##y##w##y##",
+        "#!.Y#.#...#",
+        "#.&.#w#.+Q#",
+        "#####.#####",
+        "#####^#####"
+      ],
+      "events": []
+    },
+    "47": {
+      "index": 47,
+      "entry": {
+        "x": 5,
+        "y": 9
+      },
+      "legend": {
+        "$": "astralMage",
+        "+": "highAuraPriest",
+        "&": "voidBlade",
+        "N": "merchant",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "Y": "yellowKey",
+        "U": "blueCrystal",
+        "R": "redCrystal"
+      },
+      "grid": [
+        "^##########",
+        ".##########",
+        "+##########",
+        ".##########",
+        "Y##########",
+        "Q#P#U#R#P##",
+        "+#y#b#$#y##",
+        ".#Y#&#+#Y##",
+        ".#y#b#y#y##",
+        ".&.$...$.N#",
+        "#####v#####"
+      ],
+      "events": []
+    },
+    "48": {
+      "index": 48,
+      "entry": {
+        "x": 1,
+        "y": 0
+      },
+      "legend": {
+        "$": "astralMage",
+        "+": "highAuraPriest",
+        "&": "voidBlade",
+        "!": "stardustWraith",
+        "P": "redPotion",
+        "Q": "bluePotion",
+        "L": "blueKey",
+        "E": "redKey",
+        "Y": "yellowKey",
+        "R": "redCrystal",
+        "U": "blueCrystal"
+      },
+      "grid": [
+        "v.#########",
+        "#...!...P+#",
+        "Q#y####b#.#",
+        "L%P##Y#U#.#",
+        "Q####y###.#",
+        "#+&.Y.$.&.#",
+        "#.#y###y###",
+        "#.#R#P#Y#E#",
+        "#.###y###b#",
+        "#$.$...!.&.",
+        "##########^"
+      ],
+      "events": []
+    },
+    "49": {
+      "index": 49,
+      "entry": {
+        "x": 9,
+        "y": 10
+      },
+      "legend": {
+        "<": "pillarGuard",
+        "+": "highAuraPriest",
+        "Q": "bluePotion",
+        "r": "redDoor"
+      },
+      "grid": [
+        "***********",
+        "***********",
+        "**Q.....Q**",
+        "**.<...<.**",
+        "**.......**",
+        "**+..^..+**",
+        "**.......**",
+        "**.<...<.**",
+        "**.......r*",
+        "*********.*",
+        "*********.v"
+      ],
+      "events": [
+        {
+          "id": "f49-pillars",
+          "floor": 49,
+          "trigger": {
+            "op": "enterTile",
+            "at": {
+              "x": 9,
+              "y": 9
+            }
+          },
+          "effects": [
+            {
+              "op": "say",
+              "text": "四根星柱支撑着星幕。每击破一根，终焉之主的防御就减少 125。"
+            }
+          ]
+        }
+      ]
+    },
+    "50": {
+      "index": 50,
+      "entry": {
+        "x": 5,
+        "y": 4
+      },
+      "legend": {
+        "@": "endLord"
+      },
+      "grid": [
+        "***********",
+        "***********",
+        "**.......**",
+        "**...@...**",
+        "**.......**",
+        "**...v...**",
+        "**.......**",
+        "**.......**",
+        "**.......**",
+        "***********",
+        "***********"
+      ],
+      "events": []
+    }
+  },
+  "ACTIVE": {
+    "compass": {
+      "name": "传送罗盘",
+      "kind": "active",
+      "uses": "unlimited"
+    },
+    "pickaxe": {
+      "name": "矿镐",
+      "kind": "active",
+      "uses": "unlimited"
+    },
+    "flask": {
+      "name": "蓄能瓶",
+      "kind": "active",
+      "uses": 1
+    },
+    "mirrorJump": {
+      "name": "镜面跃迁器",
+      "kind": "active",
+      "uses": "unlimited"
+    },
+    "frostCore": {
+      "name": "霜核",
+      "kind": "active",
+      "uses": "unlimited"
+    },
+    "bomb": {
+      "name": "炸药",
+      "kind": "active",
+      "uses": 1
+    }
+  },
+  "CONSUMABLES": {
+    "redCrystal": {
+      "name": "红晶",
+      "kind": "pickup"
+    },
+    "blueCrystal": {
+      "name": "蓝晶",
+      "kind": "pickup"
+    },
+    "redPotion": {
+      "name": "红药水",
+      "kind": "pickup"
+    },
+    "bluePotion": {
+      "name": "蓝药水",
+      "kind": "pickup"
+    }
+  },
+  "GEAR": {
+    "oldIronSword": {
+      "name": "旧铁剑",
+      "kind": "pickup",
+      "atk": 10
+    },
+    "woodShield": {
+      "name": "木纹圆盾",
+      "kind": "pickup",
+      "def": 10
+    },
+    "tideShield": {
+      "name": "潮纹盾",
+      "kind": "pickup",
+      "def": 20
+    },
+    "tideSword": {
+      "name": "潮钢剑",
+      "kind": "pickup",
+      "atk": 20
+    },
+    "mirrorShield": {
+      "name": "镜银盾",
+      "kind": "pickup",
+      "def": 35
+    },
+    "mirrorSword": {
+      "name": "镜锋剑",
+      "kind": "pickup",
+      "atk": 35
+    },
+    "furnaceShield": {
+      "name": "炉铸盾",
+      "kind": "pickup",
+      "def": 50
+    },
+    "meltSword": {
+      "name": "熔心剑",
+      "kind": "pickup",
+      "atk": 50
+    },
+    "starShield": {
+      "name": "星穹盾",
+      "kind": "pickup",
+      "def": 80,
+      "immuneAura": true
+    },
+    "starSword": {
+      "name": "星陨剑",
+      "kind": "pickup",
+      "atk": 80
+    }
+  },
+  "GUIDE_FLOORS": [
+    1,
+    3,
+    5,
+    7,
+    11,
+    21,
+    27,
+    31,
+    41
+  ],
+  "HOLD": {
+    "tideSpear": {
+      "name": "逐潮枪",
+      "kind": "hold",
+      "flag": "tideSpear"
+    },
+    "charm": {
+      "name": "聚财符",
+      "kind": "hold",
+      "flag": "charm"
+    },
+    "dragonFang": {
+      "name": "龙牙匕",
+      "kind": "hold",
+      "flag": "dragonFang"
+    }
+  },
+  "KEYS": {
+    "yellowKey": {
+      "name": "黄钥匙",
+      "kind": "pickup",
+      "color": "y"
+    },
+    "blueKey": {
+      "name": "蓝钥匙",
+      "kind": "pickup",
+      "color": "b"
+    },
+    "redKey": {
+      "name": "红钥匙",
+      "kind": "pickup",
+      "color": "r"
+    }
+  },
+  "LAST_FLOOR": 50,
+  "MERCHANTS": {
+    "6": [
+      {
+        "id": "m6a",
+        "items": {
+          "yellowKey": 3
+        },
+        "price": 30
+      }
+    ],
+    "12": [
+      {
+        "id": "m12a",
+        "items": {
+          "redKey": 1
+        },
+        "price": 800
+      }
+    ],
+    "15": [
+      {
+        "id": "m15a",
+        "items": {
+          "blueKey": 1
+        },
+        "price": 150
+      }
+    ],
+    "27": [
+      {
+        "id": "m27a",
+        "items": {
+          "blueKey": 1
+        },
+        "price": 300
+      },
+      {
+        "id": "m27b",
+        "recycle": "yellowKey",
+        "gold": 80,
+        "unlimited": true
+      }
+    ],
+    "31": [
+      {
+        "id": "m31a",
+        "items": {
+          "yellowKey": 4,
+          "blueKey": 1
+        },
+        "price": 800
+      }
+    ],
+    "38": [
+      {
+        "id": "m38a",
+        "items": {
+          "yellowKey": 3
+        },
+        "price": 400
+      }
+    ],
+    "45": [
+      {
+        "id": "m45a",
+        "hp": 2000,
+        "price": 1000
+      }
+    ],
+    "47": [
+      {
+        "id": "m47a",
+        "items": {
+          "bomb": 1
+        },
+        "price": 1500
+      }
+    ]
+  },
+  "MONSTERS": {
+    "mossBlob": {
+      "name": "苔团",
+      "hp": 30,
+      "atk": 16,
+      "def": 0,
+      "gold": 1,
+      "traits": []
+    },
+    "caveBat": {
+      "name": "洞蝠",
+      "hp": 30,
+      "atk": 22,
+      "def": 2,
+      "gold": 2,
+      "traits": []
+    },
+    "boneSoldier": {
+      "name": "朽骨兵",
+      "hp": 50,
+      "atk": 30,
+      "def": 5,
+      "gold": 4,
+      "traits": []
+    },
+    "sporeMage": {
+      "name": "蚀菌师",
+      "hp": 40,
+      "atk": 12,
+      "def": 4,
+      "gold": 5,
+      "traits": [
+        {
+          "type": "magic"
+        }
+      ]
+    },
+    "stoneBeetle": {
+      "name": "石甲虫",
+      "hp": 20,
+      "atk": 35,
+      "def": 24,
+      "gold": 8,
+      "traits": []
+    },
+    "boneGuard": {
+      "name": "朽骨卫士",
+      "hp": 90,
+      "atk": 45,
+      "def": 12,
+      "gold": 10,
+      "traits": []
+    },
+    "jailer": {
+      "name": "持钥狱卒",
+      "hp": 80,
+      "atk": 50,
+      "def": 15,
+      "gold": 15,
+      "traits": [
+        {
+          "type": "firstStrike"
+        }
+      ]
+    },
+    "wardenBoss": {
+      "name": "地窖看守长",
+      "hp": 300,
+      "atk": 70,
+      "def": 20,
+      "gold": 100,
+      "boss": true,
+      "traits": []
+    },
+    "tideCrab": {
+      "name": "潮蟹",
+      "hp": 120,
+      "atk": 62,
+      "def": 10,
+      "gold": 8,
+      "traits": []
+    },
+    "cogPuppet": {
+      "name": "齿轮傀",
+      "hp": 70,
+      "atk": 75,
+      "def": 28,
+      "gold": 12,
+      "traits": []
+    },
+    "tideWitch": {
+      "name": "咒潮巫",
+      "hp": 90,
+      "atk": 30,
+      "def": 20,
+      "gold": 15,
+      "traits": [
+        {
+          "type": "magic"
+        }
+      ]
+    },
+    "sharkGuard": {
+      "name": "鲛卫",
+      "hp": 280,
+      "atk": 90,
+      "def": 12,
+      "gold": 20,
+      "traits": [
+        {
+          "type": "sea"
+        }
+      ]
+    },
+    "deepWarrior": {
+      "name": "深鳞武士",
+      "hp": 350,
+      "atk": 125,
+      "def": 25,
+      "gold": 30,
+      "traits": [
+        {
+          "type": "sea"
+        }
+      ]
+    },
+    "ironClam": {
+      "name": "铁壳蚌",
+      "hp": 30,
+      "atk": 95,
+      "def": 70,
+      "gold": 28,
+      "traits": []
+    },
+    "twinBlade": {
+      "name": "双刃机偶",
+      "hp": 150,
+      "atk": 100,
+      "def": 35,
+      "gold": 25,
+      "traits": [
+        {
+          "type": "doubleHit"
+        }
+      ]
+    },
+    "clawFiend": {
+      "name": "巨钳海魔",
+      "hp": 1000,
+      "atk": 150,
+      "def": 20,
+      "gold": 100,
+      "boss": true,
+      "traits": [
+        {
+          "type": "sea"
+        }
+      ]
+    },
+    "tideBoss": {
+      "name": "潮汐司钟",
+      "hp": 900,
+      "atk": 180,
+      "def": 50,
+      "gold": 200,
+      "boss": true,
+      "traits": [
+        {
+          "type": "sea"
+        }
+      ]
+    },
+    "mirrorShade": {
+      "name": "镜影",
+      "hp": 300,
+      "atk": 170,
+      "def": 40,
+      "gold": 30,
+      "traits": []
+    },
+    "echoMage": {
+      "name": "回声术士",
+      "hp": 160,
+      "atk": 50,
+      "def": 60,
+      "gold": 35,
+      "traits": [
+        {
+          "type": "magic"
+        }
+      ]
+    },
+    "twinShade": {
+      "name": "双生影",
+      "hp": 250,
+      "atk": 175,
+      "def": 50,
+      "gold": 45,
+      "traits": [
+        {
+          "type": "doubleHit"
+        }
+      ]
+    },
+    "glassGolem": {
+      "name": "琉璃傀",
+      "hp": 60,
+      "atk": 170,
+      "def": 100,
+      "gold": 40,
+      "traits": []
+    },
+    "mirrorBoss": {
+      "name": "镜廊之主",
+      "hp": 1200,
+      "atk": 260,
+      "def": 90,
+      "gold": 500,
+      "boss": true,
+      "traits": [
+        {
+          "type": "firstStrike"
+        }
+      ]
+    },
+    "slagSoldier": {
+      "name": "炉渣兵",
+      "hp": 400,
+      "atk": 215,
+      "def": 80,
+      "gold": 45,
+      "traits": []
+    },
+    "magmaHound": {
+      "name": "熔火犬",
+      "hp": 250,
+      "atk": 235,
+      "def": 60,
+      "gold": 50,
+      "traits": [
+        {
+          "type": "firstStrike"
+        }
+      ]
+    },
+    "forgeMage": {
+      "name": "锻魂师",
+      "hp": 240,
+      "atk": 70,
+      "def": 100,
+      "gold": 55,
+      "traits": [
+        {
+          "type": "magic"
+        }
+      ]
+    },
+    "ironKnight": {
+      "name": "黑铁骑士",
+      "hp": 300,
+      "atk": 285,
+      "def": 140,
+      "gold": 70,
+      "traits": []
+    },
+    "hammerLord": {
+      "name": "重锤督军",
+      "hp": 450,
+      "atk": 255,
+      "def": 120,
+      "gold": 90,
+      "traits": [
+        {
+          "type": "doubleHit"
+        }
+      ]
+    },
+    "coreGolem": {
+      "name": "熔核傀儡",
+      "hp": 100,
+      "atk": 350,
+      "def": 230,
+      "gold": 120,
+      "traits": []
+    },
+    "lavaDrake": {
+      "name": "熔岩巨龙",
+      "hp": 3000,
+      "atk": 500,
+      "def": 150,
+      "gold": 600,
+      "boss": true,
+      "traits": [
+        {
+          "type": "dragon"
+        }
+      ]
+    },
+    "forgeBoss": {
+      "name": "熔炉督主",
+      "hp": 2200,
+      "atk": 420,
+      "def": 150,
+      "gold": 800,
+      "boss": true,
+      "traits": []
+    },
+    "stardustWraith": {
+      "name": "星尘游魂",
+      "hp": 500,
+      "atk": 380,
+      "def": 120,
+      "gold": 80,
+      "traits": []
+    },
+    "auraPriest": {
+      "name": "灼域祭司",
+      "hp": 400,
+      "atk": 400,
+      "def": 180,
+      "gold": 90,
+      "traits": [
+        {
+          "type": "aura",
+          "damage": 100
+        }
+      ]
+    },
+    "voidBlade": {
+      "name": "虚空利刃",
+      "hp": 350,
+      "atk": 420,
+      "def": 150,
+      "gold": 100,
+      "traits": [
+        {
+          "type": "doubleHit"
+        }
+      ]
+    },
+    "highAuraPriest": {
+      "name": "大灼域祭司",
+      "hp": 450,
+      "atk": 430,
+      "def": 200,
+      "gold": 110,
+      "traits": [
+        {
+          "type": "aura",
+          "damage": 200
+        },
+        {
+          "type": "firstStrike"
+        }
+      ]
+    },
+    "astralMage": {
+      "name": "星辉法皇",
+      "hp": 500,
+      "atk": 160,
+      "def": 220,
+      "gold": 120,
+      "traits": [
+        {
+          "type": "magic"
+        }
+      ]
+    },
+    "domeGuard": {
+      "name": "穹顶铁卫",
+      "hp": 200,
+      "atk": 480,
+      "def": 360,
+      "gold": 200,
+      "traits": []
+    },
+    "pillarGuard": {
+      "name": "星柱守卫",
+      "hp": 600,
+      "atk": 520,
+      "def": 250,
+      "gold": 200,
+      "traits": []
+    },
+    "endLord": {
+      "name": "终焉之主",
+      "hp": 4000,
+      "atk": 720,
+      "def": 280,
+      "gold": 2000,
+      "boss": true,
+      "traits": [
+        {
+          "type": "starVeil"
+        }
+      ]
+    }
+  },
+  "art": {
+    "ITEM_ART": {
+      "redCrystal": "items/gem_a",
+      "blueCrystal": "items/gem_p",
+      "redPotion": "items/potion_s",
+      "bluePotion": "items/potion_h",
+      "yellowKey": "items/key_y",
+      "blueKey": "items/key_b",
+      "redKey": "items/key_r",
+      "oldIronSword": "items/sword",
+      "tideSword": "items/sword",
+      "mirrorSword": "items/sword",
+      "meltSword": "items/sword",
+      "starSword": "items/sword",
+      "woodShield": "items/shield",
+      "tideShield": "items/shield",
+      "mirrorShield": "items/shield",
+      "furnaceShield": "items/shield",
+      "starShield": "items/shield"
+    },
+    "MONSTER_ART": {
+      "mossBlob": "monsters/mon_1",
+      "caveBat": "monsters/mon_3",
+      "boneSoldier": "monsters/mon_4",
+      "sporeMage": "monsters/mon_E",
+      "stoneBeetle": "monsters/mon_6",
+      "boneGuard": "monsters/mon_5",
+      "jailer": "monsters/mon_9",
+      "wardenBoss": "monsters/mon_8",
+      "tideWitch": "monsters/mon_J",
+      "magmaHound": "monsters/mon_C",
+      "ironKnight": "monsters/mon_D",
+      "coreGolem": "monsters/mon_L",
+      "mirrorBoss": "monsters/mon_I",
+      "lavaDrake": "monsters/mon_F",
+      "forgeBoss": "monsters/mon_V",
+      "endLord": "monsters/mon_Q"
+    },
+    "NPC_ART": {
+      "merchant": "tiles/shop"
+    },
+    "TERRAIN_ART": {
+      "*": "tiles/floor_void",
+      "~": "tiles/floor_lava",
+      "^": "tiles/stair_up",
+      "v": "tiles/stair_down",
+      "y": "tiles/door_y",
+      "b": "tiles/door_b",
+      "r": "tiles/door_r"
+    },
+    "UI_ICON": {
+      "gold": "ui/icon_gold",
+      "hp": "ui/icon_hp",
+      "atk": "ui/icon_atk",
+      "def": "ui/icon_def",
+      "hero": "hero/hero"
+    },
+    "ZONE_TILES": {
+      "1": {
+        "floor": "tiles/floor_dusk",
+        "wall": "tiles/wall_dusk"
+      },
+      "2": {
+        "floor": "tiles/floor_stone",
+        "wall": "tiles/wall_stone"
+      },
+      "3": {
+        "floor": "tiles/floor_ice",
+        "wall": "tiles/wall_ice"
+      },
+      "4": {
+        "floor": "tiles/floor_lava",
+        "wall": "tiles/wall_lava"
+      },
+      "5": {
+        "floor": "tiles/floor_abyss",
+        "wall": "tiles/wall_abyss"
+      }
+    }
+  }
+}
