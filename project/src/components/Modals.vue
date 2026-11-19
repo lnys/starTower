@@ -1,7 +1,8 @@
 <script setup>
+import { languages } from '../engine/locale.js'
 // 弹窗集合：对话（引路人与事件）、祭坛、商人、罗盘、背包、存档、设置、菜单、结局
 import { computed, ref, watch } from 'vue'
-import { store, actions, compassTargets, itemName, zoneName } from '../stores/star.js'
+import { store, actions, compassTargets, itemName, zoneName, tr, localizeMessage } from '../stores/star.js'
 import { styles, styleVariables } from '../engine/styles.js'
 import { img } from '../engine/images.js'
 import { ITEM_ART } from '../engine/star-art.js'
@@ -29,20 +30,20 @@ const TRAIT_NAMES = { magic: '魔攻', firstStrike: '先攻', doubleHit: '连击
 const altarTier = computed(() => ALTAR_TIER[g.value?.floor] ?? 0)
 const altarNext = computed(() => altarPrice((g.value?.altarBuys ?? 0) + 1))
 const altarRows = computed(() => {
-  const t = altarTier.value
+  const tier = altarTier.value
   return [
-    { choice: 'hp', name: '生命', gain: altarGain(t, 'hp') },
-    { choice: 'atk', name: '攻击', gain: altarGain(t, 'atk') },
-    { choice: 'def', name: '防御', gain: altarGain(t, 'def') },
-  ].map((r) => ({ ...r, text: `每次 +${r.gain?.hp ?? r.gain?.atk ?? r.gain?.def ?? 0}` }))
+    { choice: 'hp', name: tr('生命'), gain: altarGain(tier, 'hp') },
+    { choice: 'atk', name: tr('攻击'), gain: altarGain(tier, 'atk') },
+    { choice: 'def', name: tr('防御'), gain: altarGain(tier, 'def') },
+  ].map((r) => ({ ...r, text: tr('每次 +{0}', r.gain?.hp ?? r.gain?.atk ?? r.gain?.def ?? 0) }))
 })
 
 /* ---------- 商人 ---------- */
 function merchantDesc(item) {
-  if (item.recycle) return `回收${KEYS[item.recycle].name}：每把 ${item.gold} 金币（不限次）`
+  if (item.recycle) return tr('回收{0}：每把 {1} 金币（不限次）', tr(KEYS[item.recycle].name), item.gold)
   const parts = []
   for (const [k, n] of Object.entries(item.items ?? {})) parts.push(`${itemName(k)} ×${n}`)
-  if (item.hp) parts.push(`生命 +${item.hp}`)
+  if (item.hp) parts.push(tr('生命 +{0}', item.hp))
   return parts.join('、')
 }
 const merchantRows = computed(() => {
@@ -79,7 +80,7 @@ const ACTIVE_DESC = {
 const bagRows = computed(() =>
   Object.keys(ACTIVE)
     .filter((k) => (g.value?.items[k] ?? 0) > 0)
-    .map((k) => ({ id: k, name: ACTIVE[k].name, count: g.value.items[k], desc: ACTIVE_DESC[k] ?? '' })),
+    .map((k) => ({ id: k, name: tr(ACTIVE[k].name), count: g.value.items[k], desc: tr(ACTIVE_DESC[k] ?? '') })),
 )
 function useBag(id) {
   if (id === 'compass') {
@@ -95,7 +96,7 @@ function useBag(id) {
 const saveMode = computed(() => modal.value?.mode === 'save')
 function fmtTime(ts) {
   try {
-    return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+    return new Date(ts).toLocaleString(store.meta.language, { hour12: false })
   } catch {
     return ''
   }
@@ -103,9 +104,9 @@ function fmtTime(ts) {
 const slotRows = computed(() =>
   store.slots.map((s) => ({
     name: s.name,
-    label: s.name === AUTO_SLOT ? '自动存档' : `存档 ${Number(s.name) + 1}`,
+    label: s.name === AUTO_SLOT ? tr('自动存档') : tr('存档 {0}', Number(s.name) + 1),
     entry: s.entry,
-    summary: s.entry ? `第 ${s.entry.floor} 层 · ${fmtTime(s.entry.savedAt)}` : '空',
+    summary: s.entry ? tr('第 {0} 层 · {1}', s.entry.floor, fmtTime(s.entry.savedAt)) : tr('空'),
     manual: s.name !== AUTO_SLOT && MANUAL_SLOTS.includes(s.name),
   })),
 )
@@ -153,29 +154,29 @@ watch(modal, () => {
 <template>
   <Transition name="modal">
     <div v-if="modal" class="backdrop" @click.self="closeWithBackdrop">
-      <div class="modal" :class="`m-${modal.type}`" role="dialog" :aria-label="TITLE">
-        <button v-if="closable" class="close" aria-label="关闭" @click="actions.closeModal()">✕</button>
+      <div class="modal" :class="`m-${modal.type}`" role="dialog" :aria-label="localizeMessage(TITLE)">
+        <button v-if="closable" class="close" :aria-label="tr('关闭')" @click="actions.closeModal()">✕</button>
 
         <div ref="scroller" class="modal-scroll">
-          <h2 class="modal-title">{{ TITLE }}</h2>
+          <h2 class="modal-title">{{ localizeMessage(TITLE) }}</h2>
 
-          <p v-if="modal.type === 'notice'" class="notice-detail">{{ modal.text }}</p>
+          <p v-if="modal.type === 'notice'" class="notice-detail">{{ localizeMessage(modal.text) }}</p>
 
           <template v-else-if="modal.type === 'battle'">
-            <p>生命 {{ modal.preview.monster.hp }} · 攻击 {{ modal.preview.monster.atk }} · 防御 {{ modal.preview.def }}</p>
-            <p :class="modal.preview.canFight ? 'battle-ok' : 'battle-bad'">{{ modal.preview.canFight ? '可以击败' : modal.preview.reason === 'unpierceable' ? '无法破防' : '会死亡' }}</p>
-            <p>预计损失 {{ Number.isFinite(modal.preview.loss) ? modal.preview.loss : '—' }} · 回合数 {{ modal.preview.rounds ?? '—' }}</p>
-            <p>我方每回合 {{ modal.preview.perHit }} · 怪物每回合 {{ modal.preview.perRound ?? '—' }}</p>
-            <p v-if="Number.isFinite(modal.preview.loss)">至少需要 {{ modal.preview.loss + 1 }} 生命（当前 {{ g.hero.hp }}）</p>
-            <p v-if="modal.preview.monster.traits.length">特性：{{ modal.preview.monster.traits.map(t => TRAIT_NAMES[t.type] ?? t.type).join('、') }}</p>
+            <p>{{ tr('生命 {0} · 攻击 {1} · 防御 {2}', modal.preview.monster.hp, modal.preview.monster.atk, modal.preview.def) }}</p>
+            <p :class="modal.preview.canFight ? 'battle-ok' : 'battle-bad'">{{ tr(modal.preview.canFight ? '可以击败' : modal.preview.reason === 'unpierceable' ? '无法破防' : '会死亡') }}</p>
+            <p>{{ tr('预计损失 {0} · 回合数 {1}', Number.isFinite(modal.preview.loss) ? modal.preview.loss : '—', modal.preview.rounds ?? '—') }}</p>
+            <p>{{ tr('我方每回合 {0} · 怪物每回合 {1}', modal.preview.perHit, modal.preview.perRound ?? '—') }}</p>
+            <p v-if="Number.isFinite(modal.preview.loss)">{{ tr('至少需要 {0} 生命（当前 {1}）', modal.preview.loss + 1, g.hero.hp) }}</p>
+            <p v-if="modal.preview.monster.traits.length">{{ tr('特性：{0}', modal.preview.monster.traits.map(t => tr(TRAIT_NAMES[t.type] ?? t.type)).join(tr('、'))) }}</p>
           </template>
 
           <!-- 祭坛：三选一，价格全塔共享计次 -->
           <template v-else-if="modal.type === 'altar'">
             <p class="note">
-              本座祭坛档位 {{ altarTier }} · 全塔已购买 {{ g.altarBuys }} 次 · 下一次花费 <b class="gold-t">{{ altarNext }}</b> 金币
+              {{ tr('本座祭坛档位 {0} · 全塔已购买 {1} 次 · 下一次花费 {2} 金币', altarTier, g.altarBuys, altarNext) }}
             </p>
-            <p class="note small">你的金币：<b class="gold-t">{{ g.hero.gold }}</b></p>
+            <p class="note small">{{ tr("你的金币：") }}<b class="gold-t">{{ g.hero.gold }}</b></p>
             <div class="rows">
               <div v-for="r in altarRows" :key="r.choice" class="row">
                 <div class="row-main">
@@ -183,25 +184,25 @@ watch(modal, () => {
                   <span class="sub">{{ r.text }}</span>
                 </div>
                 <button class="buy" :disabled="g.hero.gold < altarNext" @click="actions.buyAltar(r.choice)">
-                  {{ altarNext }} 金
+                  {{ tr('{0} 金', altarNext) }}
                 </button>
               </div>
             </div>
-            <p class="note small">买防御通常比攻击划算；攻击只在需要越过数值门时购买。</p>
+            <p class="note small">{{ tr("买防御通常比攻击划算；攻击只在需要越过数值门时购买。") }}</p>
           </template>
 
           <!-- 商人：每件只卖一次；回收钥匙不限次 -->
           <template v-else-if="modal.type === 'merchant'">
-            <p class="note small">你的金币：<b class="gold-t">{{ g.hero.gold }}</b></p>
-            <div v-if="!merchantRows.length" class="note">这一层的商人已经没有可交易的东西了。</div>
+            <p class="note small">{{ tr("你的金币：") }}<b class="gold-t">{{ g.hero.gold }}</b></p>
+            <div v-if="!merchantRows.length" class="note">{{ tr("这一层的商人已经没有可交易的东西了。") }}</div>
             <div class="rows">
               <div v-for="r in merchantRows" :key="r.id" class="row" :class="{ sold: r.sold }">
                 <div class="row-main">
                   <b>{{ r.desc }}</b>
                   <span class="sub">
-                    <template v-if="r.sold">已售完</template>
-                    <template v-else-if="r.recycle">回收：每把 +金币（不限次）</template>
-                    <template v-else>价格 {{ r.price }} 金币</template>
+                    <template v-if="r.sold">{{ tr("已售完") }}</template>
+                    <template v-else-if="r.recycle">{{ tr("回收：每把 +金币（不限次）") }}</template>
+                    <template v-else>{{ tr('价格 {0} 金币', r.price) }}</template>
                   </span>
                 </div>
                 <button
@@ -209,7 +210,7 @@ watch(modal, () => {
                   :disabled="r.sold || !r.can"
                   @click="actions.merchantBuy(r.id)"
                 >
-                  {{ r.recycle ? '回收' : r.sold ? '售完' : `${r.price} 金` }}
+                  {{ r.recycle ? tr('回收') : r.sold ? tr('售完') : tr('{0} 金', r.price) }}
                 </button>
               </div>
             </div>
@@ -217,11 +218,11 @@ watch(modal, () => {
 
           <!-- 传送罗盘：只列出到过的楼层 -->
           <template v-else-if="modal.type === 'compass'">
-            <p class="note">{{ g.hiddenMode ? '隐藏测试模式：可传送至任意楼层，包括第 44、50 层。' : '选择一层，传送到它的入口。第 44、50 层不能作为目标。' }}</p>
-            <div v-if="!targets.length" class="note">还没有其他可以去的楼层。</div>
+            <p class="note">{{ tr(g.hiddenMode ? '隐藏测试模式：可传送至任意楼层，包括第 44、50 层。' : '选择一层，传送到它的入口。第 44、50 层不能作为目标。') }}</p>
+            <div v-if="!targets.length" class="note">{{ tr("还没有其他可以去的楼层。") }}</div>
             <div class="rows">
               <button v-for="f in targets" :key="f" class="row-btn" @click="travel(f)">
-                第 {{ f }} 层
+                {{ tr('第 {0} 层', f) }}
                 <small>{{ zoneName(f) }}</small>
               </button>
             </div>
@@ -229,14 +230,14 @@ watch(modal, () => {
 
           <!-- 背包：主动道具 -->
           <template v-else-if="modal.type === 'items'">
-            <div v-if="!bagRows.length" class="note">背包是空的。</div>
+            <div v-if="!bagRows.length" class="note">{{ tr("背包是空的。") }}</div>
             <div class="rows">
               <div v-for="r in bagRows" :key="r.id" class="row">
                 <div class="row-main">
                   <b class="bag-item-label"><img :src="img(ITEM_ART[r.id])" alt="" width="24" height="24" />{{ r.name }} ×{{ r.count === Infinity ? '∞' : r.count }}</b>
                   <span class="sub">{{ r.desc }}</span>
                 </div>
-                <button class="buy" @click="useBag(r.id)">{{ r.id === 'compass' ? '前往' : '使用' }}</button>
+                <button class="buy" @click="useBag(r.id)">{{ tr(r.id === 'compass' ? '前往' : '使用') }}</button>
               </div>
             </div>
           </template>
@@ -255,59 +256,65 @@ watch(modal, () => {
                     class="buy"
                     :disabled="!s.manual || !g"
                     @click="actions.saveSlot(s.name)"
-                  >存入</button>
-                  <button v-else class="buy" :disabled="!s.entry" @click="actions.loadSlot(s.name)">读取</button>
-                  <button v-if="s.manual && s.entry" class="buy ghost" @click="actions.deleteSlot(s.name)">删除</button>
+                  >{{ tr("存入") }}</button>
+                  <button v-else class="buy" :disabled="!s.entry" @click="actions.loadSlot(s.name)">{{ tr("读取") }}</button>
+                  <button v-if="s.manual && s.entry" class="buy ghost" @click="actions.deleteSlot(s.name)">{{ tr("删除") }}</button>
                 </div>
               </div>
             </div>
-            <p class="note small">自动存档在换层时写入，只能读取。</p>
+            <p class="note small">{{ tr("自动存档在换层时写入，只能读取。") }}</p>
           </template>
 
           <!-- 设置 -->
           <template v-else-if="modal.type === 'settings'">
+            <label class="language-picker field">
+              {{ tr('语言') }}
+              <select :value="store.meta.language" @change="actions.setLanguage($event.target.value)">
+                <option v-for="language in languages" :key="language.id" :value="language.id" :lang="language.id">{{ language.name }}</option>
+              </select>
+            </label>
             <fieldset class="style-picker">
-              <legend>界面风格</legend>
+              <legend>{{ tr("界面风格") }}</legend>
               <div class="style-options">
                 <label v-for="style in styles" :key="style.id" class="style-option"
                        :style="styleVariables(style.id)">
                   <input type="radio" name="tower-style" :value="style.id"
                          :checked="store.meta.style === style.id" @change="actions.setStyle(style.id)" />
                   <span class="style-swatch" aria-hidden="true"></span>
-                  <span>{{ style.name }}</span>
+                  <span>{{ tr(style.name) }}</span>
                 </label>
               </div>
             </fieldset>
             <label class="field">
-              音量
+              {{ tr("音量") }}
               <input type="range" min="0" max="1" step="0.05" :value="store.meta.volume" @input="onVolume" />
             </label>
             <button class="menu-row" @click="actions.setMuted(!store.meta.muted)">
-              {{ store.meta.muted ? '取消静音' : '静音' }}
+              {{ tr(store.meta.muted ? '取消静音' : '静音') }}
             </button>
           </template>
 
           <!-- 操作说明 -->
           <template v-else-if="modal.type === 'help'">
             <ul class="help">
-              <li v-for="(t, i) in OPENING_HELP" :key="i">{{ t }}</li>
+              <li v-for="(t, i) in OPENING_HELP" :key="i">{{ tr(t) }}</li>
             </ul>
           </template>
 
           <!-- 菜单 -->
           <template v-else-if="modal.type === 'pause'">
             <div class="menu-list">
-              <button class="menu-row primary" @click="actions.closeModal()">继续</button>
-              <button class="menu-row" :disabled="!g || g.history.length === 0" @click="actions.undo()">撤销一步</button>
-              <button class="menu-row" :disabled="!g" @click="actions.openModal({ type: 'saves', mode: 'save' })">存档</button>
-              <button class="menu-row" @click="actions.openModal({ type: 'saves', mode: 'load' })">读档</button>
-              <button class="menu-row" @click="actions.openModal({ type: 'settings' })">设置</button>
-              <button class="menu-row" @click="actions.openModal({ type: 'help' })">操作说明</button>
+              <button class="menu-row primary" @click="actions.closeModal()">{{ tr("继续") }}</button>
+              <button class="menu-row" :disabled="!g || g.history.length === 0" @click="actions.undo()">{{ tr("撤销一步") }}</button>
+              <button class="menu-row" :disabled="!g" @click="actions.openModal({ type: 'saves', mode: 'save' })">{{ tr("存档") }}</button>
+              <button class="menu-row" @click="actions.openModal({ type: 'saves', mode: 'load' })">{{ tr("读档") }}</button>
+              <button class="menu-row" @click="actions.openModal({ type: 'settings' })">{{ tr("设置") }}</button>
+              <button class="menu-row" @click="actions.openModal({ type: 'help' })">{{ tr("操作说明") }}</button>
               <button class="menu-row danger back-home" @click="goTitle">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M3 11 12 3l9 8M5.5 9v12h4v-6h5v6h4V9" />
                 </svg>
-                <span>返回游戏主界面</span>
+                <span>{{ tr("返回游戏主界面") }}</span>
               </button>
             </div>
           </template>
@@ -315,7 +322,7 @@ watch(modal, () => {
           <!-- 结局 -->
           <template v-else-if="modal.type === 'ending'">
             <RescueEnding :hero="g.hero" />
-            <button class="menu-row primary" @click="goTitle">返回标题</button>
+            <button class="menu-row primary" @click="goTitle">{{ tr("返回标题") }}</button>
           </template>
         </div>
       </div>
@@ -324,6 +331,7 @@ watch(modal, () => {
 </template>
 
 <style scoped>
+.language-picker select { width: 100%; min-height: 44px; margin-top: 6px; padding: 0 10px; border: 1px solid var(--line-gold); border-radius: 8px; background: var(--panel, #191633); color: var(--text, #fff); font: inherit; }
 .bag-item-label { display: flex; align-items: center; gap: 6px; }
 
 .backdrop {

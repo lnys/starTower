@@ -6,11 +6,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 class RescueEnding extends StatefulWidget {
   final int hp, atk, def;
   final VoidCallback onReturn;
+  final String Function(String, [List<Object?>]) translate;
   const RescueEnding(
       {super.key,
       required this.hp,
       required this.atk,
       required this.def,
+      required this.translate,
       required this.onReturn});
   @override
   State<RescueEnding> createState() => _RescueEndingState();
@@ -22,6 +24,8 @@ class _RescueEndingState extends State<RescueEnding>
       AnimationController(vsync: this, duration: const Duration(seconds: 8))
         ..repeat();
   bool opened = false;
+  String tr(String source, [List<Object?> args = const []]) =>
+      widget.translate(source, args);
   @override
   void dispose() {
     stars.dispose();
@@ -53,15 +57,15 @@ class _RescueEndingState extends State<RescueEnding>
                           constraints: const BoxConstraints(maxWidth: 440),
                           child:
                               Column(mainAxisSize: MainAxisSize.min, children: [
-                            const Text('第五十层 · 重逢',
-                                style: TextStyle(
+                            Text(tr('第五十层 · 重逢'),
+                                style: const TextStyle(
                                     color: Color(0xffffdba1),
                                     letterSpacing: 5,
                                     fontSize: 13)),
                             const SizedBox(height: 16),
-                            const Text('终于，等到你',
+                            Text(tr('终于，等到你'),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xffffe9d5))),
@@ -76,12 +80,12 @@ class _RescueEndingState extends State<RescueEnding>
                                       Colors.transparent
                                     ])),
                                 child: Semantics(
-                                    label: '获救的女神捧着一颗心，向你微笑',
+                                    label: tr('获救的女神捧着一颗心，向你微笑'),
                                     child: SvgPicture.asset(
                                         'assets/images/hero/goddess.svg'))),
-                            const Text('星幕散去，她从星光里走向你。\n“我就知道，你一定会来。”',
+                            Text(tr('星幕散去，她从星光里走向你。\n“我就知道，你一定会来。”'),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     height: 1.8,
                                     color: Color(0xffe6d6ef),
                                     fontSize: 16)),
@@ -95,46 +99,46 @@ class _RescueEndingState extends State<RescueEnding>
                                         color: const Color(0xff8c6385)),
                                     borderRadius: BorderRadius.circular(20)),
                                 child: opened
-                                    ? const Column(children: [
-                                        Icon(Icons.favorite,
+                                    ? Column(children: [
+                                        const Icon(Icons.favorite,
                                             color: Color(0xfff3a6c7), size: 32),
-                                        SizedBox(height: 12),
-                                        Text('致我的勇者',
-                                            style: TextStyle(
+                                        const SizedBox(height: 12),
+                                        Text(tr('致我的勇者'),
+                                            style: const TextStyle(
                                                 color: Color(0xffffdebd),
                                                 fontSize: 20)),
-                                        SizedBox(height: 12),
-                                        Text(
-                                            '你走过的每一层，都有一颗星替我记着。\n谢谢你没有放弃。\n这次，换我陪你看遍塔外的星空。',
+                                        const SizedBox(height: 12),
+                                        Text(tr('你走过的每一层，都有一颗星替我记着。\n谢谢你没有放弃。\n这次，换我陪你看遍塔外的星空。'),
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 height: 1.9,
                                                 color: Color(0xfff1e1ed))),
-                                        SizedBox(height: 14),
-                                        Text('纪念称号 · 她的唯一勇者',
-                                            style: TextStyle(
+                                        const SizedBox(height: 14),
+                                        Text(tr('纪念称号 · 她的唯一勇者'),
+                                            style: const TextStyle(
                                                 color: Color(0xffffd56b))),
                                       ])
                                     : Column(children: [
                                         const Icon(Icons.mail_outline,
                                             size: 32, color: Color(0xfff3a6c7)),
                                         const SizedBox(height: 8),
-                                        const Text('她为你留了一封信'),
+                                        Text(tr('她为你留了一封信')),
                                         TextButton(
                                             onPressed: () =>
                                                 setState(() => opened = true),
-                                            child: const Text('拆开这份惊喜')),
+                                            child: Text(tr('拆开这份惊喜'))),
                                       ]))),
                             const SizedBox(height: 24),
                             Text(
-                                '通关纪念  ·  50 / 50\n生命 ${widget.hp}  ·  攻击 ${widget.atk}  ·  防御 ${widget.def}',
+                                tr('通关纪念  ·  50 / 50\n生命 {0}  ·  攻击 {1}  ·  防御 {2}',
+                                    [widget.hp, widget.atk, widget.def]),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                     height: 1.8, color: Color(0xffbfb0ce))),
                             const SizedBox(height: 20),
                             OutlinedButton(
                                 onPressed: widget.onReturn,
-                                child: const Text('带着约定，返回标题')),
+                                child: Text(tr('带着约定，返回标题'))),
                           ]))))),
         ]));
   }

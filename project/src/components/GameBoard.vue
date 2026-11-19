@@ -1,7 +1,7 @@
 <script setup>
 // 11×11 棋盘：地形来自引擎的 world[floor].terr，实体来自 world[floor].ents，战斗标记来自引擎的 preview()
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
-import { store, actions, itemName, previewAt } from '../stores/star.js'
+import { store, actions, itemName, previewAt, tr } from '../stores/star.js'
 import { img } from '../engine/images.js'
 import { ZONE_TILES, TERRAIN_ART, NPC_ART, MONSTER_ART, ITEM_ART, UI_ICON } from '../engine/star-art.js'
 import { zoneOf } from '../game/star/rules.js'
@@ -29,7 +29,7 @@ function entityView(ent) {
       finalBoss: ent.id === 'endLord',
       art: boardArt(MONSTER_ART[ent.id] ?? ''),
       ph: phChar(name),
-      title: name + (MONSTERS[ent.id]?.boss ? '（BOSS）' : ''),
+      title: name + (MONSTERS[ent.id]?.boss ? tr('（BOSS）') : ''),
     }
   }
   if (ent.kind === 'npc') {
@@ -69,7 +69,7 @@ const cells = computed(() => {
       let badge = null
       if (ent && ent.kind === 'monster') {
         const p = previewAt(g, x, y)
-        if (p) badge = p.canFight ? { text: String(p.loss), cls: 'ok' } : { text: p.reason === 'unpierceable' ? '×' : '死', cls: 'bad' }
+        if (p) badge = p.canFight ? { text: String(p.loss), cls: 'ok' } : { text: p.reason === 'unpierceable' ? '×' : tr('死'), cls: 'bad' }
       }
       const cls = ch === '~' ? 'lava' : ''
       out.push({
@@ -178,7 +178,7 @@ function onTouchEnd(e) {
         >
           <img v-if="c.overlay" class="ov" :src="c.overlay" alt="" draggable="false" />
           <span v-if="c.badge" class="dmg" :class="c.badge.cls">{{ c.badge.text }}</span>
-          <span v-if="c.label" class="terr-label">{{ c.label }}</span>
+          <span v-if="c.label" class="terr-label">{{ tr(c.label) }}</span>
           <template v-if="c.ent">
             <img
               v-if="c.ent.art && !c.ent.finalBoss"
@@ -193,10 +193,10 @@ function onTouchEnd(e) {
         </div>
       </div>
 
-      <div v-if="finalBoss" class="final-boss" :style="finalBossStyle" aria-label="终焉女妖">
-        <img :src="finalBoss.ent.art" alt="终焉女妖" draggable="false" />
+      <div v-if="finalBoss" class="final-boss" :style="finalBossStyle" :aria-label="tr('终焉女妖')">
+        <img :src="finalBoss.ent.art" :alt="tr('终焉女妖')" draggable="false" />
       </div>
-      <img class="hero" :src="heroSrc" :style="heroStyle" alt="勇者" draggable="false" />
+      <img class="hero" :src="heroSrc" :style="heroStyle" :alt="tr('勇者')" draggable="false" />
 
       <div v-for="f in store.floats" :key="f.id" class="float" :class="f.kind" :style="floatStyle(f)">
         {{ f.text }}

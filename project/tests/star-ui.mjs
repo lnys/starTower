@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, test } from 'node:test'
-import { store, actions, DEFS } from '../src/stores/star.js'
+import { store, actions, DEFS, tr, localizeMessage } from '../src/stores/star.js'
 import { stopBgm } from '../src/engine/audio.js'
 import { createGame } from '../src/game/star/engine.js'
 import { writeSlot, readSlot, loadMeta } from '../src/engine/storage.js'
@@ -62,4 +62,46 @@ test('界面风格选择持久化，不改动存档或其他设置', () => {
   }
   actions.setStyle('obsolete-style')
   assert.equal(loadMeta().style, 'classic')
+})
+
+test('语言默认中文、即时切换并持久化，不改动存档或其他设置', () => {
+  const before = readSlot('auto')
+  const otherSettings = { ...loadMeta() }
+  assert.equal(otherSettings.language, 'zh-CN')
+  assert.equal(tr('新的冒险'), '新的冒险')
+  actions.setLanguage('en')
+  assert.equal(tr('设置'), 'Settings')
+  assert.equal(localizeMessage('需要蓝钥匙才能打开'), 'You need a Blue Key to open this door.')
+  assert.equal(localizeMessage('第 1 次购买，花费 20 · 防御 +4'), 'Purchase #1 cost 20 gold. · DEF +4')
+  assert.equal(loadMeta().language, 'en')
+  actions.setLanguage('ja')
+  assert.equal(tr('第 {0} 层', 50), '50階')
+  assert.equal(localizeMessage('第 50 层'), '50階')
+  assert.equal(localizeMessage('你的女神被终焉女妖囚禁在第五十层，击破星幕才能救她。先算清楚战斗损失，打不动的怪可以以后回来。').includes('バンシー'), true)
+  assert.equal(loadMeta().language, 'ja')
+  actions.setLanguage('invalid-language')
+  assert.deepEqual(loadMeta(), otherSettings)
+  assert.deepEqual(readSlot('auto'), before)
+})
+
+test('Flutter 与 Vue 共用翻译表，完整覆盖游戏数据文本', async () => {
+  const { readFileSync } = await import('node:fs')
+  const read = (file) => readFileSync(new URL(file, import.meta.url), 'utf8')
+  const source = read('../design/translations.json')
+  assert.equal(read('../flutter/assets/data/translations.json'), source)
+  const catalog = JSON.parse(source)
+  const placeholders = (text) => [...new Set(text.match(/\{\d+\}/g))].sort()
+  for (const [key, values] of Object.entries(catalog)) {
+    assert.equal(values.length, 2, key)
+    for (const value of values) {
+      assert.ok(value.trim(), key)
+      assert.deepEqual(placeholders(value), placeholders(key), key)
+    }
+  }
+  const visit = (value) => {
+    if (typeof value === 'string' && /\p{Script=Han}/u.test(value)) assert.ok(catalog[value], value)
+    else if (value && typeof value === 'object') Object.values(value).forEach(visit)
+  }
+  visit(JSON.parse(read('../flutter/assets/data/game.json')))
+  visit(JSON.parse(read('../design/styles.json')))
 })

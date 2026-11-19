@@ -1,3 +1,16 @@
+@font-face {
+  font-family: 'Tower Japanese';
+  src: url('../../flutter/assets/fonts/tower-japanese.otf') format('opentype');
+  font-display: swap;
+}
+
+html:lang(ja) {
+  --font-body: 'Tower Japanese', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+  --font-display: 'Tower Japanese', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+}
+
+option:lang(ja) { font-family: 'Tower Japanese', 'Hiragino Sans', 'Yu Gothic', sans-serif; }
+
 /* 全局主题与基础样式 —— 颜色统一由 CSS 变量定义，便于整体调整 */
 :root {
   --bg: #08071a;

@@ -1,6 +1,6 @@
 <script setup>
 import { onBeforeUnmount } from 'vue'
-import { actions, store } from '../stores/star.js'
+import { actions, store, tr } from '../stores/star.js'
 import { createHoldRepeat } from '../engine/repeat.js'
 
 // 按住方向键会连续移动；撞墙或弹出窗口时自动停止
@@ -27,12 +27,12 @@ onBeforeUnmount(() => Object.values(repeaters).forEach((r) => r.stop()))
 </script>
 
 <template>
-  <div class="pad" aria-label="方向控制">
-    <button class="key up" aria-label="上" @pointerdown.prevent="holdStart('up')" @pointerup="holdStop('up')" @pointerleave="holdStop('up')" @pointercancel="holdStop('up')">▲</button>
-    <button class="key left" aria-label="左" @pointerdown.prevent="holdStart('left')" @pointerup="holdStop('left')" @pointerleave="holdStop('left')" @pointercancel="holdStop('left')">◀</button>
-    <button class="key scroll" aria-label="撤销一步" @pointerdown.prevent="actions.undo()">↶</button>
-    <button class="key right" aria-label="右" @pointerdown.prevent="holdStart('right')" @pointerup="holdStop('right')" @pointerleave="holdStop('right')" @pointercancel="holdStop('right')">▶</button>
-    <button class="key down" aria-label="下" @pointerdown.prevent="holdStart('down')" @pointerup="holdStop('down')" @pointerleave="holdStop('down')" @pointercancel="holdStop('down')">▼</button>
+  <div class="pad" :aria-label="tr('方向控制')">
+    <button class="key up" :aria-label="tr('上')" @pointerdown.prevent="holdStart('up')" @pointerup="holdStop('up')" @pointerleave="holdStop('up')" @pointercancel="holdStop('up')">▲</button>
+    <button class="key left" :aria-label="tr('左')" @pointerdown.prevent="holdStart('left')" @pointerup="holdStop('left')" @pointerleave="holdStop('left')" @pointercancel="holdStop('left')">◀</button>
+    <button class="key scroll" :aria-label="tr('撤销一步')" @pointerdown.prevent="actions.undo()">↶</button>
+    <button class="key right" :aria-label="tr('右')" @pointerdown.prevent="holdStart('right')" @pointerup="holdStop('right')" @pointerleave="holdStop('right')" @pointercancel="holdStop('right')">▶</button>
+    <button class="key down" :aria-label="tr('下')" @pointerdown.prevent="holdStart('down')" @pointerup="holdStop('down')" @pointerleave="holdStop('down')" @pointercancel="holdStop('down')">▼</button>
   </div>
 </template>
 

@@ -1,12 +1,14 @@
 # 星穹塔 Star Dome Tower
 
+[English](README.en.md)
+
 > 💰 成本：100 元 ｜ ⏱️ 时间：3 小时以上（一路写到凌晨 3 点）
 
 > 一座从地底矿窟修到星空的 50 层观星塔，一段原创冒险。
 
 > 🤖 本项目由 AI 驱动开发。
 
-![星穹塔界面与玩法介绍](bg/bfde9003e6f131855c59b340e078aa1f.png)
+![星穹塔界面与玩法介绍](bg/game.jpg)
 
 《星穹塔》是一款魔塔风格游戏，提供 Vue 3 + Vite 网页版、Electron 桌面版和 Flutter 原生版。终焉女妖将你心爱的女神囚禁在塔顶，你要登上五十层，打破星幕，带她回家。
 
@@ -92,7 +94,11 @@ npm run build    # 产物为 dist/index.html，可直接双击用浏览器打开
 npm test
 ```
 
-`npm test` 会依次运行 28 条引擎测试、17 条规则测试、全塔地图校验、3779 步真实引擎通关回放和 3 项界面回归测试。
+`npm test` 会依次运行 28 条引擎测试、17 条规则测试、全塔地图校验、3779 步真实引擎通关回放和 5 项界面回归测试。
+
+## 语言
+
+标题页和游戏内的「设置 → 语言」支持 **简体中文 / English / 日本語**。默认简体中文，切换即时生效并保存在本机，不改动游戏存档。Vue 和 Flutter 使用同一份翻译表，详见[项目说明](project/README.md#语言)。
 
 ## Flutter 原生版
 
@@ -134,6 +140,7 @@ project/
 - **修改地图**：编辑 `src/game/star/maps/*.js`，然后运行 `node tools/star-verify.mjs` 做全塔校验，运行 `node tools/star-check.mjs <文件>` 检查单个分片的尺寸、图例与连通性。
 - **修改规则**：修改 `src/game/star/rules.js`，并同步 `tests/star-rules.mjs` 中的核对用例。
 - 每次改动后建议运行：`npm test && npm run build`。
+- 每次修改后，在包含项目和 `skills/` 的工作区运行 `python3 skills/sync-project.py <改动文件...>`，同步源码快照和校验清单；随后运行 `bash skills/verify.sh`。
 
 ## 更新说明
 
@@ -142,6 +149,7 @@ project/
 - iOS、Android、Vue Web 和 Flutter Web 对齐 Logo、标题、可展开的单行提示及战斗／交易交互，给棋盘留出更多空间。
 - 调高背景音乐和操作音效，保留已保存的设置；加入五套新界面风格，可实时切换并保存。
 - 「返回游戏主界面」按钮加入房屋图标；「新的冒险」标题页加入随主题变化的动态星空，支持减少动态效果。
+- 标题页和游戏内可切换简体中文、英语、日语；Vue 移除扫码下载推广区，保留触屏操作。
 - Skill 已同步源码、资源和 60 秒主宣传片；详见 [游戏更新说明](project/游戏更新说明.md)。本次不新增 Release 或安装包。
 
 ### v1.0.4 — 2026-11-18

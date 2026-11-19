@@ -24,7 +24,7 @@ flutter run -d <设备ID>
 | Android | `flutter run -d <Android设备ID>` / `flutter build apk` | 已生成工程；本机下载 Gradle 8.3 时网络中断，尚未验证 APK 构建与实机运行 |
 | Web | `flutter run -d chrome` / `flutter build web` | 已完成 Web 构建，并在 Chrome 验证标题页动画和减少动态效果设置 |
 
-通过 HTTP 服务访问构建产物 `build/web/`，不能像 Vue 单文件一样直接双击。Web 随包提供 CanvasKit 和中文字体子集；增加中文文案后，可用 `tool/subset_web_font.py` 从 Noto Sans CJK SC 原版字体更新子集（许可证在 `assets/fonts/OFL.txt`）。
+通过 HTTP 服务访问构建产物 `build/web/`，不能像 Vue 单文件一样直接双击。Web 随包提供 CanvasKit 和中文字体子集；日文也使用离线字体子集（许可证在 `assets/fonts/OFL.txt`）。
 
 Android 工程使用 Gradle 8.3、AGP 8.1.0，建议 JDK 17。若 Flutter 优先选用了 Android Studio 内置的新 JDK，可用 `flutter config --jdk-dir=<JDK17目录>` 配置后构建。iOS 真机需要自己的签名与开发者配置，模拟器无需签名。发布 Android / iOS 应用前需配置正式签名；当前 Android release 沿用 Flutter 模板的调试签名。
 
@@ -51,6 +51,8 @@ iOS 和 Android 使用星穹塔金色塔楼图标，原生启动页采用深色�
 
 标题页和游戏菜单的「设置 → 界面风格」可即时切换六种风格，选择保存在本机。标题页背景随主题变化，并支持减少动态效果。
 
+「设置 → 语言」可即时切换简体中文、English 和日本語，首次启动默认简体中文。语言保存为本机设置，不会修改游戏存档。
+
 ## 目录与维护
 
 - `lib/game/engine.dart`：纯 Dart 游戏规则、地图实例、事件、战斗、道具及存档。
@@ -70,6 +72,14 @@ flutter analyze
 flutter test
 # 单独回放通关
 dart run tool/replay.dart
+```
+
+翻译在项目根目录的 `design/translations.json` 维护。文案变更后，在项目根目录运行：
+
+```bash
+node flutter/tool/sync_translations.mjs
+python3 flutter/tool/subset_web_font.py /path/to/NotoSansCJKsc-Regular.otf
+python3 flutter/tool/subset_web_font.py /path/to/NotoSansCJKjp-Regular.otf ja
 ```
 
 验证详情见 [通关测试.md](通关测试.md)。

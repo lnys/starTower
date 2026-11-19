@@ -1,4 +1,5 @@
 <script setup>
+import { tr, localizeMessage } from '../stores/star.js'
 // 打字机式剧情框：逐字显示，点击可跳过本句；全部显示后可继续
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 
@@ -21,7 +22,7 @@ const shown = ref('')
 const typing = ref(false)
 let timer = null
 
-const current = computed(() => props.lines[index.value] ?? '')
+const current = computed(() => localizeMessage(props.lines[index.value] ?? ''))
 const isLast = computed(() => index.value >= props.lines.length - 1)
 const progress = computed(() => `${index.value + 1} / ${props.lines.length}`)
 
@@ -90,17 +91,17 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="story" :class="{ 'no-click': !clickToAdvance }" @click="clickToAdvance && next()">
-    <div v-if="title" class="story-title">{{ title }}</div>
+    <div v-if="title" class="story-title">{{ localizeMessage(title) }}</div>
     <p class="story-text">
       {{ shown }}<span v-if="typing" class="caret">▍</span>
     </p>
     <div class="story-foot">
       <div class="foot-left">
         <span class="progress">{{ progress }}</span>
-        <button v-if="skippable" class="skip-btn" @click.stop="emit('skip')">跳过全部</button>
+        <button v-if="skippable" class="skip-btn" @click.stop="emit('skip')">{{ tr("跳过全部") }}</button>
       </div>
       <button class="story-btn" @click.stop="next">
-        {{ typing ? '看完本句' : isLast ? buttonText : '下一句 ▸' }}
+        {{ localizeMessage(typing ? '看完本句' : isLast ? buttonText : '下一句 ▸') }}
       </button>
     </div>
   </div>

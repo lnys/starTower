@@ -5,6 +5,8 @@ import * as eng from '../game/star/engine.js'
 import { ACTIVE, CONSUMABLES, KEYS, GEAR, HOLD, MONSTERS } from '../game/star/data.js'
 import { zoneOf } from '../game/star/rules.js'
 import { resolveStyle } from '../engine/styles.js'
+import { translate, translateMessage } from '../engine/i18n.js'
+import { resolveLanguage } from '../engine/locale.js'
 import * as storage from '../engine/storage.js'
 import { sfx, setVolume, setMuted, startBgm, startTitleBgm, stopBgm, unlockAudio } from '../engine/audio.js'
 import m0104 from '../game/star/maps/floors-01-04.js'
@@ -27,13 +29,15 @@ for (const shard of [m0104, m0515, m1627, m2839, m2932, m3336, m3739, m4050]) {
 
 export const ZONES = ['苔藓地窖', '潮汐机关城', '镜廊', '熔炉深处', '星穹']
 export const BOSS_FLOORS = [10, 20, 30, 40, 50]
-export const zoneName = (floor) => ZONES[zoneOf(floor) - 1] ?? ''
+const rawZoneName = (floor) => ZONES[zoneOf(floor) - 1] ?? ''
+export const zoneName = (floor) => tr(rawZoneName(floor))
 
 /** 道具中文名：在所有道具表中查找（怪物名也放在这里，供事件提示使用） */
-export function itemName(id) {
+function rawItemName(id) {
   return CONSUMABLES[id]?.name ?? KEYS[id]?.name ?? GEAR[id]?.name ?? HOLD[id]?.name
-    ?? ACTIVE[id]?.name ?? MONSTERS[id]?.name ?? ({ goddess: '你的女神' }[id]) ?? id
+    ?? ACTIVE[id]?.name ?? MONSTERS[id]?.name ?? ({ goddess: '你的女神', guide: '引路人', altar: '祭坛', merchant: '商人' }[id]) ?? id
 }
+export const itemName = (id) => tr(rawItemName(id))
 
 const OPENING = [
   '很久以前，地底矿窖的尽头凿出了一座观星塔。塔一直修到星空里，顶端悬着一张星图。',
@@ -55,6 +59,9 @@ export const store = reactive({
   slots: storage.listSlots(),
   meta: storage.loadMeta(),
 })
+
+export const tr = (source, ...args) => translate(store.meta.language, source, ...args)
+export const localizeMessage = (source) => translateMessage(store.meta.language, source)
 
 let uid = 0
 
@@ -128,7 +135,7 @@ function afterAction(g, before, events) {
           floatAt(`-${ev.loss}`, 'hurt')
           store.shakeKey++
         }
-        toast(`击败 ${itemName(ev.id)} · 损失 ${ev.loss} 生命 · 金币 +${ev.gold}`, 'gold')
+        toast(`击败 ${rawItemName(ev.id)} · 损失 ${ev.loss} 生命 · 金币 +${ev.gold}`, 'gold')
         sfx.hit()
         break
       }
@@ -153,7 +160,7 @@ function afterAction(g, before, events) {
         sfx.denied()
         break
       case 'pickup':
-        toast(`获得 ${itemName(ev.id)}`, 'gold')
+        toast(`获得 ${rawItemName(ev.id)}`, 'gold')
         sfx.pick()
         break
       case 'aura': {
@@ -184,7 +191,7 @@ function afterAction(g, before, events) {
 
   const floorChanged = g.floor !== before.floor
   if (floorChanged) {
-    store.transition = { title: `第 ${g.floor} 层 · ${zoneName(g.floor)}`, key: ++uid }
+    store.transition = { title: `第 ${g.floor} 层 · ${rawZoneName(g.floor)}`, key: ++uid }
     setTimeout(() => (store.transition = null), 1600)
     sfx.stairs()
     playFloorBgm(g.floor)
@@ -416,6 +423,11 @@ export const actions = {
 
   closeModal() {
     store.modal = null
+  },
+
+  setLanguage(language) {
+    store.meta.language = resolveLanguage(language)
+    persistMeta()
   },
 
   setStyle(id) {

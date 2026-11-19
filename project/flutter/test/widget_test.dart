@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:star_tower/main.dart';
 import 'package:star_tower/game/engine.dart';
 import 'package:star_tower/ui/rescue_ending.dart';
+import 'package:star_tower/ui/localization.dart';
 import 'package:star_tower/ui/style_catalog.dart';
 import 'package:star_tower/ui/title_backdrop.dart';
 
@@ -26,6 +27,59 @@ void main() {
         .setMockMethodCallHandler(
             const MethodChannel('xyz.luan/audioplayers'), (call) async => 1);
   });
+  testWidgets('三语即时切换、保留进度并在重新启动后恢复', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(320, 568);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final engine = GameEngine(
+        jsonDecode(File('assets/data/game.json').readAsStringSync()));
+    final raw =
+        jsonDecode(File('assets/data/translations.json').readAsStringSync())
+            as Map<String, dynamic>;
+    final translations = TowerTranslations(raw
+        .map((key, value) => MapEntry(key, List<String>.from(value as List))));
+    final prefs = await SharedPreferences.getInstance();
+    Widget app() =>
+        TowerApp(engine: engine, prefs: prefs, translations: translations);
+    await tester.pumpWidget(app());
+    expect(find.text('新的冒险'), findsOneWidget);
+    await tester.tap(find.text('新的冒险'));
+    await tester.pumpAndSettle();
+    final save = prefs.getString('save_auto');
+    expect(save, isNotNull);
+    await tester.tap(find.text('菜单'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('设置'));
+    await tester.pumpAndSettle();
+    Future<void> choose(String text) async {
+      await tester.tap(find.byKey(const ValueKey('tower-language')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(text).last);
+      await tester.pumpAndSettle();
+    }
+
+    await choose('English');
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Visual Style'), findsOneWidget);
+    expect(prefs.getString('language'), 'en');
+    await choose('日本語');
+    expect(find.text('設定'), findsOneWidget);
+    expect(find.text('外観テーマ'), findsOneWidget);
+    expect(prefs.getString('language'), 'ja');
+    await tester.tap(find.text('閉じる'));
+    await tester.pumpAndSettle();
+    expect(find.text('メニュー'), findsOneWidget);
+    expect(prefs.getString('save_auto'), save);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(app());
+    expect(find.text('新しい冒険'), findsOneWidget);
+    expect(translations.message('ja', '需要蓝钥匙才能打开'), '開けるには青い鍵が必要です。');
+    expect(tester.takeException(), isNull);
+  },
+      variant:
+          const TargetPlatformVariant({TargetPlatform.iOS, TargetPlatform.android}));
+
   testWidgets('标题背景会移动，但不会移动按钮或挡住点击，并支持减少动态效果', (tester) async {
     final dispatcher = tester.binding.platformDispatcher;
     dispatcher.accessibilityFeaturesTestValue =
@@ -33,7 +87,8 @@ void main() {
     final engine = GameEngine(
         jsonDecode(File('assets/data/game.json').readAsStringSync()));
     final prefs = await SharedPreferences.getInstance();
-    await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+    await tester.pumpWidget(TowerApp(
+        engine: engine, prefs: prefs, translations: TowerTranslations()));
     final landscape = find.byKey(const ValueKey('title-landscape'));
     Offset offset() =>
         tester.widget<FractionalTranslation>(landscape).translation;
@@ -80,7 +135,8 @@ void main() {
       final engine = GameEngine(
           jsonDecode(File('assets/data/game.json').readAsStringSync()));
       final prefs = await SharedPreferences.getInstance();
-      await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+      await tester.pumpWidget(TowerApp(
+          engine: engine, prefs: prefs, translations: TowerTranslations()));
       await tester.pumpAndSettle();
       await tester.tap(find.text('设置'));
       await tester.pumpAndSettle();
@@ -97,7 +153,8 @@ void main() {
       expect(volumes.last, closeTo(.57, .0001));
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();
-      await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+      await tester.pumpWidget(TowerApp(
+          engine: engine, prefs: prefs, translations: TowerTranslations()));
       await tester.pumpAndSettle();
       await tester.tap(find.text('设置'));
       await tester.pumpAndSettle();
@@ -113,7 +170,8 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     final engine = GameEngine(
         jsonDecode(File('assets/data/game.json').readAsStringSync()));
-    final app = TowerApp(engine: engine, prefs: prefs);
+    final app = TowerApp(
+        engine: engine, prefs: prefs, translations: TowerTranslations());
     MaterialApp materialApp() =>
         tester.widget<MaterialApp>(find.byType(MaterialApp));
     Finder choice(String id) => find.byKey(ValueKey('style-$id'));
@@ -203,7 +261,8 @@ void main() {
       final engine = GameEngine(
           jsonDecode(File('assets/data/game.json').readAsStringSync()));
       final prefs = await SharedPreferences.getInstance();
-      await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+      await tester.pumpWidget(TowerApp(
+          engine: engine, prefs: prefs, translations: TowerTranslations()));
       await tester.pumpAndSettle();
       expect(find.text('新的冒险'), findsOneWidget);
       await tester.tap(find.text('新的冒险'));
@@ -285,7 +344,8 @@ void main() {
       engine.hero['y'] = 10;
       SharedPreferences.setMockInitialValues({'save_auto': engine.serialize()});
       final prefs = await SharedPreferences.getInstance();
-      await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+      await tester.pumpWidget(TowerApp(
+          engine: engine, prefs: prefs, translations: TowerTranslations()));
       await tester.pumpAndSettle();
       await tester.tap(find.text('继续冒险'));
       await tester.pumpAndSettle();
@@ -340,7 +400,8 @@ void main() {
     engine.hero['gold'] = 30;
     SharedPreferences.setMockInitialValues({'save_auto': engine.serialize()});
     final prefs = await SharedPreferences.getInstance();
-    await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+    await tester.pumpWidget(TowerApp(
+        engine: engine, prefs: prefs, translations: TowerTranslations()));
     await tester.pumpAndSettle();
     await tester.tap(find.text('继续冒险'));
     await tester.pumpAndSettle();
@@ -370,7 +431,8 @@ void main() {
     engine.hero['y'] = 10;
     SharedPreferences.setMockInitialValues({'save_auto': engine.serialize()});
     final prefs = await SharedPreferences.getInstance();
-    await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+    await tester.pumpWidget(TowerApp(
+        engine: engine, prefs: prefs, translations: TowerTranslations()));
     await tester.pumpAndSettle();
     await tester.tap(find.text('继续冒险'));
     await tester.pumpAndSettle();
@@ -408,7 +470,8 @@ void main() {
       engine.state['ended'] = true;
       SharedPreferences.setMockInitialValues({'save_auto': engine.serialize()});
       final prefs = await SharedPreferences.getInstance();
-      await tester.pumpWidget(TowerApp(engine: engine, prefs: prefs));
+      await tester.pumpWidget(TowerApp(
+          engine: engine, prefs: prefs, translations: TowerTranslations()));
       await tester.pumpAndSettle();
       await tester.tap(find.text('继续冒险'));
       await tester.pump();

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { store, actions, zoneName } from '../stores/star.js'
+import { store, actions, zoneName, tr } from '../stores/star.js'
 import { img } from '../engine/images.js'
 import { AUTO_SLOT } from '../engine/storage.js'
 import { unlockAudio } from '../engine/audio.js'
@@ -8,7 +8,7 @@ import { unlockAudio } from '../engine/audio.js'
 const hasAuto = computed(() => !!store.slots.find((s) => s.name === AUTO_SLOT)?.entry)
 const autoInfo = computed(() => {
   const e = store.slots.find((s) => s.name === AUTO_SLOT)?.entry
-  return e ? `第 ${e.floor} 层 · ${zoneName(e.floor)}` : ''
+  return e ? tr('第 {0} 层 · {1}', e.floor, zoneName(e.floor)) : ''
 })
 
 const landscape = computed(() => {
@@ -57,33 +57,43 @@ function go(fn) {
     <div class="content">
       <div class="logo">
         <div class="logo-ring"></div>
-        <div class="logo-cn">星穹塔</div>
-        <div class="logo-en">STAR DOME TOWER · 50 层</div>
+        <div class="logo-cn">{{ tr("星穹塔") }}</div>
+        <div class="logo-en">{{ tr("STAR DOME TOWER · 50 层") }}</div>
       </div>
 
-      <p class="quest">登上五十层，救回你的女神。</p>
+      <p class="quest">{{ tr("登上五十层，救回你的女神。") }}</p>
       <nav class="menu">
         <button class="menu-btn primary" @click="go(() => actions.newGame())">
-          星穹塔
-          <small>新的冒险</small>
+          {{ tr("星穹塔") }}
+          <small>{{ tr("新的冒险") }}</small>
         </button>
         <button class="menu-btn" :disabled="!hasAuto" @click="go(() => actions.continueAuto())">
-          继续冒险
+          {{ tr("继续冒险") }}
           <small v-if="hasAuto">{{ autoInfo }}</small>
         </button>
-        <button class="menu-btn" @click="go(() => actions.openModal({ type: 'saves', mode: 'load' }))">读取存档</button>
-        <button class="menu-btn" @click="go(() => actions.openModal({ type: 'settings' }))">设置</button>
-        <button class="menu-btn" @click="go(() => actions.openModal({ type: 'help' }))">操作说明</button>
+        <button class="menu-btn" @click="go(() => actions.openModal({ type: 'saves', mode: 'load' }))">{{ tr("读取存档") }}</button>
+        <button class="menu-btn" @click="go(() => actions.openModal({ type: 'settings' }))">{{ tr("设置") }}</button>
+        <button class="menu-btn" @click="go(() => actions.openModal({ type: 'help' }))">{{ tr("操作说明") }}</button>
       </nav>
 
       <footer class="foot">
-        <span>方向键 / 滑动 移动 · 预判卡片显示战斗损失</span>
+        <span>{{ tr("方向键 / 滑动 移动 · 预判卡片显示战斗损失") }}</span>
       </footer>
     </div>
   </div>
 </template>
 
 <style scoped>
+:global(html[lang="en"]) .logo-cn {
+  font-size: clamp(27px, min(10cqw, 7vh), 49px);
+  letter-spacing: .02em;
+  padding-left: 0;
+}
+:global(html[lang="ja"]) .logo-cn {
+  font-size: clamp(40px, min(17cqw, 12vh), 72px);
+  letter-spacing: .06em;
+  padding-left: 0;
+}
 .title {
   position: relative;
   min-height: 100vh;
@@ -268,5 +278,15 @@ function go(fn) {
 </style>
 
 <style scoped>
+:global(html[lang="en"]) .logo-cn {
+  font-size: clamp(27px, min(10cqw, 7vh), 49px);
+  letter-spacing: .02em;
+  padding-left: 0;
+}
+:global(html[lang="ja"]) .logo-cn {
+  font-size: clamp(40px, min(17cqw, 12vh), 72px);
+  letter-spacing: .06em;
+  padding-left: 0;
+}
 .quest { color: #e8c6da; text-align: center; font-size: 13px; margin: 20px 0; }
 </style>

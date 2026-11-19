@@ -19,7 +19,6 @@
     "dist:win": "npm run build && electron-builder --win --x64"
   },
   "dependencies": {
-    "qrcode": "^1.5.4",
     "vue": "^3.5.45"
   },
   "devDependencies": {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'game/engine.dart';
 import 'ui/rescue_ending.dart';
+import 'ui/localization.dart';
 import 'ui/style_catalog.dart';
 import 'ui/title_backdrop.dart';
 
@@ -23,18 +25,25 @@ Future<void> main() async {
   final data =
       jsonDecode(await rootBundle.loadString('assets/data/game.json')) as Json;
   final prefs = await SharedPreferences.getInstance();
+  final translations = await TowerTranslations.load();
   if (kIsWeb) {
     await (FontLoader('Tower Chinese')
           ..addFont(rootBundle.load('assets/fonts/tower-chinese.otf')))
         .load();
   }
-  runApp(TowerApp(engine: GameEngine(data), prefs: prefs));
+  runApp(TowerApp(
+      engine: GameEngine(data), prefs: prefs, translations: translations));
 }
 
 class TowerApp extends StatefulWidget {
   final GameEngine engine;
   final SharedPreferences prefs;
-  const TowerApp({super.key, required this.engine, required this.prefs});
+  final TowerTranslations translations;
+  const TowerApp(
+      {super.key,
+      required this.engine,
+      required this.prefs,
+      required this.translations});
 
   @override
   State<TowerApp> createState() => _TowerAppState();
@@ -42,11 +51,22 @@ class TowerApp extends StatefulWidget {
 
 class _TowerAppState extends State<TowerApp> {
   late TowerStyle style;
+  late String language;
+  TowerTranslations get translations => widget.translations;
+  String tr(String source) => translations.text(language, source);
+
+  void changeLanguage(String value) {
+    final next = resolveTowerLanguage(value);
+    if (language == next) return;
+    setState(() => language = next);
+    unawaited(widget.prefs.setString('language', next));
+  }
 
   @override
   void initState() {
     super.initState();
     style = resolveTowerStyle(widget.prefs.getString('style'));
+    language = resolveTowerLanguage(widget.prefs.getString('language'));
   }
 
   void changeStyle(TowerStyle next) {
@@ -60,7 +80,15 @@ class _TowerAppState extends State<TowerApp> {
     final shape = RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(style.radius));
     return MaterialApp(
-        title: '星穹塔',
+        title: tr('星穹塔'),
+        locale:
+            language == 'zh-CN' ? const Locale('zh', 'CN') : Locale(language),
+        supportedLocales: const [
+          Locale('zh', 'CN'),
+          Locale('en'),
+          Locale('ja')
+        ],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             brightness: Brightness.dark,
@@ -70,7 +98,8 @@ class _TowerAppState extends State<TowerApp> {
                 secondary: style.accent,
                 surface: style.panel),
             useMaterial3: true,
-            fontFamilyFallback: const [
+            fontFamilyFallback: [
+              if (language == 'ja') 'Tower Japanese',
               if (kIsWeb) 'Tower Chinese',
               'PingFang SC',
               'Microsoft YaHei',
@@ -101,7 +130,10 @@ class _TowerAppState extends State<TowerApp> {
             engine: widget.engine,
             prefs: widget.prefs,
             style: style,
-            onStyleChanged: changeStyle));
+            onStyleChanged: changeStyle,
+            language: language,
+            translations: translations,
+            onLanguageChanged: changeLanguage));
   }
 }
 
@@ -110,12 +142,18 @@ class TowerScreen extends StatefulWidget {
   final SharedPreferences prefs;
   final TowerStyle style;
   final ValueChanged<TowerStyle> onStyleChanged;
+  final String language;
+  final TowerTranslations translations;
+  final ValueChanged<String> onLanguageChanged;
   const TowerScreen(
       {super.key,
       required this.engine,
       required this.prefs,
       required this.style,
-      required this.onStyleChanged});
+      required this.onStyleChanged,
+      required this.language,
+      required this.translations,
+      required this.onLanguageChanged});
   @override
   State<TowerScreen> createState() => _TowerScreenState();
 }
@@ -124,6 +162,11 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   GameEngine get e => widget.engine;
   SharedPreferences get prefs => widget.prefs;
   TowerStyle get skin => widget.style;
+  String tr(String source, [List<Object?> args = const []]) =>
+      widget.translations.text(widget.language, source, args);
+  String localized(String source) =>
+      widget.translations.message(widget.language, source);
+  String name(String id) => tr(e.name(id));
   Color get gold => skin.accent;
   Color get muted => skin.muted;
   Color get panel => skin.panel;
@@ -145,7 +188,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
       e.history.clear();
     });
     save('auto', quiet: true);
-    toast('隐藏测试模式已开启：罗盘可传送至任意楼层');
+    toast(tr('隐藏测试模式已开启：罗盘可传送至任意楼层'));
   }
 
   Offset swipe = Offset.zero;
@@ -220,9 +263,9 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   Future<void> save(String slot, {bool quiet = false}) async {
     try {
       final ok = await prefs.setString('save_$slot', e.serialize());
-      if (!quiet) toast(ok ? '存档成功' : '存档失败');
+      if (!quiet) toast(ok ? tr('存档成功') : tr('存档失败'));
     } catch (_) {
-      if (!quiet) toast('存档失败，请检查存储空间');
+      if (!quiet) toast(tr('存档失败，请检查存储空间'));
     }
   }
 
@@ -245,7 +288,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     brandTaps = 0;
     final text = prefs.getString('save_$slot');
     if (text == null || !e.load(text)) {
-      toast('这个存档无法读取');
+      toast(tr('这个存档无法读取'));
       return false;
     }
     setState(() {
@@ -253,7 +296,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
       peak = e.hero['hp'];
     });
     bgm(e.floor);
-    toast('已读取存档 · 第 ${e.floor} 层');
+    toast(tr('已读取存档 · 第 {0} 层', [e.floor]));
     if (e.state['ended'] == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) showRescueEnding();
@@ -270,6 +313,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
             hp: e.hero['hp'],
             atk: e.hero['atk'],
             def: e.hero['def'],
+            translate: tr,
             onReturn: () => Navigator.pop(ctx))));
     if (!mounted) return;
     setState(() {
@@ -289,7 +333,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           context: context,
           builder: (ctx) => StatefulBuilder(
               builder: (ctx, refresh) => AlertDialog(
-                      title: Text(title,
+                      title: Text(tr(title),
                           style: TextStyle(
                               color: Theme.of(ctx).colorScheme.primary)),
                       content: SizedBox(
@@ -304,7 +348,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                       actions: [
                         TextButton(
                             onPressed: () => Navigator.pop(ctx),
-                            child: const Text('关闭'))
+                            child: Text(tr('关闭')))
                       ])));
     } finally {
       dialogCount--;
@@ -320,16 +364,16 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     for (final ev in events) {
       switch (ev['type']) {
         case 'fight':
-          toast(
-              '击败 ${e.name(ev['id'])} · 生命 -${ev['loss']} · 金币 +${ev['gold']}');
+          toast(tr('击败 {0} · 生命 -{1} · 金币 +{2}',
+              [name(ev['id']), ev['loss'], ev['gold']]));
           sfx('hit');
           break;
         case 'pickup':
-          toast('获得 ${e.name(ev['id'])}');
+          toast(tr('获得 {0}', [name(ev['id'])]));
           sfx('pick');
           break;
         case 'false-wall':
-          toast('这面墙是假的，已经打通');
+          toast(tr('这面墙是假的，已经打通'));
           sfx('door');
           break;
         case 'door':
@@ -337,19 +381,21 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           break;
         case 'locked':
         case 'nofight':
-          toast(ev['reason']);
+          toast(localized(ev['reason']));
           sfx('denied');
           break;
         case 'blocked':
-          if (!['边界外', '前方不能通行'].contains(ev['reason'])) toast(ev['reason']);
+          if (!['边界外', '前方不能通行'].contains(ev['reason'])) {
+            toast(localized(ev['reason']));
+          }
           break;
         case 'stairs':
-          toast('第 ${e.floor} 层 · ${e.zoneName}');
+          toast(tr('第 {0} 层 · {1}', [e.floor, tr(e.zoneName)]));
           sfx('stairs');
           bgm(e.floor);
           break;
         case 'aura':
-          toast('灼域灼伤 -${ev['damage']} 生命');
+          toast(tr('灼域灼伤 -{0} 生命', [ev['damage']]));
           break;
         case 'say':
           says.add(ev['text']);
@@ -408,7 +454,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     if (modal) return;
     final r = e.undo();
     setState(() {});
-    toast(r['text']);
+    toast(localized(r['text']));
     bgm(e.floor);
     save('auto', quiet: true);
   }
@@ -416,7 +462,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   void use(String id, [int? target]) {
     final r = e.useItem(id, target);
     setState(() => peak = math.max(peak, e.hero['hp'] as int));
-    toast(r['text']);
+    toast(localized(r['text']));
     if (r['ok'] == true) {
       sfx('pick');
       save('auto', quiet: true);
@@ -450,7 +496,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     if (compactGameUi) {
       String? result;
       dialog(
-          id == 'altar' ? '祭坛' : '商人',
+          id == 'altar' ? tr('祭坛') : tr('商人'),
           (refresh) => [
                 ...shopContent(id, refresh, onResult: (text) => result = text),
                 if (result != null)
@@ -469,15 +515,18 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
       {ValueChanged<String>? onResult}) {
     if (id == 'altar') {
       return [
-        Text('金币 ${e.hero['gold']} · 本次价格 ${e.altarPrice}'),
+        Text(tr('金币 {0} · 本次价格 {1}', [e.hero['gold'], e.altarPrice])),
         for (final c in ['hp', 'atk', 'def'])
           button(
-              '${{'hp': '生命', 'atk': '攻击', 'def': '防御'}[c]} +${e.altarGain(c)}',
-              () {
+              '${{
+                'hp': tr('生命'),
+                'atk': tr('攻击'),
+                'def': tr('防御')
+              }[c]} +${e.altarGain(c)}', () {
             final r = e.buyAltar(c);
             refresh(() => onResult?.call(r['text']));
             setState(() => peak = math.max(peak, e.hero['hp'] as int));
-            toast(r['text']);
+            toast(localized(r['text']));
             if (r['ok'] == true) {
               sfx('buy');
               save('auto', quiet: true);
@@ -487,19 +536,28 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     }
     final list = e.data['MERCHANTS']['${e.floor}'] as List? ?? [];
     return [
-      Text('金币 ${e.hero['gold']}'),
+      Text(tr('金币 {0}', [e.hero['gold']])),
       for (final item in list)
         button(
             item['recycle'] != null
-                ? '回收${e.name(item['recycle'])} · +${item['gold']} 金币'
-                : '${item['hp'] != null ? '生命 +${item['hp']}' : (item['items'] as Map).entries.map((v) => '${e.name(v.key)} ×${v.value}').join('、')} · ${item['price']} 金币${e.state['soldOut'].contains(item['id']) ? '（售完）' : ''}',
+                ? tr('回收{0} · +{1} 金币', [name(item['recycle']), item['gold']])
+                : tr('{0} · {1} 金币{2}', [
+                    item['hp'] != null
+                        ? tr('生命 +{0}', [item['hp']])
+                        : (item['items'] as Map)
+                            .entries
+                            .map((v) => '${name(v.key)} ×${v.value}')
+                            .join(tr('、')),
+                    item['price'],
+                    e.state['soldOut'].contains(item['id']) ? tr('（售完）') : ''
+                  ]),
             e.state['soldOut'].contains(item['id'])
                 ? null
                 : () {
                     final r = e.merchantBuy(item['id']);
                     refresh(() => onResult?.call(r['text']));
                     setState(() => peak = math.max(peak, e.hero['hp'] as int));
-                    toast(r['text']);
+                    toast(localized(r['text']));
                     if (r['ok'] == true) {
                       sfx('buy');
                       save('auto', quiet: true);
@@ -514,12 +572,12 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
         ? List.generate(50, (i) => i + 1)
         : ((e.state['visited'] as List).cast<int>().toList()..sort());
     dialog(
-        hidden ? '传送罗盘 · 隐藏测试模式' : '传送罗盘',
+        hidden ? tr('传送罗盘 · 隐藏测试模式') : tr('传送罗盘'),
         (refresh) => [
               (e.state['items']['compass'] ?? 0) <= 0
-                  ? const Text('还未获得传送罗盘')
+                  ? Text(tr('还未获得传送罗盘'))
                   : !hidden && e.floor == 50
-                      ? const Text('第 50 层不能使用罗盘')
+                      ? Text(tr('第 50 层不能使用罗盘'))
                       : Wrap(spacing: 8, children: [
                           for (final f in floors)
                             if (f != e.floor &&
@@ -529,19 +587,19 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                                     Navigator.pop(context);
                                     use('compass', f);
                                   },
-                                  child: Text('$f 层'))
+                                  child: Text(tr('{0} 层', [f])))
                         ])
             ]);
   }
 
   void bag() {
     dialog(
-        '背包',
+        tr('背包'),
         (refresh) => [
               for (final id in (e.data['ACTIVE'] as Map).keys)
                 if ((e.state['items'][id] ?? 0) > 0)
                   button(
-                      '${e.name(id)}${e.data['ACTIVE'][id]['uses'] == 'unlimited' ? '' : ' ×${e.state['items'][id]}'}',
+                      '${name(id)}${e.data['ACTIVE'][id]['uses'] == 'unlimited' ? '' : ' ×${e.state['items'][id]}'}',
                       () {
                     Navigator.pop(context);
                     if (id == 'compass') {
@@ -557,16 +615,16 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                       child: Row(children: [
                         art(e.data['art']['ITEM_ART'][id], size: 22),
                         const SizedBox(width: 6),
-                        Text('${e.name(id)} · 持有生效')
+                        Text(tr('{0} · 持有生效', [name(id)]))
                       ])),
               if ((e.state['items'] as Map).values.every((v) => v == 0))
-                const Text('主动道具会在冒险中获得。')
+                Text(tr('主动道具会在冒险中获得。'))
             ]);
   }
 
   void saves(bool saving) {
     dialog(
-        saving ? '保存进度' : '读取存档',
+        saving ? tr('保存进度') : tr('读取存档'),
         (refresh) => [
               for (final slot in ['auto', '1', '2', '3']) ...[
                 Builder(builder: (context) {
@@ -575,13 +633,18 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                   try {
                     if (text != null) state = jsonDecode(text);
                   } catch (_) {}
-                  return Text(
-                      '${slot == 'auto' ? '自动存档' : '存档 $slot'} · ${state == null ? '空' : '第 ${state['floor']} 层 · 生命 ${state['hero']['hp']}'}');
+                  return Text('${slot == 'auto' ? tr('自动存档') : tr('存档 {0}', [
+                          slot
+                        ])} · ${state == null ? tr('空') : tr('第 {0} 层 · 生命 {1}', [state['floor'], state['hero']['hp']])}');
                 }),
                 button(
                     saving
-                        ? '保存到${slot == 'auto' ? '自动存档' : '存档 $slot'}'
-                        : '读取${slot == 'auto' ? '自动存档' : '存档 $slot'}',
+                        ? tr('保存到{0}', [
+                            slot == 'auto' ? tr('自动存档') : tr('存档 {0}', [slot])
+                          ])
+                        : tr('读取{0}', [
+                            slot == 'auto' ? tr('自动存档') : tr('存档 {0}', [slot])
+                          ]),
                     saving
                         ? () {
                             save(slot);
@@ -602,7 +665,32 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     dialog(
         '设置',
         (refresh) => [
-              const Text('界面风格'),
+              Text(tr('语言')),
+              DropdownButton<String>(
+                key: const ValueKey('tower-language'),
+                isExpanded: true,
+                value: widget.language,
+                items: [
+                  for (final option in towerLanguages.entries)
+                    DropdownMenuItem(
+                        value: option.key,
+                        child: Text(option.value,
+                            style: option.key == 'ja'
+                                ? const TextStyle(
+                                    fontFamilyFallback: ['Tower Japanese'])
+                                : null))
+                ],
+                onChanged: (value) {
+                  if (value == null) return;
+                  widget.onLanguageChanged(value);
+                  // The dialog lives on a separate route; refresh after home rebuilds.
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted && modal) refresh(() {});
+                  });
+                },
+              ),
+              const SizedBox(height: 12),
+              Text(tr('界面风格')),
               const SizedBox(height: 6),
               LayoutBuilder(builder: (context, box) {
                 final width =
@@ -639,7 +727,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                                           color: option.accent),
                                       const SizedBox(width: 5),
                                       Flexible(
-                                          child: Text(option.name,
+                                          child: Text(tr(option.name),
                                               textAlign: TextAlign.center,
                                               style: const TextStyle(
                                                   fontSize: 12))),
@@ -649,14 +737,14 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
               const SizedBox(height: 12),
               SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('静音'),
+                  title: Text(tr('静音')),
                   value: mutedAudio,
                   onChanged: (v) {
                     refresh(() => mutedAudio = v);
                     prefs.setBool('muted', v);
                     music.setVolume(musicVolume);
                   }),
-              const Text('音量'),
+              Text(tr('音量')),
               Slider(
                   value: volume,
                   onChanged: (v) {
@@ -669,34 +757,34 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
 
   void help() {
     dialog(
-        '操作说明',
+        tr('操作说明'),
         (refresh) => [
-              const Text(
-                  '点击方向盘、滑动棋盘，或使用键盘方向键 / WASD 移动。方向盘中间和 Z 键可以撤销，最多保留 50 步。\n\n碰到怪物先战斗、碰到门先开门，再走一步才会进入。无法破防或会死亡时禁止战斗。点击怪物可查看完整预判。\n\n撞击引路人触发剧情；在祭坛或商人旁边交易。背包中使用主动道具，罗盘可返回到过的楼层。每次操作自动保存，菜单可手动存读档。\n\n快捷键：B 背包，C 罗盘，Esc 菜单。')
+              Text(tr(
+                  '点击方向盘、滑动棋盘，或使用键盘方向键 / WASD 移动。方向盘中间和 Z 键可以撤销，最多保留 50 步。\n\n碰到怪物先战斗、碰到门先开门，再走一步才会进入。无法破防或会死亡时禁止战斗。点击怪物可查看完整预判。\n\n撞击引路人触发剧情；在祭坛或商人旁边交易。背包中使用主动道具，罗盘可返回到过的楼层。每次操作自动保存，菜单可手动存读档。\n\n快捷键：B 背包，C 罗盘，Esc 菜单。'))
             ]);
   }
 
   void menu() {
     dialog(
-        '暂停',
+        tr('暂停'),
         (refresh) => [
-              button('保存进度', () {
+              button(tr('保存进度'), () {
                 Navigator.pop(context);
                 Future.microtask(() => saves(true));
               }),
-              button('读取存档', () {
+              button(tr('读取存档'), () {
                 Navigator.pop(context);
                 Future.microtask(() => saves(false));
               }),
-              button('设置', () {
+              button(tr('设置'), () {
                 Navigator.pop(context);
                 Future.microtask(settings);
               }),
-              button('操作说明', () {
+              button(tr('操作说明'), () {
                 Navigator.pop(context);
                 Future.microtask(help);
               }),
-              button('返回游戏主界面', () {
+              button(tr('返回游戏主界面'), () {
                 save('auto', quiet: true);
                 Navigator.pop(context);
                 setState(() => playing = false);
@@ -808,18 +896,20 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     child: Column(mainAxisSize: MainAxisSize.min, children: [
                       Icon(Icons.auto_awesome, color: gold, size: 48),
                       const SizedBox(height: 24),
-                      Text('星穹塔',
+                      Text(tr('星穹塔'),
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               color: gold,
-                              fontSize: 54,
+                              fontSize: widget.language == 'en' ? 38 : 54,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 10)),
-                      Text('STAR DOME TOWER · 50 层',
+                              letterSpacing: widget.language == 'en' ? 1 : 10)),
+                      Text(tr('STAR DOME TOWER · 50 层'),
                           style: TextStyle(
                               color: muted, fontSize: 12, letterSpacing: 2)),
                       const SizedBox(height: 16),
-                      const Text('登上五十层，救回你的女神。',
-                          style: TextStyle(color: Color(0xffe8c6da))),
+                      Text(tr('登上五十层，救回你的女神。'),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Color(0xffe8c6da))),
                       const SizedBox(height: 28),
                       SizedBox(
                           width: 280,
@@ -828,21 +918,22 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                               children: [
                                 FilledButton(
                                     onPressed: start,
-                                    child: const Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: Text('新的冒险',
-                                            style: TextStyle(fontSize: 18)))),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(tr('新的冒险'),
+                                            style: const TextStyle(
+                                                fontSize: 18)))),
                                 button(
-                                    '继续冒险',
+                                    tr('继续冒险'),
                                     prefs.getString('save_auto') != null
                                         ? () => load('auto')
                                         : null),
-                                button('读取存档', () => saves(false)),
-                                button('设置', settings),
-                                button('操作说明', help)
+                                button(tr('读取存档'), () => saves(false)),
+                                button(tr('设置'), settings),
+                                button(tr('操作说明'), help)
                               ])),
                       const SizedBox(height: 24),
-                      Text('方向键 / 滑动移动 · 预判战斗损失',
+                      Text(tr('方向键 / 滑动移动 · 预判战斗损失'),
                           style: TextStyle(color: muted, fontSize: 11))
                     ]))))
       ]);
@@ -860,19 +951,20 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
             Expanded(
                 child: Text(
                     activeShop == null
-                        ? '引路人'
+                        ? tr('引路人')
                         : activeShop == 'altar'
-                            ? '祭坛'
-                            : '商人',
+                            ? tr('祭坛')
+                            : tr('商人'),
                     style: TextStyle(color: gold, fontSize: 12))),
             InkWell(
                 onTap: () => setState(() {
                       activeShop = null;
                       npcMessage = '';
                     }),
-                child: const Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text('收起', style: TextStyle(fontSize: 12))))
+                child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child:
+                        Text(tr('收起'), style: const TextStyle(fontSize: 12))))
           ]),
         Expanded(
             child: SingleChildScrollView(
@@ -881,17 +973,19 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     children: [
               if (activeShop != null) ...shopContent(activeShop!, setState),
               if (npcMessage.isNotEmpty)
-                Text(npcMessage, style: const TextStyle(fontSize: 13)),
+                Text(localized(npcMessage),
+                    style: const TextStyle(fontSize: 13)),
               if (message.isNotEmpty)
                 Text(message, style: TextStyle(color: gold, fontSize: 12)),
               if (activeShop == null && npcMessage.isEmpty && message.isEmpty)
-                Text('旅途提示将显示在这里', style: TextStyle(color: muted, fontSize: 12))
+                Text(tr('旅途提示将显示在这里'),
+                    style: TextStyle(color: muted, fontSize: 12))
             ])))
       ]));
 
   Widget compactNotice() {
     final isStory = npcMessage.isNotEmpty;
-    final text = isStory ? npcMessage : message;
+    final text = isStory ? localized(npcMessage) : message;
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         child: Material(
@@ -904,8 +998,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
             child: InkWell(
                 onTap: text.isEmpty
                     ? help
-                    : () =>
-                        dialog(isStory ? '引路人' : '旅途提示', (_) => [Text(text)]),
+                    : () => dialog(
+                        isStory ? tr('引路人') : tr('旅途提示'), (_) => [Text(text)]),
                 child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 9),
                     child: Row(children: [
@@ -917,7 +1011,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                           color: gold),
                       const SizedBox(width: 7),
                       Expanded(
-                          child: Text(text.isEmpty ? '旅途提示 · 点击查看操作说明' : text,
+                          child: Text(
+                              text.isEmpty ? tr('旅途提示 · 点击查看操作说明') : text,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -927,17 +1022,25 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     ])))));
   }
 
-  Widget gameBrand() => Row(mainAxisSize: MainAxisSize.min, children: [
+  Widget gameBrand() => ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 156),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
         SvgPicture.asset('assets/images/ui/tower-logo.svg',
             key: const ValueKey('tower-logo'),
             width: 32,
             height: 32,
             excludeFromSemantics: true),
         const SizedBox(width: 6),
-        Text('星穹塔',
-            style: TextStyle(
-                color: gold, fontSize: 17, fontWeight: FontWeight.bold)),
-      ]);
+        Flexible(
+            child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(tr('星穹塔'),
+                    maxLines: 1,
+                    style: TextStyle(
+                        color: gold,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold)))),
+      ]));
 
   Widget game() => LayoutBuilder(builder: (context, box) {
         if (box.maxWidth < 320) {
@@ -1024,11 +1127,15 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(children: [
-                  Text('第 ${e.floor} 层',
-                      style: TextStyle(
-                          color: gold,
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold)),
+                  ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 104),
+                      child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(tr('第 {0} 层', [e.floor]),
+                              style: TextStyle(
+                                  color: gold,
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.bold)))),
                   const SizedBox(width: 8),
                   if (compactUi)
                     Expanded(child: zoneLabel())
@@ -1038,18 +1145,23 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                   ],
                   Semantics(
                       button: true,
-                      label: '星穹塔',
+                      label: tr('星穹塔'),
                       child: GestureDetector(
                           key: const ValueKey('hidden-mode-trigger'),
                           behavior: HitTestBehavior.opaque,
                           onTap: tapBrand,
                           child: compactUi
                               ? gameBrand()
-                              : Text('✦ 星穹塔',
-                                  style: TextStyle(
-                                      color: gold,
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.bold))))
+                              : ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 156),
+                                  child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(tr('✦ 星穹塔'),
+                                          style: TextStyle(
+                                              color: gold,
+                                              fontSize: 19,
+                                              fontWeight: FontWeight.bold))))))
                 ]),
                 Row(children: [
                   art('hero/hero', size: compactUi ? 40 : 46),
@@ -1057,7 +1169,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                   Expanded(
                       child: Column(children: [
                     Row(children: [
-                      const Text('生命 ', style: TextStyle(fontSize: 12)),
+                      Text(tr('生命 '), style: const TextStyle(fontSize: 12)),
                       Expanded(
                           child: Stack(alignment: Alignment.center, children: [
                         ClipRRect(
@@ -1090,7 +1202,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     ])
               ])));
 
-  Widget zoneLabel() => Text(e.zoneName,
+  Widget zoneLabel() => Text(tr(e.zoneName),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(color: muted, fontSize: 11));
@@ -1098,11 +1210,11 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   Widget heroStats(bool compactUi) {
     final stats =
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text('⚔ 攻击 ${e.hero['atk']}',
+      Text(tr('⚔ 攻击 {0}', [e.hero['atk']]),
           style: const TextStyle(color: Color(0xffff9d89), fontSize: 12)),
-      Text('◈ 防御 ${e.hero['def']}',
+      Text(tr('◈ 防御 {0}', [e.hero['def']]),
           style: const TextStyle(color: Color(0xff9ecbff), fontSize: 12)),
-      Text('撤销 ${e.history.length}/50',
+      Text(tr('撤销 {0}/50', [e.history.length]),
           style: TextStyle(color: muted, fontSize: 10)),
     ]);
     if (!compactUi) return stats;
@@ -1127,8 +1239,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      button('快速存档', () => saves(true)),
-                      button('菜单', menu)
+                      button(tr('快速存档'), () => saves(true)),
+                      button(tr('菜单'), menu)
                     ])),
             pad(padSize),
             SizedBox(
@@ -1138,18 +1250,18 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       smallButton(
-                          '罗盘',
+                          tr('罗盘'),
                           (e.state['items']['compass'] ?? 0) > 0
                               ? compass
                               : null),
                       smallButton(
-                          e.near('altar') ? '祭坛' : '商人',
+                          e.near('altar') ? tr('祭坛') : tr('商人'),
                           e.near('altar')
                               ? () => openShop('altar')
                               : e.near('merchant')
                                   ? () => openShop('merchant')
                                   : null),
-                      smallButton('背包', bag)
+                      smallButton(tr('背包'), bag)
                     ]))
           ])));
 
@@ -1208,12 +1320,17 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
             width: size / 3,
             height: size / 3,
             child: IconButton(
-                tooltip: '撤销一步',
+                tooltip: tr('撤销一步'),
                 onPressed: undo,
                 icon: Icon(Icons.undo, color: gold, size: 22)))
       ]));
   Widget padKey(String dir, IconData icon) => Semantics(
-      label: {'up': '上', 'down': '下', 'left': '左', 'right': '右'}[dir],
+      label: {
+        'up': tr('上'),
+        'down': tr('下'),
+        'left': tr('左'),
+        'right': tr('右')
+      }[dir],
       button: true,
       child: Listener(
           onPointerDown: (_) => hold(dir),
@@ -1271,7 +1388,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                       height: cell * 2.2,
                       child: IgnorePointer(
                           child: Semantics(
-                              label: '终焉女妖', child: art('monsters/endLord')))),
+                              label: tr('终焉女妖'),
+                              child: art('monsters/endLord')))),
                 if (bosses.isNotEmpty)
                   Positioned(
                       left: e.hero['x'] * cell,
@@ -1300,7 +1418,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
               ? 'NPC_ART'
               : 'ITEM_ART'][id];
       if (sprite == null) {
-        label = e.name(id).substring(0, 1);
+        label = name(id).substring(0, 1);
         color = entity['kind'] == 'monster'
             ? const Color(0xffff8292)
             : entity['kind'] == 'npc'
@@ -1308,7 +1426,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                 : gold;
       }
     }
-    if (t == '%' || t == 'a') label = t == '%' ? '裂' : '机';
+    if (t == '%' || t == 'a') label = t == '%' ? tr('裂') : tr('机');
     final pv = entity?['kind'] == 'monster' ? e.preview(x, y) : null;
     return GestureDetector(
         onTap: () {
@@ -1335,7 +1453,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           if (overlay != null && !(e.floor == 50 && t == '*')) art(overlay),
           if (sprite != null && entity?['id'] != 'endLord')
             Semantics(
-                label: e.name(entity!['id']),
+                label: name(entity!['id']),
                 child: Padding(
                     padding: EdgeInsets.all(size * .06), child: art(sprite))),
           if (label != null)
@@ -1374,36 +1492,43 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   void inspect(Json pv) {
     final m = pv['monster'];
     dialog(
-        e.name(pv['id']),
+        name(pv['id']),
         (refresh) => [
-              Text('生命 ${m['hp']} · 攻击 ${m['atk']} · 防御 ${pv['def']}'),
+              Text(tr(
+                  '生命 {0} · 攻击 {1} · 防御 {2}', [m['hp'], m['atk'], pv['def']])),
               const SizedBox(height: 12),
               Text(
                   pv['canFight'] == true
-                      ? '可以击败'
+                      ? tr('可以击败')
                       : pv['reason'] == 'unpierceable'
-                          ? '无法破防'
-                          : '会死亡',
+                          ? tr('无法破防')
+                          : tr('会死亡'),
                   style: TextStyle(
                       color: pv['canFight'] == true
                           ? Colors.greenAccent
                           : Colors.redAccent,
                       fontSize: 20)),
               const SizedBox(height: 8),
-              Text('预计损失 ${pv['loss'] ?? '—'} · 回合数 ${pv['rounds'] ?? '—'}'),
-              Text('我方每回合 ${pv['perHit']} · 怪物每回合 ${pv['perRound'] ?? '—'}'),
+              Text(tr('预计损失 {0} · 回合数 {1}',
+                  [pv['loss'] ?? '—', pv['rounds'] ?? '—'])),
+              Text(tr('我方每回合 {0} · 怪物每回合 {1}',
+                  [pv['perHit'], pv['perRound'] ?? '—'])),
               if (pv['loss'] != null)
-                Text('至少需要 ${pv['loss'] + 1} 生命（当前 ${e.hero['hp']}）'),
+                Text(tr('至少需要 {0} 生命（当前 {1}）', [pv['loss'] + 1, e.hero['hp']])),
               if ((m['traits'] as List).isNotEmpty)
-                Text('特性：${(m['traits'] as List).map((t) => {
-                      'magic': '魔攻',
-                      'firstStrike': '先攻',
-                      'doubleHit': '连击',
-                      'aura': '灼域',
-                      'sea': '海兽',
-                      'dragon': '龙',
-                      'starVeil': '星幕'
-                    }[t['type']]).join('、')}')
+                Text(tr('特性：{0}', [
+                  (m['traits'] as List)
+                      .map((t) => {
+                            'magic': tr('魔攻'),
+                            'firstStrike': tr('先攻'),
+                            'doubleHit': tr('连击'),
+                            'aura': tr('灼域'),
+                            'sea': tr('海兽'),
+                            'dragon': tr('龙'),
+                            'starVeil': tr('星幕')
+                          }[t['type']])
+                      .join(tr('、'))
+                ]))
             ]);
   }
 }

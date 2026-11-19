@@ -52,7 +52,7 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 `sceneVersion: 2` 用于旧终层存档迁移。修改时保留人物属性、已击败首领与已通关状态；迁移只执行一次，读档不能重复生成守卫。结局由 Vue `RescueEnding.vue` 与 Flutter `ui/rescue_ending.dart` 分别实现，已通关存档可直接重看。
 
-地图、数据和 SVG 更新后运行 `node flutter/tool/export-vue.mjs`；界面与引擎逻辑需要两端分别修改。风格目录以 `design/styles.json` 为准，使用 `node flutter/tool/generate_styles.mjs` 同步 Dart，使用 `python3 scripts/generate-pixel-art.py` 同步像素素材。标题动画需尊重减少动态效果设置。增加素材需纳入 `project/` 和 `MANIFEST.sha256`，避免把本地存档、构建缓存或安装包加入快照。
+地图、数据和 SVG 更新后运行 `node flutter/tool/export-vue.mjs`；界面与引擎逻辑需要两端分别修改。风格目录以 `design/styles.json` 为准，使用 `node flutter/tool/generate_styles.mjs` 同步 Dart，使用 `python3 scripts/generate-pixel-art.py` 同步像素素材。标题动画需尊重减少动态效果设置。中英日翻译维护在 `design/translations.json`，运行 `node flutter/tool/sync_translations.mjs` 同步 Flutter；语言只属于界面设置，不能写进存档或改变游戏引擎。增加素材需纳入 `project/` 和 `MANIFEST.sha256`，避免把本地存档、构建缓存或安装包加入快照。
 
 ## Flutter 原生版
 
@@ -60,7 +60,7 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 Vue 与 Flutter Web 同步手机端的游戏内交互：右上角先放 Logo 再显示「星穹塔」，棋盘下保留单行提示，点击查看长剧情，商人和祭坛用弹窗。Flutter Web 手机浏览器使用全宽，桌面浏览器居中显示；原生桌面窗口逻辑仍位于各平台 runner。
 
-在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；29 项测试含同一条 3779 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
+在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；测试含同一条 3779 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
 
 Mac 上 `flutter build macos --release` 后执行 `bash tool/packaging/macos.sh` 生成并验证 Universal DMG / ZIP。Windows 必须在 Windows + Visual Studio C++ 工具链环境构建，不能从 Mac 直接交叉编译。Windows 打包配置为 `tool/packaging/windows.iss`（Inno Setup 6），需包含构建目录全部 DLL、data 和 Visual C++ 运行库。
 
@@ -87,6 +87,7 @@ Mac 的 DMG 工具下载失败时，可用系统 `hdiutil` 封装已签名应用
 
 ## 交付检查
 
+- 在同时包含游戏源码与 `skills/project/` 的工作区，每次修改都按根目录 `AGENTS.md` 同步受影响的文件与清单，再运行 `bash skills/verify.sh`。单独使用 Skill 时不要用快照覆盖用户项目。
 - 游戏或规则修改：运行相关回归检查与构建；需要证明新路线时重新全程模拟并更新通关报告。
 - Mac：检查 Universal 包含 `x86_64 arm64`，执行 `codesign --verify --deep --strict`，在可用硬件上启动最终应用。校验 DMG 和 ZIP 完整性。
 - Electron Windows：检查应用为 x64 PE，内置 ASAR 页面及主进程与构建结果一致；用 7-Zip 校验两个 NSIS EXE。安装器外壳可能为 32 位，不能据此认定内置应用不是 x64。

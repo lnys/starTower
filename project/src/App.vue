@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onMounted, onBeforeUnmount } from 'vue'
-import { store, actions, applyAudioSettings } from './stores/star.js'
+import { computed, watchEffect, onMounted, onBeforeUnmount } from 'vue'
+import { store, actions, applyAudioSettings, tr, localizeMessage } from './stores/star.js'
 import TitleScreen from './components/TitleScreen.vue'
 import GameScreen from './components/GameScreen.vue'
 import Modals from './components/Modals.vue'
@@ -9,6 +9,12 @@ import EndingFx from './components/EndingFx.vue'
 import IntroPanel from './components/IntroPanel.vue'
 
 import { styleVariables } from './engine/styles.js'
+
+
+watchEffect(() => {
+  document.documentElement.lang = store.meta.language
+  document.title = tr('星穹塔')
+})
 
 const skinVariables = computed(() => styleVariables(store.meta.style))
 
@@ -21,7 +27,7 @@ const MOVE_KEYS = {
 
 function isTyping(e) {
   const tag = e.target?.tagName
-  return tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable
+  return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable
 }
 
 // 键盘长按：按住方向键连续移动（不依赖系统的按键重复，节奏更稳定）
@@ -109,14 +115,14 @@ onBeforeUnmount(() => {
 
         <div v-if="store.screen === 'title' || (store.modal && ['altar', 'merchant', 'saves'].includes(store.modal.type))" class="toasts" aria-live="polite">
           <TransitionGroup name="toast">
-            <div v-for="t in store.toasts" :key="t.id" class="toast" :class="t.tone">{{ t.text }}</div>
+            <div v-for="t in store.toasts" :key="t.id" class="toast" :class="t.tone">{{ localizeMessage(t.text) }}</div>
           </TransitionGroup>
         </div>
 
         <Transition name="fade">
           <div v-if="store.transition" :key="store.transition.key" class="floor-transition">
             <div class="ft-line"></div>
-            <div class="ft-title">{{ store.transition.title }}</div>
+            <div class="ft-title">{{ localizeMessage(store.transition.title) }}</div>
             <div class="ft-line"></div>
           </div>
         </Transition>

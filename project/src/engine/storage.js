@@ -3,6 +3,8 @@
 
 import { defaultStyle, resolveStyle } from './styles.js'
 
+import { resolveLanguage } from './locale.js'
+
 const PREFIX = 'star-v1:'
 export const MANUAL_SLOTS = ['0', '1', '2']
 export const AUTO_SLOT = 'auto'
@@ -32,7 +34,7 @@ function removeRaw(key) {
   }
 }
 
-const DEFAULT_META = { volume: 0.9, muted: false, seenHelp: false, style: defaultStyle }
+const DEFAULT_META = { volume: 0.9, muted: false, seenHelp: false, style: defaultStyle, language: 'zh-CN' }
 
 /* ---------- 玩家设置 ---------- */
 
@@ -45,6 +47,7 @@ export function loadMeta() {
       muted: !!o.muted,
       seenHelp: !!o.seenHelp,
       style: resolveStyle(o.style).id,
+      language: resolveLanguage(o.language),
     }
   } catch {
     return { ...DEFAULT_META }

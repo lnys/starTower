@@ -3,7 +3,7 @@
 import { computed, ref, watch } from 'vue'
 import GameBoard from './GameBoard.vue'
 import TouchPad from './TouchPad.vue'
-import { store, actions, nearNpc, zoneName } from '../stores/star.js'
+import { store, actions, nearNpc, zoneName, tr, localizeMessage } from '../stores/star.js'
 import { img } from '../engine/images.js'
 import logo from '../../images/ui/tower-logo.svg?url'
 import { UI_ICON, ITEM_ART } from '../engine/star-art.js'
@@ -31,7 +31,7 @@ const zoneClass = computed(() => `zone-${zoneOf(store.game.floor)}`)
 const altarNear = computed(() => nearNpc(store.game, 'altar'))
 const merchantNear = computed(() => nearNpc(store.game, 'merchant'))
 const npcNear = computed(() => (altarNear.value ? 'altar' : merchantNear.value ? 'merchant' : null))
-const npcLabel = computed(() => (npcNear.value === 'altar' ? '祭坛' : '商人'))
+const npcLabel = computed(() => tr(npcNear.value === 'altar' ? '祭坛' : '商人'))
 
 const hasCompass = computed(() => (store.game.items.compass ?? 0) > 0)
 const undoCount = computed(() => store.game.history.length)
@@ -68,39 +68,40 @@ function openBag() {
       <!-- 楼层在左，Logo 与标题在右 -->
       <header class="topbar">
         <div class="floor-chip">
-          <span class="tag">第</span><b>{{ g.floor }}</b><span class="tag">层</span>
+          <template v-if="store.meta.language === 'zh-CN'"><span class="tag">第</span><b>{{ g.floor }}</b><span class="tag">层</span></template>
+          <b v-else>{{ tr("第 {0} 层", g.floor) }}</b>
           <em>{{ zone }}</em>
         </div>
-        <button class="brand" @click="tapBrand" aria-label="星穹塔">
+        <button class="brand" @click="tapBrand" :aria-label="tr('星穹塔')">
           <img class="brand-logo" :src="logo" alt="" width="32" height="32" />
-          <span class="brand-name">星穹塔</span>
+          <span class="brand-name">{{ tr("星穹塔") }}</span>
         </button>
       </header>
 
       <!-- 勇士面板：头像、生命、攻防；右侧为持有的特殊道具 -->
       <section class="panel">
-        <div class="avatar"><img :src="img(UI_ICON.hero, store.meta.style === 'pixel')" alt="勇士" /></div>
+        <div class="avatar"><img :src="img(UI_ICON.hero, store.meta.style === 'pixel')" :alt="tr('勇士')" /></div>
         <div class="status">
           <div class="hp-row">
-            <span class="hp-lbl">生命</span>
+            <span class="hp-lbl">{{ tr("生命") }}</span>
             <div class="hp-bar" :class="{ low: hpPct <= 25 }">
               <div class="hp-fill" :style="{ width: hpPct + '%' }"></div>
               <span class="hp-text">{{ hero.hp }}<small v-if="hpPeak > hero.hp"> / {{ hpPeak }}</small></span>
             </div>
           </div>
           <div class="stats">
-            <span class="chip atk"><img :src="img(UI_ICON.atk)" alt="" />攻击 <b>{{ hero.atk }}</b></span>
-            <span class="chip def"><img :src="img(UI_ICON.def)" alt="" />防御 <b>{{ hero.def }}</b></span>
-            <span class="chip undo">撤销 {{ undoCount }}/50</span>
+            <span class="chip atk"><img :src="img(UI_ICON.atk)" alt="" />{{ tr("攻击") }} <b>{{ hero.atk }}</b></span>
+            <span class="chip def"><img :src="img(UI_ICON.def)" alt="" />{{ tr("防御") }} <b>{{ hero.def }}</b></span>
+            <span class="chip undo">{{ tr("撤销") }} {{ undoCount }}/50</span>
           </div>
         </div>
       </section>
 
       <!-- 钥匙：在勇士面板下面，三色一行 -->
       <div class="keys-row">
-        <span class="res gold"><img :src="img(UI_ICON.gold)" alt="" />金币<b>{{ hero.gold }}</b></span>
-        <span v-for="[k, name, c] in KEY_NAMES" :key="k" class="res key" :class="c">
-          <img :src="img(ITEM_ART[k])" alt="" />{{ name }}<b>{{ hero.keys[k] }}</b>
+        <span class="res gold"><img :src="img(UI_ICON.gold)" alt="" />{{ tr("金币") }}<b>{{ hero.gold }}</b></span>
+        <span v-for="[k, name, c] in KEY_NAMES" :key="k" class="res key" :class="c" :aria-label="`${tr(name)}: ${hero.keys[k]}`" :title="tr(name)">
+          <img :src="img(ITEM_ART[k])" alt="" /><span class="key-name">{{ tr(name) }}</span><b>{{ hero.keys[k] }}</b>
         </span>
       </div>
     </div>
@@ -111,27 +112,31 @@ function openBag() {
 
     <button class="travel-notice" type="button" :disabled="!!store.modal" @click="openNotice">
       <span class="notice-icon" aria-hidden="true">{{ store.notice ? '◈' : 'ⓘ' }}</span>
-      <span class="notice-text" aria-live="polite">{{ notice?.text || '旅途提示 · 点击查看操作说明' }}</span>
+      <span class="notice-text" aria-live="polite">{{ localizeMessage(notice?.text || '旅途提示 · 点击查看操作说明') }}</span>
       <span aria-hidden="true">›</span>
     </button>
 
     <!-- 底部操作区：左（存档、菜单）· 中（方向盘）· 右（罗盘、NPC、背包） -->
     <footer class="ctrl">
       <div class="side">
-        <button class="btn" :disabled="!!store.modal" @click="actions.openModal({ type: 'saves', mode: 'save' })">快速存档</button>
-        <button class="btn" :disabled="!!store.modal" @click="actions.openModal({ type: 'pause' })">菜单</button>
+        <button class="btn" :disabled="!!store.modal" @click="actions.openModal({ type: 'saves', mode: 'save' })">{{ tr("快速存档") }}</button>
+        <button class="btn" :disabled="!!store.modal" @click="actions.openModal({ type: 'pause' })">{{ tr("菜单") }}</button>
       </div>
       <TouchPad />
       <div class="side">
-        <button class="btn alt" :disabled="!hasCompass || !!store.modal" @click="actions.openModal({ type: 'compass' })">罗盘</button>
+        <button class="btn alt" :disabled="!hasCompass || !!store.modal" @click="actions.openModal({ type: 'compass' })">{{ tr("罗盘") }}</button>
         <button class="btn alt" :disabled="!npcNear || !!store.modal" @click="openNpc">{{ npcLabel }}</button>
-        <button class="btn alt" :disabled="!!store.modal" @click="openBag">背包</button>
+        <button class="btn alt" :disabled="!!store.modal" @click="openBag">{{ tr("背包") }}</button>
       </div>
     </footer>
   </div>
 </template>
 
 <style scoped>
+:global(html:not([lang="zh-CN"])) .floor-chip b { font-size: clamp(13px, 5cqw, 21px); }
+:global(html[lang="en"]) .brand-name { font-size: 12px; letter-spacing: .02em; }
+:global(html[lang="en"]) .key-name { display: none; }
+:global(html:not([lang="zh-CN"])) .btn { font-size: 11px; letter-spacing: 0; white-space: normal; }
 .game {
   position: relative;
   z-index: 1;

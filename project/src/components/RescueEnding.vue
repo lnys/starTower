@@ -1,4 +1,5 @@
 <script setup>
+import { tr } from '../stores/star.js'
 import { ref } from 'vue'
 import { img } from '../engine/images.js'
 defineProps({ hero: { type: Object, required: true } })
@@ -8,15 +9,15 @@ const opened = ref(false)
   <section class="rescue">
     <div class="stars" aria-hidden="true"><i v-for="i in 28" :key="i" :style="{ left: `${i * 37 % 100}%`, top: `${i * 19 % 100}%`, animationDelay: `${i / 7}s` }">✦</i></div>
     <div class="rescue-content">
-      <p class="eyebrow">第五十层 · 重逢</p>
-      <h2>终于，等到你</h2>
-      <img class="goddess" :src="img('hero/goddess')" alt="获救的女神捧着一颗心，向你微笑" />
-      <p class="reunion">星幕散去，她从星光里走向你。<br />“我就知道，你一定会来。”</p>
+      <p class="eyebrow">{{ tr("第五十层 · 重逢") }}</p>
+      <h2>{{ tr("终于，等到你") }}</h2>
+      <img class="goddess" :src="img('hero/goddess')" :alt="tr('获救的女神捧着一颗心，向你微笑')" />
+      <p class="reunion">{{ tr("星幕散去，她从星光里走向你。") }}<br />{{ tr("“我就知道，你一定会来。”") }}</p>
       <div class="letter" aria-live="polite">
-        <template v-if="opened"><div class="heart">♥</div><h3>致我的勇者</h3><p>你走过的每一层，都有一颗星替我记着。<br />谢谢你没有放弃。<br />这次，换我陪你看遍塔外的星空。</p><strong>纪念称号 · 她的唯一勇者</strong></template>
-        <template v-else><span class="heart">✉</span><p>她为你留了一封信</p><button @click="opened = true">拆开这份惊喜</button></template>
+        <template v-if="opened"><div class="heart">♥</div><h3>{{ tr("致我的勇者") }}</h3><p>{{ tr("你走过的每一层，都有一颗星替我记着。") }}<br />{{ tr("谢谢你没有放弃。") }}<br />{{ tr("这次，换我陪你看遍塔外的星空。") }}</p><strong>{{ tr("纪念称号 · 她的唯一勇者") }}</strong></template>
+        <template v-else><span class="heart">✉</span><p>{{ tr("她为你留了一封信") }}</p><button @click="opened = true">{{ tr("拆开这份惊喜") }}</button></template>
       </div>
-      <p class="stats">通关纪念 · 50 / 50<br />生命 {{ hero.hp }} · 攻击 {{ hero.atk }} · 防御 {{ hero.def }}</p>
+      <p class="stats">{{ tr("通关纪念 · 50 / 50") }}<br />{{ tr('生命 {0} · 攻击 {1} · 防御 {2}', hero.hp, hero.atk, hero.def) }}</p>
     </div>
   </section>
 </template>

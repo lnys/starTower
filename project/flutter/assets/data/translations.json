@@ -1,0 +1,1338 @@
+{
+  "11–20 层": [
+    "Floors 11–20",
+    "11〜20階"
+  ],
+  "1–10 层": [
+    "Floors 1–10",
+    "1〜10階"
+  ],
+  "21–30 层": [
+    "Floors 21–30",
+    "21〜30階"
+  ],
+  "31–40 层": [
+    "Floors 31–40",
+    "31〜40階"
+  ],
+  "41–50 层": [
+    "Floors 41–50",
+    "41〜50階"
+  ],
+  "STAR DOME TOWER · 50 层": [
+    "STAR DOME TOWER · 50 FLOORS",
+    "STAR DOME TOWER · 全50階"
+  ],
+  "{0} · {1} 金币{2}": [
+    "{0} · {1} gold{2}",
+    "{0} · {1}ゴールド{2}"
+  ],
+  "{0} · 持有生效": [
+    "{0} · Active while held",
+    "{0} · 所持中に有効"
+  ],
+  "{0} 层": [
+    "Floor {0}",
+    "{0}階"
+  ],
+  "{0} 金": [
+    "{0} gold",
+    "{0}ゴールド"
+  ],
+  "“我就知道，你一定会来。”": [
+    "“I knew you would come.”",
+    "「きっと来てくれるって、信じてた」"
+  ],
+  "◈ 防御 {0}": [
+    "◈ DEF {0}",
+    "◈ 防御 {0}"
+  ],
+  "⚔ 攻击 {0}": [
+    "⚔ ATK {0}",
+    "⚔ 攻撃 {0}"
+  ],
+  "✦ 星穹塔": [
+    "✦ Star Dome Tower",
+    "✦ 星穹の塔"
+  ],
+  "、": [
+    ", ",
+    "、"
+  ],
+  "一座从地底矿窖修到星空里的观星塔。你的女神被囚禁在第五十层，登上塔顶，打破星幕，带她回家。": [
+    "An observatory tower rises from an underground mine into the night sky. Your goddess is imprisoned on floor 50. Climb to the top, break the Star Veil, and bring her home.",
+    "地下鉱山から星空まで伸びる天文塔。50階に囚われた女神を救うため、塔の頂を目指し、星の結界を打ち破ろう。"
+  ],
+  "一座楼梯出现了": [
+    "A staircase appeared.",
+    "階段が現れました。"
+  ],
+  "上": [
+    "Up",
+    "上"
+  ],
+  "下": [
+    "Down",
+    "下"
+  ],
+  "下一句 ▸": [
+    "Next ▸",
+    "次へ ▸"
+  ],
+  "两名穹顶铁卫倒下，机关门缓缓升起。": [
+    "Both Dome Iron Guards fall, and the gate slowly rises.",
+    "二人の天蓋の鉄衛兵が倒れ、仕掛け扉がゆっくりと上がった。"
+  ],
+  "中国复古风": [
+    "Retro Chinese",
+    "中華レトロ"
+  ],
+  "主动道具会在冒险中获得。": [
+    "Find usable items during your adventure.",
+    "使える道具は冒険中に手に入ります。"
+  ],
+  "买防御通常比攻击划算；攻击只在需要越过数值门时购买。": [
+    "Defense is usually better value. Buy attack when you need to overcome an enemy's defense.",
+    "通常は防御の方がお得です。敵の防御を突破するために必要なときだけ攻撃を上げましょう。"
+  ],
+  "二区到此过半。海里来的东西怕一把枪，那把枪藏在 14 层的假墙后面。": [
+    "You're halfway through the second zone. Sea creatures are weak to a spear hidden behind a false wall on floor 14.",
+    "第二区域も折り返しです。海の怪物が恐れる槍が、14階の隠し壁の奥にあります。"
+  ],
+  "五个区": [
+    "Five Zones",
+    "五つの区域"
+  ],
+  "五区检查点：祭司身边每走一步都会被灼伤，绕着它走。43 层有一面墙不对劲。": [
+    "Fifth-zone checkpoint: every move next to a priest burns you. Give them a wide berth. Something is off about a wall on floor 43.",
+    "第五区域のチェックポイントです。司祭の隣では一歩ごとに灼熱ダメージを受けます。距離を取って進みましょう。43階に何かおかしな壁があります。"
+  ],
+  "价格 {0} 金币": [
+    "Price: {0} gold",
+    "価格：{0}ゴールド"
+  ],
+  "会死亡": [
+    "Fatal",
+    "戦闘不能になる"
+  ],
+  "会死亡：损失不小于当前生命": [
+    "Fatal: predicted damage is at least your current HP.",
+    "予測ダメージが現在のHP以上です。"
+  ],
+  "传送到任意已到过的楼层（第 44、50 层除外），落在该层入口。": [
+    "Warp to the entrance of any visited floor except 44 and 50.",
+    "訪れた階の入口へ転移します。44階と50階は移動先にできません。"
+  ],
+  "传送到本层中心对称的格子，目标必须是没有任何东西的空地。": [
+    "Jump to the tile opposite you across the center. It must be empty.",
+    "階の中心を挟んで反対側のマスに転移します。移動先は空いている必要があります。"
+  ],
+  "传送到第 {0} 层": [
+    "Warped to floor {0}.",
+    "{0}階に転移しました。"
+  ],
+  "传送罗盘": [
+    "Warp Compass",
+    "転移の羅針盤"
+  ],
+  "传送罗盘 · 隐藏测试模式": [
+    "Warp Compass · Hidden Test Mode",
+    "転移の羅針盤 · 隠しテストモード"
+  ],
+  "你的女神": [
+    "Your Goddess",
+    "あなたの女神"
+  ],
+  "你的女神被终焉女妖囚禁在第五十层，击破星幕才能救她。先算清楚战斗损失，打不动的怪可以以后回来。": [
+    "The Banshee of Ruin holds your goddess on floor 50. Break the Star Veil to reach her. Check your expected damage before fighting; you can come back for tougher enemies later.",
+    "女神は終焉のバンシーによって50階に囚われています。救うには星の結界を破らなければなりません。戦う前にダメージを確かめ、手強い敵には後で挑みましょう。"
+  ],
+  "你的金币：": [
+    "Your gold: ",
+    "所持金："
+  ],
+  "你走过的每一层，都有一颗星替我记着。": [
+    "For every floor you climbed, a star kept watch for me.",
+    "あなたが登った一階一階を、星が私の代わりに覚えている。"
+  ],
+  "你走过的每一层，都有一颗星替我记着。\n谢谢你没有放弃。\n这次，换我陪你看遍塔外的星空。": [
+    "For every floor you climbed, a star kept watch for me.\nThank you for never giving up.\nNow it's my turn to walk with you beneath the stars beyond the tower.",
+    "あなたが登った一階一階を、星が私の代わりに覚えている。\n諦めないでくれて、ありがとう。\n今度は私が、塔の外の星空をあなたと一緒に見に行く番ね。"
+  ],
+  "使用": [
+    "Use",
+    "使う"
+  ],
+  "保存到{0}": [
+    "Save to {0}",
+    "{0}に保存"
+  ],
+  "保存进度": [
+    "Save Progress",
+    "進行状況を保存"
+  ],
+  "像素风": [
+    "Pixel Art",
+    "ピクセルアート"
+  ],
+  "先攻": [
+    "First strike",
+    "先制攻撃"
+  ],
+  "先看战斗预判：「会死亡」与「无法破防」的怪先绕开。": [
+    "Check the battle preview first. Avoid enemies marked Fatal or Cannot deal damage.",
+    "まず戦闘予測を確認し、戦闘不能になる相手や防御を突破できない相手は避けましょう。"
+  ],
+  "关闭": [
+    "Close",
+    "閉じる"
+  ],
+  "出错了：{0}": [
+    "Error: {0}",
+    "エラー：{0}"
+  ],
+  "击败 {0} · 损失 {1} 生命 · 金币 +{2}": [
+    "Defeated {0} · HP -{1} · Gold +{2}",
+    "{0}を撃破 · HP -{1} · ゴールド +{2}"
+  ],
+  "击败 {0} · 生命 -{1} · 金币 +{2}": [
+    "Defeated {0} · HP -{1} · Gold +{2}",
+    "{0}を撃破 · HP -{1} · ゴールド +{2}"
+  ],
+  "击败第 50 层的终焉女妖即为通关。它的防御随第 49 层的星柱守卫减少。": [
+    "Defeat the Banshee of Ruin on floor 50 to clear the game. Defeating Star Pillar Guards on floor 49 lowers her defense.",
+    "50階の終焉のバンシーを倒せばクリア。49階の星柱の守護者を倒すと、バンシーの防御が下がります。"
+  ],
+  "击败门前的终焉女妖，即可解除封印、救回女神": [
+    "Defeat the Banshee of Ruin at the door to break the seal and rescue the goddess.",
+    "扉の前の終焉のバンシーを倒し、封印を解いて女神を救い出そう。"
+  ],
+  "凿开了一面裂墙": [
+    "Broke through a cracked wall.",
+    "ひび割れた壁を壊しました。"
+  ],
+  "凿开身边的一面裂墙。": [
+    "Breaks an adjacent cracked wall.",
+    "隣接するひび割れた壁を壊します。"
+  ],
+  "删除": [
+    "Delete",
+    "削除"
+  ],
+  "前往": [
+    "Travel",
+    "移動"
+  ],
+  "前方不能通行": [
+    "The way is blocked.",
+    "先に進めません。"
+  ],
+  "勇士": [
+    "Hero",
+    "勇者"
+  ],
+  "勇者": [
+    "Hero",
+    "勇者"
+  ],
+  "双刃机偶": [
+    "Twinblade Automaton",
+    "双刃の機械人形"
+  ],
+  "双生影": [
+    "Twin Shade",
+    "双子の影"
+  ],
+  "取消静音": [
+    "Unmute",
+    "ミュート解除"
+  ],
+  "只能传送到已到过的楼层": [
+    "You can only warp to floors you've visited.",
+    "訪れたことのある階にしか転移できません。"
+  ],
+  "可以击败": [
+    "You can win",
+    "勝利可能"
+  ],
+  "右": [
+    "Right",
+    "右"
+  ],
+  "周围没有可以炸的怪物": [
+    "There are no nearby enemies the bomb can hit.",
+    "近くに爆破できる敵がいません。"
+  ],
+  "周围没有裂墙": [
+    "There are no cracked walls nearby.",
+    "近くにひび割れた壁がありません。"
+  ],
+  "咒潮巫": [
+    "Tide Hexer",
+    "潮呪の魔女"
+  ],
+  "售完": [
+    "Sold out",
+    "売り切れ"
+  ],
+  "商人": [
+    "Merchant",
+    "商人"
+  ],
+  "四根星柱支撑着星幕。每击破一根，终焉女妖的防御就减少 125。": [
+    "Four Star Pillars sustain the Star Veil. Break one to reduce the Banshee of Ruin's defense by 125.",
+    "四本の星柱が星の結界を支えています。一本壊すごとに、終焉のバンシーの防御が125低下します。"
+  ],
+  "回声术士": [
+    "Echo Mage",
+    "反響の魔術師"
+  ],
+  "回收": [
+    "Sell",
+    "売る"
+  ],
+  "回收{0} · +{1} 金币": [
+    "Sell {0} · +{1} gold",
+    "{0}を売る · +{1}ゴールド"
+  ],
+  "回收{0}：每把 {1} 金币（不限次）": [
+    "Sell {0} for {1} gold each (unlimited)",
+    "{0}を1本{1}ゴールドで売却（回数無制限）"
+  ],
+  "回收了一把钥匙，获得 {0} 金币": [
+    "Sold a key for {0} gold.",
+    "鍵を1本売って{0}ゴールドを獲得しました。"
+  ],
+  "回收成功，获得 {0} 金币": [
+    "Sold for {0} gold.",
+    "売却して{0}ゴールドを獲得しました。"
+  ],
+  "回收：每把 +金币（不限次）": [
+    "Sell keys for gold (unlimited)",
+    "鍵を売ってゴールドを獲得（回数無制限）"
+  ],
+  "地窖看守长": [
+    "Cellar Warden",
+    "地下貯蔵庫の看守長"
+  ],
+  "墙不全是实心的。有的墙是空心的，多看几眼它的厚度。": [
+    "Not every wall is solid. Some are hollow—look closely at how thick they are.",
+    "すべての壁が頑丈とは限りません。中が空洞の壁もあります。厚みをよく見比べてください。"
+  ],
+  "大灼域祭司": [
+    "High Burning Priest",
+    "灼熱の大司祭"
+  ],
+  "她为你留了一封信": [
+    "She left you a letter.",
+    "彼女はあなたに手紙を残していた。"
+  ],
+  "她会在关键的层给你提示与检查点，也会赠送传送罗盘。": [
+    "The guide offers hints at key floors and gives you the Warp Compass.",
+    "案内人は要所でヒントをくれます。転移の羅針盤も彼女からもらえます。"
+  ],
+  "存入": [
+    "Save",
+    "保存"
+  ],
+  "存档": [
+    "Save",
+    "セーブ"
+  ],
+  "存档 {0}": [
+    "Slot {0}",
+    "セーブ枠 {0}"
+  ],
+  "存档失败": [
+    "Could not save the game.",
+    "セーブできませんでした。"
+  ],
+  "存档失败，请检查存储空间": [
+    "Could not save. Check your available storage.",
+    "セーブできません。空き容量を確認してください。"
+  ],
+  "存档失败：浏览器存储不可用": [
+    "Could not save: browser storage is unavailable.",
+    "セーブ失敗：ブラウザーのストレージを利用できません。"
+  ],
+  "存档成功": [
+    "Game saved.",
+    "セーブしました。"
+  ],
+  "对称位置不是没有东西的空地": [
+    "The mirrored tile is not empty.",
+    "対称位置のマスが空いていません。"
+  ],
+  "左": [
+    "Left",
+    "左"
+  ],
+  "巨钳海魔": [
+    "Greatclaw Horror",
+    "巨鋏の海魔"
+  ],
+  "已售完": [
+    "Sold out",
+    "売り切れ"
+  ],
+  "已撤销一步": [
+    "Last move undone.",
+    "一手戻しました。"
+  ],
+  "已经售完": [
+    "Already sold out.",
+    "すでに売り切れです。"
+  ],
+  "已读取存档 · 第 {0} 层": [
+    "Game loaded · Floor {0}",
+    "ロードしました · {0}階"
+  ],
+  "带着约定，返回标题": [
+    "Return to Title",
+    "約束を胸に、タイトルへ"
+  ],
+  "序章": [
+    "Prologue",
+    "序章"
+  ],
+  "引路人": [
+    "Guide",
+    "案内人"
+  ],
+  "当前生命翻倍，只能用一次。": [
+    "Doubles your current HP. Single use.",
+    "現在のHPを2倍にします。1回限り。"
+  ],
+  "很久以前，地底矿窖的尽头凿出了一座观星塔。塔一直修到星空里，顶端悬着一张星图。": [
+    "Long ago, an observatory tower rose from the far end of an underground mine. It reached into the night sky, with a star chart hanging at its summit.",
+    "遠い昔、地下鉱山の奥に天文塔が築かれた。塔は星空まで伸び、その頂には一枚の星図が懸かっていた。"
+  ],
+  "快速存档": [
+    "Quick Save",
+    "クイックセーブ"
+  ],
+  "愿星光照亮你的前路。": [
+    "May starlight guide you on your way.",
+    "星の光があなたの行く道を照らしますように。"
+  ],
+  "我方每回合 {0} · 怪物每回合 {1}": [
+    "Your damage per round: {0} · Enemy: {1}",
+    "毎ターンのダメージ：自分 {0} · 敵 {1}"
+  ],
+  "或": [
+    "or",
+    "または"
+  ],
+  "战斗预判": [
+    "Battle Preview",
+    "戦闘予測"
+  ],
+  "手机请使用屏幕上的方向键。": [
+    "On mobile, use the on-screen direction pad.",
+    "スマートフォンでは画面の方向ボタンを使います。"
+  ],
+  "打不动（无法破防）或会死亡的怪物，游戏会拒绝你走进去，不会扣血。": [
+    "The game blocks fights if you can't damage the enemy or would die. You lose no HP.",
+    "敵にダメージを与えられない場合や、自分が倒れる場合は戦闘を開始せず、HPも減りません。"
+  ],
+  "拆开这份惊喜": [
+    "Open the Letter",
+    "手紙を開く"
+  ],
+  "持钥狱卒": [
+    "Keykeeper",
+    "鍵持ちの看守"
+  ],
+  "撤销": [
+    "Undo",
+    "やり直し"
+  ],
+  "撤销 {0}/50": [
+    "Undo {0}/50",
+    "やり直し {0}/50"
+  ],
+  "撤销一步": [
+    "Undo Last Move",
+    "一手戻す"
+  ],
+  "撤销与存档": [
+    "Undo and Save",
+    "やり直しとセーブ"
+  ],
+  "撤销最多 50 步。每次操作自动保存，也可以在菜单中手动存读档。": [
+    "Undo up to 50 moves. Each action is saved automatically. You can also save or load from the menu.",
+    "最大50手まで戻せます。操作ごとに自動セーブし、メニューから手動セーブやロードもできます。"
+  ],
+  "撤销最多 50 步，每次操作自动存档，也可以随时手动存档。": [
+    "Undo up to 50 moves. The game saves automatically after each action, and you can save manually at any time.",
+    "最大50手まで戻せます。操作ごとに自動セーブし、手動セーブもできます。"
+  ],
+  "操作": [
+    "Controls",
+    "操作方法"
+  ],
+  "操作说明": [
+    "How to Play",
+    "遊び方"
+  ],
+  "收起": [
+    "Collapse",
+    "折りたたむ"
+  ],
+  "攻击": [
+    "ATK",
+    "攻撃"
+  ],
+  "攻击 +{0}": [
+    "ATK +{0}",
+    "攻撃 +{0}"
+  ],
+  "攻略小贴士": [
+    "Strategy Tips",
+    "攻略のヒント"
+  ],
+  "新的冒险": [
+    "New Adventure",
+    "新しい冒険"
+  ],
+  "方向控制": [
+    "Movement controls",
+    "移動操作"
+  ],
+  "方向键 / 滑动 移动 · 预判卡片显示战斗损失": [
+    "Arrow keys or swipe to move · Preview damage before fighting",
+    "方向キー・スワイプで移動 · 戦闘前に被ダメージを確認"
+  ],
+  "方向键 / 滑动移动 · 预判战斗损失": [
+    "Arrow keys or swipe to move · Preview damage before fighting",
+    "方向キー・スワイプで移動 · 戦闘前に被ダメージを確認"
+  ],
+  "旅途提示": [
+    "Journey Notes",
+    "冒険のヒント"
+  ],
+  "旅途提示 · 点击查看操作说明": [
+    "Journey Notes · Tap for help",
+    "冒険のヒント · タップして遊び方を確認"
+  ],
+  "旅途提示将显示在这里": [
+    "Journey notes appear here.",
+    "冒険のヒントがここに表示されます。"
+  ],
+  "无效方向": [
+    "Invalid direction.",
+    "無効な方向です。"
+  ],
+  "无法破防": [
+    "Cannot deal damage",
+    "防御を突破できない"
+  ],
+  "无法破防：攻击不大于防御": [
+    "Cannot deal damage: ATK does not exceed DEF.",
+    "攻撃が防御を上回らないため、ダメージを与えられません。"
+  ],
+  "旧铁剑": [
+    "Old Iron Sword",
+    "古びた鉄の剣"
+  ],
+  "星尘游魂": [
+    "Stardust Wraith",
+    "星屑の亡霊"
+  ],
+  "星幕": [
+    "Star Veil",
+    "星の結界"
+  ],
+  "星幕散去，她从星光里走向你。": [
+    "The Star Veil fades, and she steps out of the starlight.",
+    "星の結界が消え、星明かりの中から彼女が歩み寄る。"
+  ],
+  "星幕散去，她从星光里走向你。\n“我就知道，你一定会来。”": [
+    "The Star Veil fades, and she steps out of the starlight.\n“I knew you would come.”",
+    "星の結界が消え、星明かりの中から彼女が歩み寄る。\n「きっと来てくれるって、信じてた」"
+  ],
+  "星柱守卫": [
+    "Star Pillar Guard",
+    "星柱の守護者"
+  ],
+  "星穹": [
+    "Star Vault",
+    "星の天蓋"
+  ],
+  "星穹塔": [
+    "Star Dome Tower",
+    "星穹の塔"
+  ],
+  "星穹塔经典": [
+    "Star Dome Classic",
+    "星穹の塔クラシック"
+  ],
+  "星穹盾": [
+    "Star Dome Shield",
+    "星穹の盾"
+  ],
+  "星辉法皇": [
+    "Astral Hierophant",
+    "星輝の法王"
+  ],
+  "星陨剑": [
+    "Starfall Sword",
+    "星墜の剣"
+  ],
+  "暂停": [
+    "Pause",
+    "一時停止"
+  ],
+  "有的墙是空心的。留意墙面上不一样的地方。": [
+    "Some walls are hollow. Look for differences in their surfaces.",
+    "中が空洞の壁もあります。壁の表面がほかと違っていないかよく見てください。"
+  ],
+  "木纹圆盾": [
+    "Wooden Round Shield",
+    "木の丸盾"
+  ],
+  "未实现": [
+    "Not implemented.",
+    "未実装です。"
+  ],
+  "未知选项": [
+    "Unknown option.",
+    "不明な選択肢です。"
+  ],
+  "本层没有熔岩": [
+    "There is no lava on this floor.",
+    "この階には溶岩がありません。"
+  ],
+  "本座祭坛档位 {0} · 全塔已购买 {1} 次 · 下一次花费 {2} 金币": [
+    "Altar tier {0} · {1} purchases so far · Next cost: {2} gold",
+    "祭壇ランク {0} · 購入回数 {1} · 次の費用：{2}ゴールド"
+  ],
+  "机": [
+    "Lock",
+    "仕掛"
+  ],
+  "机关": [
+    "Mechanism",
+    "仕掛け"
+  ],
+  "机关门，需要触发机关": [
+    "Trigger the mechanism to open this door.",
+    "仕掛けを作動させると扉が開きます。"
+  ],
+  "朽骨兵": [
+    "Bone Soldier",
+    "朽ち骨の兵"
+  ],
+  "朽骨卫士": [
+    "Bone Guard",
+    "朽ち骨の衛兵"
+  ],
+  "核心玩法": [
+    "Game Mechanics",
+    "基本ルール"
+  ],
+  "楼层无效": [
+    "Invalid floor.",
+    "無効な階です。"
+  ],
+  "死": [
+    "KO",
+    "死"
+  ],
+  "每一层都是 11×11 的固定地图，全塔分五个区。没有经验、没有随机数：战斗结果在开打前就能算清楚， 变强只靠晶石、剑盾与祭坛。钥匙永远比门少，要取舍这扇门值不值得开。": [
+    "The tower has five zones, with a fixed 11×11 map on each floor. No XP or randomness: you can predict every fight. Grow stronger through crystals, gear, and altars. There are fewer keys than doors, so choose carefully.",
+    "塔は五つの区域に分かれ、各階は固定の11×11マップ。経験値も乱数もなく、戦う前に結果がわかります。結晶や装備、祭壇で強くなり、限られた鍵で開ける扉を選びましょう。"
+  ],
+  "每次 +{0}": [
+    "+{0} per purchase",
+    "購入ごとに +{0}"
+  ],
+  "没有{0}": [
+    "You don't have {0}.",
+    "{0}を持っていません。"
+  ],
+  "没有可以回收的钥匙": [
+    "You have no keys to sell.",
+    "売れる鍵がありません。"
+  ],
+  "没有可以撤销的操作": [
+    "No moves to undo.",
+    "戻せる手がありません。"
+  ],
+  "洞蝠": [
+    "Cave Bat",
+    "洞窟コウモリ"
+  ],
+  "测绘员会为你指路。收集装备，破解机关，击破四根星柱，救回你的女神。": [
+    "A surveyor will guide you. Gather gear, solve the tower's mechanisms, and break the four Star Pillars to rescue your goddess.",
+    "測量士が道を案内してくれる。装備を集め、仕掛けを解き、四本の星柱を破壊して女神を救い出そう。"
+  ],
+  "海兽": [
+    "Sea beast",
+    "海獣"
+  ],
+  "深鳞武士": [
+    "Deepscale Warrior",
+    "深鱗の戦士"
+  ],
+  "清除了 {0} 格熔岩": [
+    "Cleared {0} lava tiles.",
+    "溶岩を{0}マス取り除きました。"
+  ],
+  "清除本层全部熔岩，永久变成空地。": [
+    "Permanently clears all lava on the current floor.",
+    "この階の溶岩をすべて取り除き、空きマスに変えます。"
+  ],
+  "游戏介绍": [
+    "About the Game",
+    "ゲーム紹介"
+  ],
+  "游戏已结束": [
+    "The game has ended.",
+    "ゲームは終了しました。"
+  ],
+  "游戏简介": [
+    "Overview",
+    "概要"
+  ],
+  "潮汐司钟": [
+    "Tide Bellkeeper",
+    "潮の鐘守"
+  ],
+  "潮汐机关城": [
+    "Tideworks",
+    "潮のからくり城"
+  ],
+  "潮纹盾": [
+    "Tidecrest Shield",
+    "潮紋の盾"
+  ],
+  "潮蟹": [
+    "Tide Crab",
+    "潮ガニ"
+  ],
+  "潮钢剑": [
+    "Tidesteel Sword",
+    "潮鋼の剣"
+  ],
+  "灼域": [
+    "Burning Aura",
+    "灼熱のオーラ"
+  ],
+  "灼域灼伤 -{0} 生命": [
+    "Burning Aura · HP -{0}",
+    "灼熱のオーラ · HP -{0}"
+  ],
+  "灼域灼伤 -{0} 生命（原始伤害 {1}）": [
+    "Burning Aura · HP -{0} (base damage: {1})",
+    "灼熱のオーラ · HP -{0}（元のダメージ：{1}）"
+  ],
+  "灼域祭司": [
+    "Burning Priest",
+    "灼熱の司祭"
+  ],
+  "灼域：走完一步后，与灼域怪相邻会扣生命。星穹盾可以免疫。": [
+    "Burning Aura: ending a move next to an aura enemy costs HP. The Star Dome Shield blocks it.",
+    "灼熱のオーラ：移動後にオーラを持つ敵と隣接しているとHPが減ります。星穹の盾で防げます。"
+  ],
+  "炉渣兵": [
+    "Slag Soldier",
+    "炉滓の兵"
+  ],
+  "炉铸盾": [
+    "Forgecast Shield",
+    "炉鋳の盾"
+  ],
+  "炸掉了 {0} 只怪物（不给金币）": [
+    "Destroyed {0} enemies (no gold).",
+    "敵を{0}体爆破しました（ゴールドなし）。"
+  ],
+  "炸掉身边所有非 BOSS 怪物（不给金币，算作已击败）。只能用一次。": [
+    "Defeats all adjacent non-boss enemies without awarding gold. Single use.",
+    "隣接するボス以外の敵をすべて倒します。ゴールドは得られません。1回限り。"
+  ],
+  "炸药": [
+    "Bomb",
+    "爆弾"
+  ],
+  "点击怪物查看损失、回合数与需要的生命。会死亡或无法破防的怪，游戏拒绝你走进去。": [
+    "Tap an enemy to preview damage, rounds, and minimum HP. You can't start a fatal fight or fight an enemy you can't damage.",
+    "敵をタップすると予測ダメージ、ターン数、必要HPを確認できます。勝てない戦闘やダメージを与えられない戦闘は始まりません。"
+  ],
+  "点击方向盘、滑动棋盘，或使用键盘方向键 / WASD 移动。方向盘中间和 Z 键可以撤销，最多保留 50 步。\n\n碰到怪物先战斗、碰到门先开门，再走一步才会进入。无法破防或会死亡时禁止战斗。点击怪物可查看完整预判。\n\n撞击引路人触发剧情；在祭坛或商人旁边交易。背包中使用主动道具，罗盘可返回到过的楼层。每次操作自动保存，菜单可手动存读档。\n\n快捷键：B 背包，C 罗盘，Esc 菜单。": [
+    "Use the direction pad, swipe on the board, or press the arrow keys or WASD to move. Press the pad center or Z to undo up to 50 moves.\n\nWalk into a monster to fight or a door to open it, then take another step to enter the tile. The game blocks fights you can't win. Tap an enemy for a full preview.\n\nWalk into the guide to talk, or stand next to an altar or merchant to trade. Use items from your inventory. The compass returns you to visited floors. Autosave runs as you play; the menu also lets you save and load.\n\nShortcuts: B Inventory, C Compass, Esc Menu.",
+    "方向ボタン、盤面のスワイプ、方向キー、WASDで移動します。方向ボタンの中央またはZで最大50手まで戻せます。\n\n敵に向かうと戦闘、扉に向かうと開錠します。マスに入るにはもう一歩進みます。勝てない戦闘は始まりません。敵をタップすると戦闘予測が表示されます。\n\n案内人に向かうと会話が始まります。祭壇や商人の隣で取引し、持ち物から道具を使えます。羅針盤で訪れたことのある階に戻れます。プレイ中は自動セーブされ、メニューから手動セーブやロードもできます。\n\nショートカット：B 持ち物、C 羅針盤、Esc メニュー。"
+  ],
+  "熔岩巨龙": [
+    "Lava Dragon",
+    "溶岩の巨竜"
+  ],
+  "熔岩巨龙倒下了，它守护的霜核落在原地。": [
+    "The Lava Dragon falls, dropping the Frost Core it guarded.",
+    "溶岩の巨竜が倒れ、守っていた霜の核を落とした。"
+  ],
+  "熔心剑": [
+    "Moltenheart Sword",
+    "溶心の剣"
+  ],
+  "熔核傀儡": [
+    "Moltencore Golem",
+    "溶核のゴーレム"
+  ],
+  "熔火犬": [
+    "Magma Hound",
+    "溶炎の猟犬"
+  ],
+  "熔炉深处": [
+    "Forge Depths",
+    "熔炉の奥底"
+  ],
+  "熔炉督主": [
+    "Forge Overlord",
+    "熔炉の統領"
+  ],
+  "熔炉督主倒下，王座深处升起通往 41 层的阶梯。": [
+    "The Forge Overlord falls. A staircase to floor 41 rises behind the throne.",
+    "熔炉の統領が倒れ、玉座の奥に41階へ続く階段が現れた。"
+  ],
+  "特性：{0}": [
+    "Traits: {0}",
+    "特性：{0}"
+  ],
+  "琉璃傀": [
+    "Glass Golem",
+    "瑠璃のゴーレム"
+  ],
+  "生命": [
+    "HP",
+    "HP"
+  ],
+  "生命 ": [
+    "HP ",
+    "HP "
+  ],
+  "生命 +{0}": [
+    "HP +{0}",
+    "HP +{0}"
+  ],
+  "生命 {0} · 攻击 {1} · 防御 {2}": [
+    "HP {0} · ATK {1} · DEF {2}",
+    "HP {0} · 攻撃 {1} · 防御 {2}"
+  ],
+  "生命翻倍，现为 {0}": [
+    "HP doubled to {0}.",
+    "HPが2倍になり、{0}になりました。"
+  ],
+  "界面风格": [
+    "Visual Style",
+    "外観テーマ"
+  ],
+  "登上五十层，救回你的女神。": [
+    "Climb all 50 floors and rescue your goddess.",
+    "50階まで登り、女神を救い出そう。"
+  ],
+  "看完本句": [
+    "Show Full Line",
+    "全文表示"
+  ],
+  "石甲虫": [
+    "Stone Beetle",
+    "岩甲虫"
+  ],
+  "矿镐": [
+    "Pickaxe",
+    "つるはし"
+  ],
+  "祭坛": [
+    "Altar",
+    "祭壇"
+  ],
+  "祭坛与商人": [
+    "Altars and Merchants",
+    "祭壇と商人"
+  ],
+  "祭坛优先买防御。攻击只要够破防就行，别把金币全压在攻击上。": [
+    "Prioritize defense at the altar. You only need enough attack to break through the enemy's defense, so don't spend all your gold on it.",
+    "祭壇では防御を優先しましょう。攻撃は敵の防御を突破できる分だけで十分です。ゴールドをすべて攻撃につぎ込まないように。"
+  ],
+  "祭坛优先买防御，攻击只要够越过数值门即可。": [
+    "Prioritize defense at altars. Only buy enough attack to get past tough enemies.",
+    "祭壇では防御を優先し、攻撃は手強い敵の防御を突破できる分だけ上げましょう。"
+  ],
+  "祭坛用金币换生命、攻击或防御，价格随全塔购买次数上涨。商人只卖一次性的补给。": [
+    "Spend gold at altars to gain HP, ATK, or DEF. The cost rises with every altar purchase across the tower. Merchant supplies can be bought once.",
+    "祭壇ではゴールドでHP・攻撃・防御を上げられます。費用は塔全体での購入回数に応じて上がります。商人の補給品は一度だけ購入できます。"
+  ],
+  "移动，按住连续移动": [
+    "to move; hold to keep moving",
+    "で移動。長押しで連続移動"
+  ],
+  "移动：方向键、WASD，或触屏方向键；也可以点击相邻的格子，或在棋盘上滑动。": [
+    "Move with arrow keys, WASD, or the on-screen pad. You can also tap an adjacent tile or swipe on the board.",
+    "方向キー、WASD、画面の方向ボタンで移動します。隣のマスをタップしたり、盤面をスワイプしたりしても移動できます。"
+  ],
+  "穹顶铁卫": [
+    "Dome Iron Guard",
+    "天蓋の鉄衛兵"
+  ],
+  "空": [
+    "Empty",
+    "空き"
+  ],
+  "第 41 层之后，灼域怪会在你走完一步后灼伤相邻的勇者。星穹盾可以免疫。": [
+    "From floor 41 onward, adjacent aura enemies burn you after each move. The Star Dome Shield grants immunity.",
+    "41階以降、灼熱のオーラを持つ敵の隣では一歩ごとにダメージを受けます。星穹の盾で防げます。"
+  ],
+  "第 50 层不能使用传送罗盘": [
+    "The Warp Compass cannot be used on floor 50.",
+    "50階では転移の羅針盤を使えません。"
+  ],
+  "第 50 层不能使用罗盘": [
+    "The compass cannot be used on floor 50.",
+    "50階では羅針盤を使えません。"
+  ],
+  "第 {0} 层": [
+    "Floor {0}",
+    "{0}階"
+  ],
+  "第 {0} 层 · {1}": [
+    "Floor {0} · {1}",
+    "{0}階 · {1}"
+  ],
+  "第 {0} 层 · 生命 {1}": [
+    "Floor {0} · HP {1}",
+    "{0}階 · HP {1}"
+  ],
+  "第 {0} 次购买，花费 {1}": [
+    "Purchase #{0} cost {1} gold.",
+    "{0}回目の購入：{1}ゴールドを使用しました。"
+  ],
+  "第五十层 · 重逢": [
+    "Floor 50 · Reunion",
+    "50階 · 再会"
+  ],
+  "红晶": [
+    "Red Crystal",
+    "赤の結晶"
+  ],
+  "红药水": [
+    "Red Potion",
+    "赤のポーション"
+  ],
+  "红钥匙": [
+    "Red Key",
+    "赤い鍵"
+  ],
+  "纪念称号 · 她的唯一勇者": [
+    "Keepsake Title · Her One and Only Hero",
+    "記念称号 · 彼女のただ一人の勇者"
+  ],
+  "终于，等到你": [
+    "At Last, You're Here",
+    "ようやく、会えたね"
+  ],
+  "终焉女妖": [
+    "Banshee of Ruin",
+    "終焉のバンシー"
+  ],
+  "终焉女妖将你心爱的女神囚禁在第五十层，让星幕封住了她的光芒。你带着重逢的约定，踏上登塔之路。": [
+    "The Banshee of Ruin imprisoned your beloved goddess on the fiftieth floor and sealed away her light behind the Star Veil. You set out to climb the tower, carrying a promise to meet again.",
+    "終焉のバンシーは愛する女神を50階に閉じ込め、星の結界でその光を封じた。再会の約束を胸に、あなたは塔を登り始める。"
+  ],
+  "结局": [
+    "Ending",
+    "エンディング"
+  ],
+  "继续": [
+    "Continue",
+    "続ける"
+  ],
+  "继续冒险": [
+    "Continue Adventure",
+    "冒険を続ける"
+  ],
+  "罗盘": [
+    "Compass",
+    "羅針盤"
+  ],
+  "罗盘不能传送到第 44、50 层": [
+    "The compass cannot warp to floors 44 or 50.",
+    "44階と50階には転移できません。"
+  ],
+  "聚财符": [
+    "Fortune Charm",
+    "招財のお守り"
+  ],
+  "背包": [
+    "Inventory",
+    "持ち物"
+  ],
+  "背包是空的。": [
+    "Your inventory is empty.",
+    "持ち物はありません。"
+  ],
+  "自动存档": [
+    "Autosave",
+    "オートセーブ"
+  ],
+  "自动存档在换层时写入，只能读取。": [
+    "The autosave slot is read-only and updates as you play.",
+    "オートセーブ枠は読み込み専用で、プレイ中に更新されます。"
+  ],
+  "至少需要 {0} 生命（当前 {1}）": [
+    "Minimum HP: {0} (current: {1})",
+    "必要HP：{0}（現在：{1}）"
+  ],
+  "致我的勇者": [
+    "To My Hero",
+    "私の勇者へ"
+  ],
+  "苔团": [
+    "Moss Blob",
+    "苔スライム"
+  ],
+  "苔藓地窖": [
+    "Moss Cellar",
+    "苔むす地下貯蔵庫"
+  ],
+  "英雄联盟": [
+    "League of Legends",
+    "リーグ・オブ・レジェンド"
+  ],
+  "获得 {0}": [
+    "Acquired {0}",
+    "{0}を入手"
+  ],
+  "获救的女神捧着一颗心，向你微笑": [
+    "The rescued goddess smiles at you, holding a heart.",
+    "救われた女神がハートを抱き、あなたに微笑みます。"
+  ],
+  "菜单": [
+    "Menu",
+    "メニュー"
+  ],
+  "蓄能瓶": [
+    "Vital Flask",
+    "生命のフラスコ"
+  ],
+  "蓝晶": [
+    "Blue Crystal",
+    "青の結晶"
+  ],
+  "蓝药水": [
+    "Blue Potion",
+    "青のポーション"
+  ],
+  "蓝钥匙": [
+    "Blue Key",
+    "青い鍵"
+  ],
+  "虚空利刃": [
+    "Void Blade",
+    "虚空の刃"
+  ],
+  "蚀菌师": [
+    "Blight Shaman",
+    "腐菌の呪術師"
+  ],
+  "裂": [
+    "Crack",
+    "亀裂"
+  ],
+  "设置": [
+    "Settings",
+    "設定"
+  ],
+  "语言": [
+    "Language",
+    "言語"
+  ],
+  "读取": [
+    "Load",
+    "読み込む"
+  ],
+  "读取{0}": [
+    "Load {0}",
+    "{0}を読み込む"
+  ],
+  "读取存档": [
+    "Load Game",
+    "ロード"
+  ],
+  "读档": [
+    "Load",
+    "ロード"
+  ],
+  "谢谢你没有放弃。": [
+    "Thank you for never giving up.",
+    "諦めないでくれて、ありがとう。"
+  ],
+  "购买成功，花费 {0}": [
+    "Purchased for {0} gold.",
+    "{0}ゴールドで購入しました。"
+  ],
+  "购买成功，花费 {0} 金币": [
+    "Purchased for {0} gold.",
+    "{0}ゴールドで購入しました。"
+  ],
+  "走向怪物即开战；点击怪物可查看预计损失、回合数与需要的生命。": [
+    "Walk into an enemy to fight. Tap it to see expected damage, rounds, and minimum HP.",
+    "敵に向かって進むと戦闘が始まります。タップすると予測ダメージ、ターン数、必要HPを確認できます。"
+  ],
+  "跳过全部": [
+    "Skip All",
+    "すべてスキップ"
+  ],
+  "边界外": [
+    "Out of bounds.",
+    "範囲外です。"
+  ],
+  "返回标题": [
+    "Return to Title",
+    "タイトルに戻る"
+  ],
+  "返回游戏主界面": [
+    "Return to Title Screen",
+    "タイトル画面に戻る"
+  ],
+  "还未获得传送罗盘": [
+    "You haven't found the Warp Compass yet.",
+    "転移の羅針盤をまだ入手していません。"
+  ],
+  "还没有其他可以去的楼层。": [
+    "There are no other floors you can warp to yet.",
+    "まだ転移できる別の階がありません。"
+  ],
+  "这一层的商人已经没有可交易的东西了。": [
+    "There's nothing left to trade on this floor.",
+    "この階の商人には、もう取引できる品がありません。"
+  ],
+  "这个存档无法读取": [
+    "Could not read this save.",
+    "このセーブデータを読み込めません。"
+  ],
+  "这件道具不能主动使用": [
+    "This item cannot be used directly.",
+    "この道具は直接使えません。"
+  ],
+  "这是传送罗盘，可以回到去过的楼层。石甲虫守着蓝钥匙，等拿到剑再回来。": [
+    "This is the Warp Compass. It takes you back to floors you've visited. A Stone Beetle guards the Blue Key; come back once you've found a sword.",
+    "これは転移の羅針盤。訪れた階に戻れます。青い鍵は岩甲虫が守っています。剣を手に入れてから戻るといいでしょう。"
+  ],
+  "这次，换我陪你看遍塔外的星空。": [
+    "Now it's my turn to walk with you beneath the stars beyond the tower.",
+    "今度は私が、塔の外の星空をあなたと一緒に見に行く番ね。"
+  ],
+  "这里是中盘检查点。镜廊的怪一层比一层难，别硬拼。多出来的黄钥匙可以卖给这层的商人。": [
+    "This is a mid-tower checkpoint. The enemies in the Mirror Gallery get tougher with every floor. Don't force a fight. You can sell spare Yellow Keys to the merchant here.",
+    "ここは中盤のチェックポイントです。鏡の回廊の敵は上の階ほど手強くなります。無理に戦わず、余った黄色い鍵はここの商人に売りましょう。"
+  ],
+  "这里是四区检查点。墙上有裂纹的地方，后面多半藏着东西，三十七层尤其多。": [
+    "This is the fourth-zone checkpoint. Cracked walls often hide something, especially on floor 37.",
+    "ここは第四区域のチェックポイントです。ひび割れた壁の奥には何かが隠れていることが多く、特に37階にたくさんあります。"
+  ],
+  "这里是镜廊的第一个安全层。三区的怪不多，但每一层都有一个机关：全灭一组镜影，门就会开。打不动的怪先绕开，祭坛在这里。": [
+    "This is the first safe floor in the Mirror Gallery. The third zone has few enemies, but each floor has a mechanism: defeat a group of Mirror Shades to open a door. Leave tough enemies for later. The altar is here.",
+    "ここは鏡の回廊で最初の安全な階です。第三区域は敵が少ないものの、各階に仕掛けがあります。鏡の影を一組すべて倒すと扉が開きます。手強い敵は後回しに。祭壇はここにあります。"
+  ],
+  "这里没有这件商品": [
+    "This merchant doesn't offer that item.",
+    "この商品は売っていません。"
+  ],
+  "这面墙是假的，已经打通": [
+    "The false wall is gone.",
+    "隠し壁を崩しました。"
+  ],
+  "连击": [
+    "Double strike",
+    "連続攻撃"
+  ],
+  "选择一层，传送到它的入口。第 44、50 层不能作为目标。": [
+    "Choose a floor to warp to its entrance. Floors 44 and 50 are excluded.",
+    "階を選ぶと、その入口に転移します。44階と50階は選べません。"
+  ],
+  "逐潮枪": [
+    "Tidechaser Spear",
+    "追潮の槍"
+  ],
+  "通关": [
+    "Game Cleared",
+    "クリア"
+  ],
+  "通关纪念  ·  50 / 50\n生命 {0}  ·  攻击 {1}  ·  防御 {2}": [
+    "Clear Record · 50 / 50\nHP {0} · ATK {1} · DEF {2}",
+    "クリア記録 · 50 / 50\nHP {0} · 攻撃 {1} · 防御 {2}"
+  ],
+  "通关纪念 · 50 / 50": [
+    "Clear Record · 50 / 50",
+    "クリア記録 · 50 / 50"
+  ],
+  "重锤督军": [
+    "Hammer Warlord",
+    "大槌の将軍"
+  ],
+  "金币": [
+    "Gold",
+    "ゴールド"
+  ],
+  "金币 {0}": [
+    "Gold: {0}",
+    "ゴールド：{0}"
+  ],
+  "金币 {0} · 本次价格 {1}": [
+    "Gold: {0} · Cost: {1}",
+    "所持金：{0} · 今回の費用：{1}"
+  ],
+  "金币不足，需要 {0}": [
+    "Not enough gold. You need {0}.",
+    "ゴールドが足りません。{0}必要です。"
+  ],
+  "钥匙": [
+    "Key",
+    "鍵"
+  ],
+  "钥匙与门": [
+    "Keys and Doors",
+    "鍵と扉"
+  ],
+  "铁壳蚌": [
+    "Ironclad Clam",
+    "鉄殻貝"
+  ],
+  "锻魂师": [
+    "Soul Smith",
+    "魂の鍛冶師"
+  ],
+  "镜廊": [
+    "Mirror Gallery",
+    "鏡の回廊"
+  ],
+  "镜廊之主": [
+    "Lord of the Mirror Gallery",
+    "鏡の回廊の主"
+  ],
+  "镜影": [
+    "Mirror Shade",
+    "鏡の影"
+  ],
+  "镜银盾": [
+    "Mirrorsilver Shield",
+    "鏡銀の盾"
+  ],
+  "镜锋剑": [
+    "Mirrorblade",
+    "鏡刃の剣"
+  ],
+  "镜面跃迁到 ({0}, {1})": [
+    "Mirror jump to ({0}, {1}).",
+    "({0}, {1})に鏡面転移しました。"
+  ],
+  "镜面跃迁器": [
+    "Mirror Jumper",
+    "鏡面転移器"
+  ],
+  "门、假墙、怪物都不会让你移动；走进去之前先看清楚。": [
+    "Opening doors, breaking false walls, and fighting don't move you into the tile. Check before stepping forward.",
+    "扉を開けたり、隠し壁を壊したり、戦ったりしてもそのマスには移動しません。進む前に確認しましょう。"
+  ],
+  "门已打开": [
+    "Door opened.",
+    "扉が開きました。"
+  ],
+  "门需要对应颜色的钥匙，没有钥匙时不会打开；假墙撞一次就变成空地；这两种情况、以及打怪，都不会让你移动。": [
+    "Doors require a matching key. Walk into a false wall once to break it. Opening a door, breaking a wall, and fighting all leave you on your current tile.",
+    "扉には同じ色の鍵が必要です。隠し壁には一度体当たりすると壊れます。扉を開ける、壁を壊す、戦うといった行動ではその場にとどまります。"
+  ],
+  "防御": [
+    "DEF",
+    "防御"
+  ],
+  "防御 +{0}": [
+    "DEF +{0}",
+    "防御 +{0}"
+  ],
+  "隐藏测试模式已开启：罗盘可传送至任意楼层": [
+    "Hidden test mode enabled: the compass can warp to any floor.",
+    "隠しテストモードを有効化：すべての階に転移できます。"
+  ],
+  "隐藏测试模式：可传送至任意楼层，包括第 44、50 层。": [
+    "Hidden test mode: warp to any floor, including 44 and 50.",
+    "隠しテストモード：44階・50階を含む全階に転移できます。"
+  ],
+  "需要{0}才能打开": [
+    "You need a {0} to open this door.",
+    "開けるには{0}が必要です。"
+  ],
+  "需要站在商人旁边": [
+    "Stand next to the merchant.",
+    "商人の隣に立ってください。"
+  ],
+  "需要站在祭坛旁边": [
+    "Stand next to the altar.",
+    "祭壇の隣に立ってください。"
+  ],
+  "霜核": [
+    "Frost Core",
+    "霜の核"
+  ],
+  "静音": [
+    "Mute",
+    "ミュート"
+  ],
+  "音量": [
+    "Volume",
+    "音量"
+  ],
+  "预计损失 {0} · 回合数 {1}": [
+    "Expected damage: {0} · Rounds: {1}",
+    "予測ダメージ：{0} · ターン数：{1}"
+  ],
+  "魔兽世界": [
+    "World of Warcraft",
+    "ワールド・オブ・ウォークラフト"
+  ],
+  "魔兽争霸": [
+    "Warcraft",
+    "ウォークラフト"
+  ],
+  "魔攻": [
+    "Magic attack",
+    "魔法攻撃"
+  ],
+  "鲛卫": [
+    "Shark Guard",
+    "サメの衛兵"
+  ],
+  "黄、蓝、红钥匙开对应颜色的门，用完即消失。钥匙比门少，每层都要放弃几扇门。": [
+    "Yellow, blue, and red keys open matching doors and are consumed on use. Keys are scarce, so some doors must stay closed.",
+    "黄・青・赤の鍵で同じ色の扉を開けます。鍵は使い切りで、すべての扉を開けることはできません。"
+  ],
+  "黄钥匙": [
+    "Yellow Key",
+    "黄色い鍵"
+  ],
+  "黑铁骑士": [
+    "Black Iron Knight",
+    "黒鉄の騎士"
+  ],
+  "齿轮傀": [
+    "Gear Puppet",
+    "歯車人形"
+  ],
+  "龙": [
+    "Dragon",
+    "竜"
+  ],
+  "龙牙匕": [
+    "Dragonfang Dagger",
+    "竜牙の短剣"
+  ],
+  "（BOSS）": [
+    " (Boss)",
+    "（ボス）"
+  ],
+  "（售完）": [
+    " (Sold out)",
+    "（売り切れ）"
+  ]
+}
