@@ -22,7 +22,9 @@ npm run test:double-keys   # 对照实验：地图钥匙翻倍
 
 从地底矿窟到塔顶星空，一分钟看遍星穹塔的五个区域。影片用实机画面展示战斗预判、钥匙取舍、道具和撤销，讲述勇者登上 50 层、救回女神的冒险。
 
-[观看主宣传片（MP4 · 16:9 · 1920 × 1080）](video/cl/星穹塔-主宣传片-60s-16x9.mp4)
+https://github.com/user-attachments/assets/ee59ad69-22ea-4ac1-bb5e-8aaae13b1f35
+
+[下载原片（MP4 · 16:9 · 1920 × 1080）](video/cl/星穹塔-主宣传片-60s-16x9.mp4)
 
 ## Electron 桌面版
 
