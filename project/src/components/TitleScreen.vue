@@ -11,13 +11,19 @@ const autoInfo = computed(() => {
   return e ? `第 ${e.floor} 层 · ${zoneName(e.floor)}` : ''
 })
 
-// 背景漂浮光点（固定布局，避免每次渲染抖动）
-const motes = Array.from({ length: 36 }, (_, i) => ({
-  left: (i * 37) % 100,
-  delay: ((i * 0.53) % 9).toFixed(2),
-  dur: (7 + ((i * 0.71) % 6)).toFixed(2),
-  size: 2 + (i % 4),
-  drift: (i % 2 ? 1 : -1) * (10 + (i % 5) * 6),
+const landscape = computed(() => {
+  const id = store.meta.style
+  return 'url(' + JSON.stringify(img(id === 'classic' ? 'bg/menu' : `bg/style-${id}`)) + ')'
+})
+
+// 固定星点分布，负延迟让动画一进页面就有层次。
+const stars = Array.from({ length: 26 }, (_, i) => ({
+  x: 5 + (i * 37 + 11) % 91,
+  y: 4 + (i * 53 + 3) % 88,
+  delay: -(i * 1.37) % 15,
+  duration: 10 + (i % 7) * 1.3,
+  size: 2 + (i % 3),
+  drift: i % 2 ? 16 : -16,
 }))
 
 function go(fn) {
@@ -27,22 +33,25 @@ function go(fn) {
 </script>
 
 <template>
-  <div class="title" :style="{ backgroundImage: `url(${img('bg/menu')})` }">
-    <div class="veil"></div>
-    <div class="motes" aria-hidden="true">
-      <span
-        v-for="(m, i) in motes"
-        :key="i"
-        class="mote"
-        :style="{
-          left: m.left + '%',
-          width: m.size + 'px',
-          height: m.size + 'px',
-          animationDelay: m.delay + 's',
-          animationDuration: m.dur + 's',
-          '--drift': m.drift + 'px',
-        }"
-      />
+  <div class="title" :class="{ 'is-pixel': store.meta.style === 'pixel', 'motion-paused': store.modal }">
+    <div class="title-backdrop" aria-hidden="true">
+      <div class="landscape" :style="{ backgroundImage: landscape }"></div>
+      <div class="sky-glow"></div>
+      <div class="veil"></div>
+      <div class="stars">
+        <span
+          v-for="(star, i) in stars"
+          :key="i"
+          class="star"
+          :style="{
+            left: star.x + '%', top: star.y + '%',
+            width: star.size + 'px', height: star.size + 'px',
+            animationDelay: star.delay + 's', animationDuration: star.duration + 's',
+            '--drift': star.drift + 'px',
+          }"
+        />
+      </div>
+      <div class="meteor-track"><div class="meteor"></div></div>
     </div>
 
     <div class="content">
@@ -83,31 +92,66 @@ function go(fn) {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
   background-color: #08071a;
 }
-.veil {
-  position: absolute;
-  inset: 0;
+.title-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.landscape, .sky-glow, .veil, .stars { position: absolute; inset: 0; }
+.landscape {
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.08);
+  animation: title-pan 26s ease-in-out infinite alternate;
+}
+@keyframes title-pan {
+  from { transform: translate(-1.2%, 1%) scale(1.08); }
+  to { transform: translate(1.4%, -1.3%) scale(1.19); }
+}
+.sky-glow {
   background:
-    radial-gradient(60% 50% at 50% 35%, rgba(255, 213, 107, 0.12), transparent 70%),
-    linear-gradient(180deg, rgba(8, 7, 26, 0.2) 0%, rgba(8, 7, 26, 0.85) 100%);
+    radial-gradient(ellipse at 34% 25%, color-mix(in srgb, var(--gold) 32%, transparent), transparent 49%),
+    radial-gradient(ellipse at 78% 35%, color-mix(in srgb, var(--muted) 28%, transparent), transparent 47%);
+  opacity: .58;
+  transform: scale(1.11);
+  animation: sky-breathe 12s ease-in-out infinite alternate;
 }
-.motes { position: absolute; inset: 0; pointer-events: none; }
-.mote {
+@keyframes sky-breathe {
+  from { opacity: .28; transform: translateX(-4%) scale(1.11); }
+  to { opacity: .72; transform: translateX(4%) scale(1.16); }
+}
+.veil {
+  background: linear-gradient(180deg, transparent 10%, #08071580 57%, #080715db 100%);
+}
+.star {
   position: absolute;
-  bottom: -10px;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff6c8 0%, rgba(255, 213, 107, 0) 70%);
-  box-shadow: 0 0 8px rgba(255, 213, 107, 0.7);
-  opacity: 0;
-  animation: rise linear infinite;
+  background: var(--gold-soft);
+  box-shadow: 0 0 8px var(--gold);
+  opacity: .35;
+  animation: star-drift ease-in-out infinite alternate;
 }
-@keyframes rise {
-  0% { transform: translate(0, 0); opacity: 0; }
-  15% { opacity: 0.9; }
-  100% { transform: translate(var(--drift), -110vh); opacity: 0; }
+@keyframes star-drift {
+  from { opacity: .17; transform: translate(0, 12px) scale(.7); }
+  to { opacity: .83; transform: translate(var(--drift), -30px) scale(1.1); }
+}
+.meteor-track { position: absolute; left: 73%; top: 9%; }
+.meteor {
+  width: clamp(40px, 18vw, 90px);
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-soft), transparent);
+  opacity: 0;
+  animation: meteor-pass 16s linear infinite;
+}
+@keyframes meteor-pass {
+  0%, 22% { opacity: 0; transform: translate(0, 0) rotate(-33deg); }
+  24% { opacity: .85; }
+  29%, 100% { opacity: 0; transform: translate(-32vw, 20vw) rotate(-33deg); }
+}
+.is-pixel :is(.star, .meteor) { border-radius: 0; box-shadow: none; }
+.is-pixel .star { animation-timing-function: steps(10); }
+.motion-paused :is(.landscape, .sky-glow, .star, .meteor, .logo-ring, .logo-cn) { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .title :is(.landscape, .sky-glow, .star, .meteor, .logo-ring, .logo-cn) { animation: none; }
+  .menu-btn { transition: none; }
 }
 
 .content {

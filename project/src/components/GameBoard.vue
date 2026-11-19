@@ -1,7 +1,7 @@
 <script setup>
 // 11×11 棋盘：地形来自引擎的 world[floor].terr，实体来自 world[floor].ents，战斗标记来自引擎的 preview()
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
-import { store, actions, adjacentFights, itemName, previewAt } from '../stores/star.js'
+import { store, actions, itemName, previewAt } from '../stores/star.js'
 import { img } from '../engine/images.js'
 import { ZONE_TILES, TERRAIN_ART, NPC_ART, MONSTER_ART, ITEM_ART, UI_ICON } from '../engine/star-art.js'
 import { zoneOf } from '../game/star/rules.js'
@@ -13,12 +13,7 @@ const WALL_CH = new Set(['#', 'w', '%', 'a'])
 
 const zone = computed(() => (store.game ? zoneOf(store.game.floor) : 1))
 
-// 与勇者相邻的怪物：提前算出的战斗预判，按坐标索引
-const fightMap = computed(() => {
-  const m = {}
-  for (const f of adjacentFights(store.game)) m[`${f.x},${f.y}`] = f.pv
-  return m
-})
+const boardArt = (key) => img(key, store.meta.style === 'pixel')
 
 function phChar(name) {
   return [...name][0] ?? '?'
@@ -32,7 +27,7 @@ function entityView(ent) {
       kind: 'monster',
       boss: !!MONSTERS[ent.id]?.boss,
       finalBoss: ent.id === 'endLord',
-      art: img(MONSTER_ART[ent.id] ?? ''),
+      art: boardArt(MONSTER_ART[ent.id] ?? ''),
       ph: phChar(name),
       title: name + (MONSTERS[ent.id]?.boss ? '（BOSS）' : ''),
     }
@@ -41,7 +36,7 @@ function entityView(ent) {
     return {
       kind: 'npc',
       boss: false,
-      art: img(NPC_ART[ent.id] ?? ''),
+      art: boardArt(NPC_ART[ent.id] ?? ''),
       ph: NPC_PH[ent.id] ?? '?',
       title: itemName(ent.id),
     }
@@ -49,7 +44,7 @@ function entityView(ent) {
   return {
     kind: 'item',
     boss: false,
-    art: img(ITEM_ART[ent.id] ?? ''),
+    art: boardArt(ITEM_ART[ent.id] ?? ''),
     ph: phChar(itemName(ent.id)),
     title: itemName(ent.id),
   }
@@ -65,7 +60,6 @@ const cells = computed(() => {
     for (let x = 0; x < 11; x++) {
       const ch = w.terr[y][x]
       const k = `${x},${y}`
-      const pv = fightMap.value[k] ?? null
       const ent = w.ents[k] ?? null
       let base = WALL_CH.has(ch) ? tiles.wall : tiles.floor
       if (ch === '*') base = 'tiles/floor_void'
@@ -77,17 +71,16 @@ const cells = computed(() => {
         const p = previewAt(g, x, y)
         if (p) badge = p.canFight ? { text: String(p.loss), cls: 'ok' } : { text: p.reason === 'unpierceable' ? '×' : '死', cls: 'bad' }
       }
-      let cls = ''
-      if (pv) cls = pv.canFight ? 'adj ok' : 'adj bad'
-      if (ch === '~') cls += ' lava'
+      const cls = ch === '~' ? 'lava' : ''
       out.push({
         key: k,
         x,
         y,
         wall: WALL_CH.has(ch),
+        tint: ch !== '*' && ch !== '~',
         cls,
-        bg: g.floor === 50 ? 'none' : `url("${img(base)}")`,
-        overlay: g.floor === 50 && ch === '*' ? '' : img(TERRAIN_ART[ch] ?? ''),
+        bg: g.floor === 50 ? 'none' : `url("${boardArt(base)}")`,
+        overlay: g.floor === 50 && ch === '*' ? '' : boardArt(TERRAIN_ART[ch] ?? ''),
         label: TERRAIN_LABEL[ch] ?? '',
         ent: ev,
         badge,
@@ -104,7 +97,7 @@ const finalBossStyle = computed(() => finalBoss.value ? {
   top: `calc(${finalBoss.value.y - .3} * var(--ch))`,
 } : {})
 
-const heroSrc = computed(() => img(UI_ICON.hero))
+const heroSrc = computed(() => boardArt(UI_ICON.hero))
 const heroStyle = computed(() => ({
   left: `calc(${store.game.hero.x} * var(--cw))`,
   top: `calc(${store.game.hero.y} * var(--ch))`,
@@ -143,6 +136,12 @@ function dirBetween(dx, dy) {
 }
 
 function onCellClick(x, y) {
+  if (store.modal) return
+  const preview = previewAt(store.game, x, y)
+  if (preview) {
+    actions.openModal({ type: 'battle', preview })
+    return
+  }
   const dir = dirBetween(x - store.game.hero.x, y - store.game.hero.y)
   if (dir) actions.move(dir)
 }
@@ -172,7 +171,7 @@ function onTouchEnd(e) {
           v-for="c in cells"
           :key="c.key"
           class="cell"
-          :class="[c.wall ? 'wall' : '', c.cls]"
+          :class="[{ wall: c.wall, 'skin-tint': c.tint }, c.cls]"
           :style="{ backgroundImage: c.bg }"
           :title="c.title"
           @click="onCellClick(c.x, c.y)"
@@ -208,11 +207,10 @@ function onTouchEnd(e) {
 
 <style scoped>
 .board-frame {
-  /* 格子：宽度由屏幕宽决定；高度尽量撑满上下空间，但最多是宽度的 1.6 倍（竖长格子），通常能铺满底座 */
-  --cw: min(60px, calc((100cqw - 2px) / 11));
-  --ch: min(calc(var(--cw) * 1.6), calc((100cqh - 2px) / 11));
-  /* 字体与小图标仍按较小的边取值，避免竖长格子里的文字和图标变形 */
-  --cell: min(var(--cw), var(--ch));
+  /* 与 Flutter 一样保持 11×11 正方形，按棋盘区的可用宽高取较小值。 */
+  --cell: min(60px, calc((100cqw - 2px) / 11), calc((100cqh - 2px) / 11));
+  --cw: var(--cell);
+  --ch: var(--cell);
   position: relative;
   width: calc(var(--cw) * 11 + 2px);
   height: calc(var(--ch) * 11 + 2px);
@@ -262,8 +260,6 @@ function onTouchEnd(e) {
 .cell.wall { cursor: default; }
 .cell:hover:not(.wall) { box-shadow: inset 0 0 0 2px rgba(255, 213, 107, 0.35); }
 .cell.lava { box-shadow: inset 0 0 10px rgba(255, 110, 40, 0.7); }
-.cell.adj.ok { box-shadow: inset 0 0 0 2px #6ee7a0; }
-.cell.adj.bad { box-shadow: inset 0 0 0 2px #ff5d6c; }
 
 .cell .ov {
   position: absolute;

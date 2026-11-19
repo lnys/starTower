@@ -17,11 +17,8 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-  <style>
-    html, body { margin: 0; background: #0d0b16; }
-    #game-host { width: 25vw; height: 80vh; margin: 10vh auto; touch-action: pan-x pan-y; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <style>html, body { margin: 0; background: #0d0b16; }</style>
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="50 层原创魔塔冒险">
 
@@ -38,16 +35,6 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <div id="game-host"></div>
-  <script>
-    document.addEventListener('wheel', (event) => {
-      if (event.ctrlKey || event.metaKey) event.preventDefault();
-    }, {passive: false});
-    document.addEventListener('keydown', (event) => {
-      if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '0'].includes(event.key)) event.preventDefault();
-    });
-    document.addEventListener('gesturestart', (event) => event.preventDefault(), {passive: false});
-  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

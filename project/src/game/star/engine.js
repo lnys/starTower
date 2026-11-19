@@ -1,7 +1,7 @@
 // 《星穹塔》引擎（纯 JS，不依赖 Vue / DOM）。依据：魔塔50层新玩法.md §3–§5、§8、§10、§12。
 // 地图由调用方传入 defs：{ [层号]: { index, entry:{x,y}, grid: string[11], legend:{字符: id}, events:[...] } }。
 // 引擎本身不含任何地图内容，便于用小地图做单元测试。
-import { combat, auraDamage, consumableEffect, altarPrice, altarGain, zoneOf, ALTAR_TIER } from './rules.js'
+import { combat, effectiveDef, auraDamage, consumableEffect, altarPrice, altarGain, zoneOf, ALTAR_TIER } from './rules.js'
 import { MONSTERS, CONSUMABLES, KEYS, GEAR, HOLD, ACTIVE, MERCHANTS, LAST_FLOOR } from './data.js'
 
 export const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }
@@ -146,7 +146,8 @@ export function preview(state, defs, x, y) {
   const e = entityAt(state, defs, x, y)
   if (!e || e.kind !== 'monster') return null
   const pillars = e.id === 'endLord' ? livingPillars(state, defs) : 0
-  return { id: e.id, monster: MONSTERS[e.id], ...combat(state.hero, MONSTERS[e.id], { pillarsAlive: pillars }) }
+  const monster = MONSTERS[e.id]
+  return { id: e.id, monster, def: effectiveDef(monster, pillars), ...combat(state.hero, monster, { pillarsAlive: pillars }) }
 }
 
 /* ---------------- 事件（§10） ---------------- */

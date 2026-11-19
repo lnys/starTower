@@ -2,6 +2,8 @@
 
 将 Vue 手机模拟器内的游戏迁为 Flutter 原生界面与 Dart 引擎。保留 50 层地图、战斗预判、机关剧情、商人祭坛、背包罗盘、50 步撤销、自动存档和三个手动存档；不包含项目介绍页、二维码、浏览器手机外壳。无需联网即可游玩。原有 SVG 素材已随项目复制，音效和各层背景音乐由本地脚本生成。
 
+当前源码版本：**1.0.5（构建号 5，暂未发布）**。
+
 ## 运行
 
 本机验证环境：Flutter 3.24.4 / Dart 3.5.4、Xcode 14.3、iOS 16.4 模拟器。依赖版本记录在 `pubspec.lock`。
@@ -20,7 +22,9 @@ flutter run -d <设备ID>
 | Windows | `flutter run -d windows` / `flutter build windows` | 已生成工程，需 Windows + Visual Studio C++ 工具链构建；未实机验证 |
 | Linux | `flutter run -d linux` / `flutter build linux` | 已生成工程，未实机验证 |
 | Android | `flutter run -d <Android设备ID>` / `flutter build apk` | 已生成工程；本机下载 Gradle 8.3 时网络中断，尚未验证 APK 构建与实机运行 |
-| Web | `flutter run -d chrome` / `flutter build web` | 已生成工程，未验证构建 |
+| Web | `flutter run -d chrome` / `flutter build web` | 已完成 Web 构建，并在 Chrome 验证标题页动画和减少动态效果设置 |
+
+通过 HTTP 服务访问构建产物 `build/web/`，不能像 Vue 单文件一样直接双击。Web 随包提供 CanvasKit 和中文字体子集；增加中文文案后，可用 `tool/subset_web_font.py` 从 Noto Sans CJK SC 原版字体更新子集（许可证在 `assets/fonts/OFL.txt`）。
 
 Android 工程使用 Gradle 8.3、AGP 8.1.0，建议 JDK 17。若 Flutter 优先选用了 Android Studio 内置的新 JDK，可用 `flutter config --jdk-dir=<JDK17目录>` 配置后构建。iOS 真机需要自己的签名与开发者配置，模拟器无需签名。发布 Android / iOS 应用前需配置正式签名；当前 Android release 沿用 Flutter 模板的调试签名。
 
@@ -44,6 +48,8 @@ iOS 和 Android 使用星穹塔金色塔楼图标，原生启动页采用深色�
 - 电脑：方向键或 WASD 移动，Z 撤销，B 背包，C 罗盘，Esc 菜单；也支持鼠标点击。
 - 走进怪物先战斗，走进门先开门，再走一步进入。不能破防或会死亡的战斗会被拦截。
 - 游戏动作自动保存，可用“快速存档”选择手动存档槽。存档在本应用本地保存，与 Vue／Electron 的存档不自动同步。
+
+标题页和游戏菜单的「设置 → 界面风格」可即时切换六种风格，选择保存在本机。标题页背景随主题变化，并支持减少动态效果。
 
 ## 目录与维护
 
@@ -70,6 +76,6 @@ dart run tool/replay.dart
 
 ## 桌面版发布
 
-版本为 1.0.2；Mac 构建后运行 `bash tool/packaging/macos.sh` 生成 Universal DMG 和 ZIP。Windows 需 Windows + Visual Studio 工具链构建，由 Inno Setup 6 使用 `tool/packaging/windows.iss` 生成安装包；完整流程见 Skill 仓库 `.github/workflows/flutter-release.yml`。安装说明见 [INSTALL.md](tool/packaging/INSTALL.md)。
+版本及构建号以 `pubspec.yaml` 为准；Mac 构建后运行 `bash tool/packaging/macos.sh` 生成 Universal DMG 和 ZIP。Windows 需 Windows + Visual Studio 工具链构建，由 Inno Setup 6 使用 `tool/packaging/windows.iss` 生成安装包；完整流程见 Skill 仓库 `.github/workflows/flutter-release.yml`。安装说明见 [INSTALL.md](tool/packaging/INSTALL.md)。
 
 推送匹配 pubspec 的版本标签后，GitHub Actions 对两平台执行分析、测试、构建及安装包检查，全部通过后创建 Release。Windows 启动检查属于自动化验证，尚无人工完整游玩结果。Mac 未经 Developer ID 签名和公证，Windows 未签发布者证书。

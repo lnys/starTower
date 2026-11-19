@@ -1,3 +1,6 @@
 {{flutter_js}}
 {{flutter_build_config}}
-_flutter.loader.load({config: {hostElement: document.getElementById('game-host')}});
+
+_flutter.loader.load({
+  config: { canvasKitBaseUrl: new URL('canvaskit/', document.baseURI).href },
+});

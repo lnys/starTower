@@ -13,6 +13,8 @@ for (const [path, url] of Object.entries(modules)) {
 }
 
 /** 通过相对键名获取素材地址，例如 img('monsters/mon_1') */
-export function img(key) {
-  return urls[key] || ''
+const pixels = import.meta.glob('../../images/pixel/**/*.png', { eager: true, query: '?url', import: 'default' })
+
+export function img(key, pixel = false) {
+  return (pixel && pixels[`../../images/pixel/${key}.png`]) || urls[key] || ''
 }

@@ -40,8 +40,8 @@ onBeforeUnmount(() => Object.values(repeaters).forEach((r) => r.stop()))
 .pad {
   position: relative;
   flex: none;
-  width: 150px;
-  height: 150px;
+  width: var(--pad-size, 150px);
+  height: var(--pad-size, 150px);
   border-radius: 50%;
   user-select: none;
   background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.07), rgba(0, 0, 0, 0.35) 70%);

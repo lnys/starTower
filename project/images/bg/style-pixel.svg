@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 900" shape-rendering="crispEdges">
+<defs><pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M0 0H24V24" fill="none" stroke="#afa0f0" opacity=".14"/></pattern></defs>
+<path fill="#16132b" d="M0 0h480v900H0z"/><path fill="url(#grid)" d="M0 0h480v900H0z"/>
+<path fill="#afb1f5" d="M204 132h72v12h24v24h12v72h-12v24h-24v12h-72v-12h-24v-24h-12v-72h12v-24h24z"/>
+<path fill="#836db6" d="M192 192h96v12h-96zm-12 36h120v12H180zm24 24h72v12h-72z"/>
+<path fill="#3a3060" d="M0 468h48v-48h48v-36h48v36h48v48h48v36h48v-12h48v-48h48v-36h48v48h48v444H0z"/>
+<path fill="#252040" d="M0 612h72v-36h72v36h36v-36h36v-72h48v72h36v36h36v-36h72v36h72v288H0z"/>
+<path fill="#bafa8c" d="M59 162h8v8h-8zm72 101h8v8h-8zm232-125h8v8h-8zm53 94h8v8h-8zm-90 112h8v8h-8zm-267-23h8v8h-8zM232 530h16v24h-16z"/>
+</svg>

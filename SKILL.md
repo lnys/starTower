@@ -1,8 +1,8 @@
 ---
 name: star-tower
 metadata:
-  version: "1.0.4"
-description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关、修复地图资源瓶颈，支持 Vue/Electron 桌面版与 Flutter 原生游戏的开发、通关验证、Mac 通用版和 Windows x64 安装包构建。包含原创游戏源码快照、完整通关回放和桌面构建配置；用于星穹塔相关任务。
+  version: "1.0.5"
+description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关、修复地图资源瓶颈，支持 Vue Web、Electron 桌面版与 Flutter 原生和 Web 游戏的开发、通关验证、Mac 通用版和 Windows x64 安装包构建。包含原创游戏源码快照、完整通关回放和桌面构建配置；用于星穹塔相关任务。
 ---
 
 # 星穹塔
@@ -19,7 +19,7 @@ description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关
 
 1. 执行 `bash <skill-dir>/verify.sh` 验证快照。失败时定位缺失或变化文件；不要将损坏快照报告为校验通过。
 2. 使用用户指定目录；未指定时可选当前工作区内的 `star-tower`，说明选择。执行 `bash <skill-dir>/rebuild.sh <输出目录>`。脚本仅接受空目录，避免覆盖现有工作；已有项目直接检查和修改。
-3. 还原脚本复制快照、安装锁定依赖，执行 `npm test` 与 `npm run build`，输出网页文件 SHA256。Electron 依赖安装需要下载运行时；受限网络按当前环境授权规则处理。
+3. 还原脚本仅复制通过清单校验的快照文件、安装锁定依赖，执行 `npm test` 与 `npm run build`，输出网页文件 SHA256。Electron 依赖安装需要下载运行时；受限网络按当前环境授权规则处理。
 
 快照不包含 `node_modules/`、`dist/`、`release/` 或历史原版魔塔派生数据。构建依赖与游戏素材已包含在源码配置中。
 
@@ -30,7 +30,7 @@ description: 还原、开发和验证星穹塔 50 层魔塔游戏，模拟通关
 在项目目录运行：
 
 ```bash
-npm test                  # 28 条引擎、17 条规则、地图检查、固定路线回放
+npm test                  # 引擎、规则、地图检查、固定路线回放和界面回归
 npm run test:simulate     # 重新规划并模拟全程，耗时较长
 npm run test:no-altar     # 禁用祭坛的反向实验
 npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
@@ -52,15 +52,15 @@ npm run test:double-keys  # 地图拾取钥匙翻倍的对照实验
 
 `sceneVersion: 2` 用于旧终层存档迁移。修改时保留人物属性、已击败首领与已通关状态；迁移只执行一次，读档不能重复生成守卫。结局由 Vue `RescueEnding.vue` 与 Flutter `ui/rescue_ending.dart` 分别实现，已通关存档可直接重看。
 
-地图、数据和 SVG 更新后运行 `node flutter/tool/export-vue.mjs`；界面与引擎逻辑需要两端分别修改。增加素材需纳入 `project/` 和 `MANIFEST.sha256`，避免把本地存档、构建缓存或安装包加入快照。
+地图、数据和 SVG 更新后运行 `node flutter/tool/export-vue.mjs`；界面与引擎逻辑需要两端分别修改。风格目录以 `design/styles.json` 为准，使用 `node flutter/tool/generate_styles.mjs` 同步 Dart，使用 `python3 scripts/generate-pixel-art.py` 同步像素素材。标题动画需尊重减少动态效果设置。增加素材需纳入 `project/` 和 `MANIFEST.sha256`，避免把本地存档、构建缓存或安装包加入快照。
 
 ## Flutter 原生版
 
 `project/flutter/` 为独立 Flutter 工程，仅包含游戏，不含 Vue 介绍页或手机外壳。运行与平台限制见 `project/flutter/README.md`，验证证据见 `project/flutter/通关测试.md`。已生成 iOS、Android、macOS、Windows 等平台工程；生成工程不代表该平台构建通过。
 
-Web 游戏容器使用浏览器可视区域宽度的 1/4、高度的 4/5；桌面窗口按屏幕相同比例居中并关闭手动调整尺寸。NPC 对话、交易与普通提示固定在棋盘下方，长内容内部滚动，避免覆盖底部方向键。原生移动端仍使用手机适配布局。窗口逻辑分别位于各平台 runner，不能仅修改 Dart 布局就认定原生窗口行为已同步。
+Vue 与 Flutter Web 同步手机端的游戏内交互：右上角先放 Logo 再显示「星穹塔」，棋盘下保留单行提示，点击查看长剧情，商人和祭坛用弹窗。Flutter Web 手机浏览器使用全宽，桌面浏览器居中显示；原生桌面窗口逻辑仍位于各平台 runner。
 
-在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；20 项测试含同一条 3779 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
+在 Flutter 目录执行 `flutter pub get --enforce-lockfile`、`flutter analyze`、`flutter test`；29 项测试含同一条 3779 步通关回放。`dart run tool/replay.dart` 可单独回放。修改 Vue 地图／数值后，从项目根运行 `node flutter/tool/export-vue.mjs` 同步快照；Dart 规则位于 `flutter/lib/game/engine.dart`，须单独同步规则变更并重新验证。音频由 `flutter/tool/generate_audio.py` 生成，素材已随源码提供。
 
 Mac 上 `flutter build macos --release` 后执行 `bash tool/packaging/macos.sh` 生成并验证 Universal DMG / ZIP。Windows 必须在 Windows + Visual Studio C++ 工具链环境构建，不能从 Mac 直接交叉编译。Windows 打包配置为 `tool/packaging/windows.iss`（Inno Setup 6），需包含构建目录全部 DLL、data 和 Visual C++ 运行库。
 

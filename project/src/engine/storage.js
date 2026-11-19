@@ -1,6 +1,8 @@
 // 本地存储封装：所有读写都做了 try/catch，存储不可用时游戏仍可正常运行（只是无法存档）
 // 《星穹塔》使用独立的前缀 star-v1:，旧 20 层版本的存档不会被误读。
 
+import { defaultStyle, resolveStyle } from './styles.js'
+
 const PREFIX = 'star-v1:'
 export const MANUAL_SLOTS = ['0', '1', '2']
 export const AUTO_SLOT = 'auto'
@@ -30,7 +32,7 @@ function removeRaw(key) {
   }
 }
 
-const DEFAULT_META = { volume: 0.9, muted: false, seenHelp: false }
+const DEFAULT_META = { volume: 0.9, muted: false, seenHelp: false, style: defaultStyle }
 
 /* ---------- 玩家设置 ---------- */
 
@@ -42,6 +44,7 @@ export function loadMeta() {
       volume: typeof o.volume === 'number' ? o.volume : DEFAULT_META.volume,
       muted: !!o.muted,
       seenHelp: !!o.seenHelp,
+      style: resolveStyle(o.style).id,
     }
   } catch {
     return { ...DEFAULT_META }
@@ -60,7 +63,7 @@ export function saveMeta(meta) {
  */
 export function writeSlot(name, state) {
   try {
-    const { history, ...body } = JSON.parse(JSON.stringify(state))
+    const { history, ...body } = state
     const entry = {
       savedAt: Date.now(),
       floor: state.floor,

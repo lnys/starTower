@@ -11,7 +11,12 @@ if [ -e "$TARGET_DIR" ]; then
 fi
 bash "$SKILL_DIR/verify.sh"
 mkdir -p "$TARGET_DIR"
-cp -R "$SKILL_DIR/project/." "$TARGET_DIR/"
+# 只还原已校验的文件，不复制预览构建、缓存或本地配置。
+while IFS= read -r entry; do
+  relative="${entry#*  }"
+  mkdir -p "$TARGET_DIR/$(dirname "$relative")"
+  cp -p "$SKILL_DIR/project/$relative" "$TARGET_DIR/$relative"
+done < "$SKILL_DIR/MANIFEST.sha256"
 cd "$TARGET_DIR"
 npm ci --no-audit --no-fund
 npm test

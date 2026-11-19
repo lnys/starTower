@@ -8,7 +8,7 @@ let bgmTimer = null
 let bgmTheme = null
 
 // 整体增益：原先的音量参数偏小，这里统一放大；压缩器防止爆音
-const BOOST = 2.4
+const BOOST = 3.3
 
 function ensure() {
   if (typeof window === 'undefined') return null

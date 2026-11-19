@@ -4,6 +4,7 @@ import { reactive } from 'vue'
 import * as eng from '../game/star/engine.js'
 import { ACTIVE, CONSUMABLES, KEYS, GEAR, HOLD, MONSTERS } from '../game/star/data.js'
 import { zoneOf } from '../game/star/rules.js'
+import { resolveStyle } from '../engine/styles.js'
 import * as storage from '../engine/storage.js'
 import { sfx, setVolume, setMuted, startBgm, startTitleBgm, stopBgm, unlockAudio } from '../engine/audio.js'
 import m0104 from '../game/star/maps/floors-01-04.js'
@@ -47,6 +48,7 @@ export const store = reactive({
   game: null, // 引擎状态（就是 engine.createGame() 返回的纯数据对象）
   modal: null, // { type, ... } 见 Modals.vue
   toasts: [],
+  notice: null,
   floats: [],
   transition: null, // { title, key }
   shakeKey: 0,
@@ -70,7 +72,7 @@ export function toast(text, tone = 'info') {
   if (store.toasts.length > 4) store.toasts.shift()
   setTimeout(() => {
     store.toasts = store.toasts.filter((t) => t.id !== id)
-  }, 2600)
+  }, 3000)
 }
 
 function floatAt(text, kind) {
@@ -139,6 +141,7 @@ function afterAction(g, before, events) {
         sfx.denied()
         break
       case 'door':
+        toast('门已打开')
         sfx.door()
         break
       case 'false-wall':
@@ -185,43 +188,23 @@ function afterAction(g, before, events) {
     setTimeout(() => (store.transition = null), 1600)
     sfx.stairs()
     playFloorBgm(g.floor)
-    autoSave()
   }
 
   if (won) {
     stopBgm()
     sfx.win()
     store.modal = { type: 'ending' }
-  } else if (says.length) {
-    store.modal = {
-      type: 'story',
-      title: talked ? '引路人' : '提示',
-      lines: says,
-      then: null,
+  } else if (says.length || talked) {
+    store.notice = {
+      title: talked ? '引路人' : '旅途提示',
+      text: says.length ? says.join('\n') : '愿星光照亮你的前路。',
     }
-  } else if (talked) {
-    toast('引路人：愿星光照亮你的前路。')
   } else if (shop) {
     store.modal = { type: shop === 'altar' ? 'altar' : 'merchant' }
   }
 }
 
 /* ---------------- 查询（供界面使用） ---------------- */
-
-/** 与勇士四邻相邻的怪物，并附上引擎的战斗预判（界面不重算公式） */
-export function adjacentFights(g) {
-  if (!g) return []
-  const out = []
-  const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]]
-  for (const [dx, dy] of dirs) {
-    const x = g.hero.x + dx
-    const y = g.hero.y + dy
-    if (x < 0 || y < 0 || x > 10 || y > 10) continue
-    const pv = eng.preview(g, DEFS, x, y)
-    if (pv) out.push({ x, y, pv })
-  }
-  return out
-}
 
 /** 任意一格的战斗预判（只读，用于棋盘上显示每只怪物的预计损失） */
 export function previewAt(g, x, y) {
@@ -265,17 +248,8 @@ export const actions = {
     unlockAudio()
     store.game = eng.createGame(DEFS)
     store.screen = 'playing'
-    const firstTime = !store.meta.seenHelp
-    if (firstTime) {
-      store.meta.seenHelp = true
-      persistMeta()
-    }
-    store.modal = {
-      type: 'story',
-      title: '序章',
-      lines: OPENING,
-      then: firstTime ? () => (store.modal = { type: 'help' }) : null,
-    }
+    store.modal = null
+    store.notice = { title: '序章', text: OPENING.join('\n\n') }
     store.toasts = []
     store.floats = []
     store.transition = null
@@ -301,6 +275,7 @@ export const actions = {
     store.game = st
     store.screen = 'playing'
     store.modal = st.ended ? { type: 'ending' } : null
+    store.notice = null
     store.toasts = []
     store.floats = []
     store.transition = null
@@ -328,6 +303,7 @@ export const actions = {
     store.screen = 'title'
     store.game = null
     store.modal = null
+    store.notice = null
     store.toasts = []
     store.floats = []
     store.transition = null
@@ -338,6 +314,7 @@ export const actions = {
   move(dir) {
     const g = store.game
     if (!g || store.screen !== 'playing' || store.modal || g.ended) return false
+    store.notice = null
     const before = { x: g.hero.x, y: g.hero.y, floor: g.floor }
     let events
     try {
@@ -353,6 +330,7 @@ export const actions = {
     const moved = g.hero.x !== before.x || g.hero.y !== before.y || g.floor !== before.floor
     if (moved) sfx.move()
     afterAction(g, before, events)
+    autoSave()
     return moved
   },
 
@@ -363,7 +341,10 @@ export const actions = {
     const floor = g.floor
     const r = eng.undo(g)
     toast(r.text, r.ok ? 'info' : 'warn')
-    if (r.ok && g.floor !== floor) playFloorBgm(g.floor)
+    if (r.ok) {
+      if (g.floor !== floor) playFloorBgm(g.floor)
+      autoSave()
+    }
   },
 
   /** 使用主动道具。target 仅用于罗盘（目标层号） */
@@ -385,6 +366,7 @@ export const actions = {
     sfx.click()
     toast(res.text, 'good')
     afterAction(g, before, res.events ?? [])
+    autoSave()
     return true
   },
 
@@ -403,6 +385,7 @@ export const actions = {
       return false
     }
     sfx.buy()
+    autoSave()
     toast(`${res.text} · ${gainText(res.gain)}`, 'gold')
     return true
   },
@@ -422,6 +405,7 @@ export const actions = {
       return false
     }
     sfx.buy()
+    autoSave()
     toast(res.text, 'good')
     return true
   },
@@ -431,9 +415,12 @@ export const actions = {
   },
 
   closeModal() {
-    const modal = store.modal
     store.modal = null
-    if (modal?.then) modal.then()
+  },
+
+  setStyle(id) {
+    store.meta.style = resolveStyle(id).id
+    persistMeta()
   },
 
   setVolume(v) {

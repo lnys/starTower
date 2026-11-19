@@ -1,0 +1,8 @@
+[
+  {"id":"classic","name":"星穹塔经典","bg":"0d0b16","panel":"201a29","button":"4b3820","accent":"ffd56b","muted":"aaa7b8","trim":"6f5732","radius":12},
+  {"id":"warcraft","name":"魔兽争霸","bg":"17120d","panel":"302218","button":"482824","accent":"ffc47c","muted":"ccad95","trim":"a77347","radius":4},
+  {"id":"wow","name":"魔兽世界","bg":"0c1523","panel":"192638","button":"293b51","accent":"f4d882","muted":"b3c2d4","trim":"9a7641","radius":10},
+  {"id":"league","name":"英雄联盟","bg":"07191c","panel":"10292e","button":"163d43","accent":"8feeee","muted":"a7c1ba","trim":"a48651","radius":2},
+  {"id":"chinese","name":"中国复古风","bg":"241410","panel":"3c241b","button":"642f28","accent":"ffdaa4","muted":"ddba9a","trim":"b97751","radius":6},
+  {"id":"pixel","name":"像素风","bg":"16132b","panel":"272346","button":"3a3060","accent":"bafa8c","muted":"ccc1eb","trim":"9698ed","radius":0}
+]

@@ -1,7 +1,7 @@
 name: star_tower
 description: 星穹塔，50 层原创魔塔冒险 Flutter 版。
 publish_to: none
-version: 1.0.4+4
+version: 1.0.5+5
 environment:
   sdk: '>=3.5.0 <4.0.0'
 dependencies:
@@ -18,10 +18,16 @@ flutter:
   uses-material-design: true
   assets:
     - assets/data/game.json
+    - assets/fonts/tower-chinese.otf
+    - assets/fonts/OFL.txt
     - assets/images/bg/
     - assets/images/hero/
     - assets/images/items/
     - assets/images/monsters/
     - assets/images/tiles/
     - assets/images/ui/
+    - assets/images/pixel/hero/
+    - assets/images/pixel/items/
+    - assets/images/pixel/monsters/
+    - assets/images/pixel/tiles/
     - assets/audio/

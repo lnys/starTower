@@ -16,6 +16,8 @@ def save(image, path, size):
     path.parent.mkdir(parents=True, exist_ok=True)
     image.resize((size, size), Image.Resampling.LANCZOS).save(path)
 
+save(source, ROOT / 'assets/images/ui/tower-logo.png', 128)
+
 catalog = ROOT / 'ios/Runner/Assets.xcassets/AppIcon.appiconset'
 for entry in json.loads((catalog / 'Contents.json').read_text())['images']:
     size = round(float(entry['size'].split('x')[0]) * float(entry['scale'][:-1]))

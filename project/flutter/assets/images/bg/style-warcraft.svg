@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 900">
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#211410"/><stop offset="1" stop-color="#84472c"/></linearGradient><pattern id="bricks" width="80" height="32" patternUnits="userSpaceOnUse"><path d="M0 0H80M0 16H80M20 0v16m40 0v16" fill="none" stroke="#ffbc83" opacity=".13"/></pattern></defs>
+<path fill="url(#sky)" d="M0 0h480v900H0z"/><circle cx="247" cy="250" r="106" fill="#d1844b" opacity=".56"/>
+<path fill="#462821" d="M0 403l83-136 44 76 63-86 63 107 89-59 41 38 97-128v685H0z"/><path fill="#271815" d="M0 293h50v39h35v-39h43v142h41v-25h31v-36h25v36h28v-36h25v36h31v25h43V293h43v39h35v-39h50v607H0z"/>
+<path fill="url(#bricks)" d="M0 335h128v100h224V335h128v565H0z"/><path d="M217 900V510a23 23 0 0 1 46 0v390" fill="#140c0a"/>
+<path fill="#733e34" stroke="#cf9267" stroke-width="3" d="M20 250h60v236l-30-25-30 25zm380 0h60v236l-30-25-30 25z"/><path fill="none" stroke="#ddab77" stroke-width="4" d="M35 335l15-28 15 28-15 24zm380 0l15-28 15 28-15 24z"/>
+</svg>

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount } from 'vue'
+import { computed, onMounted, onBeforeUnmount } from 'vue'
 import { store, actions, applyAudioSettings } from './stores/star.js'
 import TitleScreen from './components/TitleScreen.vue'
 import GameScreen from './components/GameScreen.vue'
@@ -7,6 +7,10 @@ import Modals from './components/Modals.vue'
 import { createHoldRepeat } from './engine/repeat.js'
 import EndingFx from './components/EndingFx.vue'
 import IntroPanel from './components/IntroPanel.vue'
+
+import { styleVariables } from './engine/styles.js'
+
+const skinVariables = computed(() => styleVariables(store.meta.style))
 
 const MOVE_KEYS = {
   ArrowUp: 'up', w: 'up', W: 'up',
@@ -46,7 +50,7 @@ function onKeyDown(e) {
 
   if (e.key === 'Escape') {
     e.preventDefault()
-    if (store.modal?.type === 'pause') actions.closeModal()
+    if (store.modal && store.modal.type !== 'ending') actions.closeModal()
     else if (!store.modal) actions.openModal({ type: 'pause' })
     return
   }
@@ -62,6 +66,8 @@ function onKeyDown(e) {
     return
   }
   if (e.key === 'z' || e.key === 'Z') actions.undo()
+  if (e.key === 'b' || e.key === 'B') actions.openModal({ type: 'items' })
+  if ((e.key === 'c' || e.key === 'C') && store.game.items.compass > 0) actions.openModal({ type: 'compass' })
   if (e.key === 'm' || e.key === 'M') actions.setMuted(!store.meta.muted)
 }
 
@@ -88,7 +94,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="device-stage">
+  <div class="device-stage" :data-style="store.meta.style" :style="skinVariables">
     <div class="device">
       <!-- 仅在电脑上显示的 iPhone 外壳装饰；手机上访问时不显示 -->
       <div class="island" aria-hidden="true"></div>
@@ -101,7 +107,7 @@ onBeforeUnmount(() => {
         <TitleScreen v-if="store.screen === 'title'" />
         <GameScreen v-else />
 
-        <div class="toasts" aria-live="polite">
+        <div v-if="store.screen === 'title' || (store.modal && ['altar', 'merchant', 'saves'].includes(store.modal.type))" class="toasts" aria-live="polite">
           <TransitionGroup name="toast">
             <div v-for="t in store.toasts" :key="t.id" class="toast" :class="t.tone">{{ t.text }}</div>
           </TransitionGroup>

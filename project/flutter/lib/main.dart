@@ -9,62 +9,113 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'game/engine.dart';
 import 'ui/rescue_ending.dart';
+import 'ui/style_catalog.dart';
+import 'ui/title_backdrop.dart';
 
 bool get fixedGameViewport =>
     kIsWeb ||
     {TargetPlatform.macOS, TargetPlatform.windows, TargetPlatform.linux}
         .contains(defaultTargetPlatform);
 
-const gold = Color(0xffffd56b),
-    muted = Color(0xffaaa7b8),
-    panel = Color(0xff201a29);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
   final data =
       jsonDecode(await rootBundle.loadString('assets/data/game.json')) as Json;
   final prefs = await SharedPreferences.getInstance();
+  if (kIsWeb) {
+    await (FontLoader('Tower Chinese')
+          ..addFont(rootBundle.load('assets/fonts/tower-chinese.otf')))
+        .load();
+  }
   runApp(TowerApp(engine: GameEngine(data), prefs: prefs));
 }
 
-class TowerApp extends StatelessWidget {
+class TowerApp extends StatefulWidget {
   final GameEngine engine;
   final SharedPreferences prefs;
   const TowerApp({super.key, required this.engine, required this.prefs});
+
   @override
-  Widget build(BuildContext context) => MaterialApp(
-      title: '星穹塔',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: const Color(0xff0d0b16),
-          colorScheme: const ColorScheme.dark(
-              primary: gold, secondary: gold, surface: panel),
-          useMaterial3: true,
-          fontFamilyFallback: const [
-            'PingFang SC',
-            'Microsoft YaHei',
-            'Noto Sans CJK SC'
-          ],
-          textTheme:
-              const TextTheme(bodyMedium: TextStyle(color: Color(0xffeee6d5))),
-          filledButtonTheme: FilledButtonThemeData(
-              style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xff4b3820),
-                  foregroundColor: gold,
-                  minimumSize: const Size(0, 44))),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-              style: OutlinedButton.styleFrom(
-                  foregroundColor: gold,
-                  side: const BorderSide(color: Color(0xff6f5732)),
-                  minimumSize: const Size(0, 44)))),
-      home: TowerScreen(engine: engine, prefs: prefs));
+  State<TowerApp> createState() => _TowerAppState();
+}
+
+class _TowerAppState extends State<TowerApp> {
+  late TowerStyle style;
+
+  @override
+  void initState() {
+    super.initState();
+    style = resolveTowerStyle(widget.prefs.getString('style'));
+  }
+
+  void changeStyle(TowerStyle next) {
+    if (style == next) return;
+    setState(() => style = next);
+    unawaited(widget.prefs.setString('style', next.id));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final shape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(style.radius));
+    return MaterialApp(
+        title: '星穹塔',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: style.background,
+            colorScheme: ColorScheme.dark(
+                primary: style.accent,
+                secondary: style.accent,
+                surface: style.panel),
+            useMaterial3: true,
+            fontFamilyFallback: const [
+              if (kIsWeb) 'Tower Chinese',
+              'PingFang SC',
+              'Microsoft YaHei',
+              'Noto Sans CJK SC'
+            ],
+            textTheme: const TextTheme(
+                bodyMedium: TextStyle(color: Color(0xffeee6d5))),
+            dialogTheme: style.classic
+                ? null
+                : DialogTheme(
+                    backgroundColor: style.panel,
+                    surfaceTintColor: Colors.transparent,
+                    shape: shape.copyWith(side: BorderSide(color: style.trim))),
+            filledButtonTheme: FilledButtonThemeData(
+                style: FilledButton.styleFrom(
+                    backgroundColor: style.button,
+                    foregroundColor: style.accent,
+                    shape: style.classic ? null : shape,
+                    minimumSize: const Size(0, 44))),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: style.accent,
+                    side: BorderSide(color: style.trim),
+                    backgroundColor: style.classic ? null : style.panel,
+                    shape: style.classic ? null : shape,
+                    minimumSize: const Size(0, 44)))),
+        home: TowerScreen(
+            engine: widget.engine,
+            prefs: widget.prefs,
+            style: style,
+            onStyleChanged: changeStyle));
+  }
 }
 
 class TowerScreen extends StatefulWidget {
   final GameEngine engine;
   final SharedPreferences prefs;
-  const TowerScreen({super.key, required this.engine, required this.prefs});
+  final TowerStyle style;
+  final ValueChanged<TowerStyle> onStyleChanged;
+  const TowerScreen(
+      {super.key,
+      required this.engine,
+      required this.prefs,
+      required this.style,
+      required this.onStyleChanged});
   @override
   State<TowerScreen> createState() => _TowerScreenState();
 }
@@ -72,8 +123,14 @@ class TowerScreen extends StatefulWidget {
 class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   GameEngine get e => widget.engine;
   SharedPreferences get prefs => widget.prefs;
+  TowerStyle get skin => widget.style;
+  Color get gold => skin.accent;
+  Color get muted => skin.muted;
+  Color get panel => skin.panel;
+  double radius(double classic) => skin.classic ? classic : skin.radius;
   bool playing = false, modal = false, mutedAudio = false;
-  double volume = .6;
+  late double volume;
+  double get musicVolume => mutedAudio ? 0 : volume * .95;
   int peak = 1000;
   int dialogCount = 0;
   int brandTaps = 0;
@@ -104,7 +161,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     mutedAudio = prefs.getBool('muted') ?? false;
-    volume = prefs.getDouble('volume') ?? .6;
+    volume = prefs.getDouble('volume') ?? .85;
   }
 
   Future<void> bgm(int floor) async {
@@ -112,7 +169,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     track = floor;
     try {
       await music.setReleaseMode(ReleaseMode.loop);
-      await music.setVolume(mutedAudio ? 0 : volume * .45);
+      await music.setVolume(musicVolume);
       await music.play(AssetSource('audio/bgm_$floor.wav'));
     } catch (_) {}
   }
@@ -232,7 +289,9 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
           context: context,
           builder: (ctx) => StatefulBuilder(
               builder: (ctx, refresh) => AlertDialog(
-                      title: Text(title, style: const TextStyle(color: gold)),
+                      title: Text(title,
+                          style: TextStyle(
+                              color: Theme.of(ctx).colorScheme.primary)),
                       content: SizedBox(
                           width: 360,
                           child: SingleChildScrollView(
@@ -381,7 +440,24 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 12)))
           ])));
+  bool get compactGameUi =>
+      kIsWeb ||
+      ((defaultTargetPlatform == TargetPlatform.iOS ||
+              defaultTargetPlatform == TargetPlatform.android) &&
+          MediaQuery.sizeOf(context).shortestSide < 600);
+
   void openShop(String id) {
+    if (compactGameUi) {
+      String? result;
+      dialog(
+          id == 'altar' ? '祭坛' : '商人',
+          (refresh) => [
+                ...shopContent(id, refresh, onResult: (text) => result = text),
+                if (result != null)
+                  Text(result!, style: TextStyle(color: gold, fontSize: 12)),
+              ]);
+      return;
+    }
     stopHold();
     setState(() {
       activeShop = id;
@@ -389,7 +465,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     });
   }
 
-  List<Widget> shopContent(String id, StateSetter refresh) {
+  List<Widget> shopContent(String id, StateSetter refresh,
+      {ValueChanged<String>? onResult}) {
     if (id == 'altar') {
       return [
         Text('金币 ${e.hero['gold']} · 本次价格 ${e.altarPrice}'),
@@ -398,7 +475,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
               '${{'hp': '生命', 'atk': '攻击', 'def': '防御'}[c]} +${e.altarGain(c)}',
               () {
             final r = e.buyAltar(c);
-            refresh(() {});
+            refresh(() => onResult?.call(r['text']));
             setState(() => peak = math.max(peak, e.hero['hp'] as int));
             toast(r['text']);
             if (r['ok'] == true) {
@@ -420,7 +497,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                 ? null
                 : () {
                     final r = e.merchantBuy(item['id']);
-                    refresh(() {});
+                    refresh(() => onResult?.call(r['text']));
                     setState(() => peak = math.max(peak, e.hero['hp'] as int));
                     toast(r['text']);
                     if (r['ok'] == true) {
@@ -525,6 +602,51 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
     dialog(
         '设置',
         (refresh) => [
+              const Text('界面风格'),
+              const SizedBox(height: 6),
+              LayoutBuilder(builder: (context, box) {
+                final width =
+                    box.maxWidth < 190 ? box.maxWidth : (box.maxWidth - 6) / 2;
+                return Wrap(spacing: 6, runSpacing: 6, children: [
+                  for (final option in towerStyles)
+                    SizedBox(
+                        width: width,
+                        child: Semantics(
+                            selected: skin == option,
+                            child: OutlinedButton(
+                                key: ValueKey('style-${option.id}'),
+                                style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    backgroundColor: option.panel,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            option.radius)),
+                                    side: BorderSide(
+                                        color: skin == option
+                                            ? option.accent
+                                            : option.trim,
+                                        width: skin == option ? 2 : 1)),
+                                onPressed: () => refresh(
+                                    () => widget.onStyleChanged(option)),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                          width: 8,
+                                          height: 8,
+                                          color: option.accent),
+                                      const SizedBox(width: 5),
+                                      Flexible(
+                                          child: Text(option.name,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  fontSize: 12))),
+                                    ])))),
+                ]);
+              }),
+              const SizedBox(height: 12),
               SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('静音'),
@@ -532,7 +654,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                   onChanged: (v) {
                     refresh(() => mutedAudio = v);
                     prefs.setBool('muted', v);
-                    music.setVolume(v ? 0 : volume * .45);
+                    music.setVolume(musicVolume);
                   }),
               const Text('音量'),
               Slider(
@@ -540,7 +662,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                   onChanged: (v) {
                     refresh(() => volume = v);
                     prefs.setDouble('volume', v);
-                    music.setVolume(mutedAudio ? 0 : v * .45);
+                    music.setVolume(musicVolume);
                   })
             ]);
   }
@@ -574,12 +696,12 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                 Navigator.pop(context);
                 Future.microtask(help);
               }),
-              button('返回标题', () {
+              button('返回游戏主界面', () {
                 save('auto', quiet: true);
                 Navigator.pop(context);
                 setState(() => playing = false);
                 bgm(0);
-              })
+              }, icon: const Icon(Icons.home_outlined, size: 17))
             ]);
   }
 
@@ -610,64 +732,89 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => Focus(
-      focusNode: focus,
-      autofocus: true,
-      onKeyEvent: key,
-      child: Scaffold(
-          body: SafeArea(
-              child: Center(
-                  child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                          maxWidth: fixedGameViewport ? double.infinity : 600),
-                      child: Stack(children: [
-                        Positioned.fill(child: playing ? game() : title()),
-                        if (!playing && message.isNotEmpty)
-                          Positioned(
-                              left: 16,
-                              right: 16,
-                              bottom: 12,
-                              child: IgnorePointer(
-                                  child: DecoratedBox(
+  Widget build(BuildContext context) {
+    final viewport = MediaQuery.sizeOf(context);
+    final wideWeb = kIsWeb && viewport.shortestSide >= 600;
+    return Focus(
+        focusNode: focus,
+        autofocus: true,
+        onKeyEvent: key,
+        child: Scaffold(
+            body: SafeArea(
+                child: Center(
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxWidth: wideWeb
+                                ? 480
+                                : fixedGameViewport
+                                    ? double.infinity
+                                    : 600,
+                            maxHeight: wideWeb
+                                ? viewport.height * .94
+                                : double.infinity),
+                        child: Stack(children: [
+                          Positioned.fill(
+                              child: playing && !skin.classic
+                                  ? DecoratedBox(
                                       decoration: BoxDecoration(
-                                          color: const Color(0xf02d2432),
-                                          border: Border.all(
-                                              color: gold.withOpacity(.5)),
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(12),
-                                          child: Text(message,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                  color: gold,
-                                                  fontSize: 12))))))
-                      ]))))));
-  Widget art(String path, {double? size}) =>
-      SvgPicture.asset('assets/images/$path.svg',
-          width: size, height: size, fit: BoxFit.contain);
+                                          gradient: RadialGradient(
+                                              center: Alignment.topCenter,
+                                              radius: 1.4,
+                                              colors: [
+                                            panel,
+                                            skin.background
+                                          ])),
+                                      child: game())
+                                  : playing
+                                      ? game()
+                                      : title()),
+                          if (!playing && message.isNotEmpty)
+                            Positioned(
+                                left: 16,
+                                right: 16,
+                                bottom: 16,
+                                child: Material(
+                                    color: panel,
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                                        child: Text(message,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: gold, fontSize: 12)))))
+                        ]))))));
+  }
+
+  Widget art(String path, {double? size}) {
+    if (skin.pixel &&
+        const ['hero', 'items', 'monsters', 'tiles']
+            .contains(path.split('/').first)) {
+      return Image.asset('assets/images/pixel/$path.png',
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.none);
+    }
+    return SvgPicture.asset('assets/images/$path.svg',
+        width: size, height: size, fit: BoxFit.contain);
+  }
+
   Widget title() => Stack(fit: StackFit.expand, children: [
-        SvgPicture.asset('assets/images/bg/menu.svg', fit: BoxFit.cover),
-        const DecoratedBox(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0x330d0b16), Color(0xf20d0b16)]))),
+        TitleBackdrop(style: skin, paused: modal),
         Center(
             child: SingleChildScrollView(
                 child: Padding(
                     padding: const EdgeInsets.all(32),
                     child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      const Icon(Icons.auto_awesome, color: gold, size: 48),
+                      Icon(Icons.auto_awesome, color: gold, size: 48),
                       const SizedBox(height: 24),
-                      const Text('星穹塔',
+                      Text('星穹塔',
                           style: TextStyle(
                               color: gold,
                               fontSize: 54,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 10)),
-                      const Text('STAR DOME TOWER · 50 层',
+                      Text('STAR DOME TOWER · 50 层',
                           style: TextStyle(
                               color: muted, fontSize: 12, letterSpacing: 2)),
                       const SizedBox(height: 16),
@@ -695,7 +842,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                                 button('操作说明', help)
                               ])),
                       const SizedBox(height: 24),
-                      const Text('方向键 / 滑动移动 · 预判战斗损失',
+                      Text('方向键 / 滑动移动 · 预判战斗损失',
                           style: TextStyle(color: muted, fontSize: 11))
                     ]))))
       ]);
@@ -706,7 +853,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
       decoration: BoxDecoration(
           color: panel,
           border: Border.all(color: gold.withOpacity(.35)),
-          borderRadius: BorderRadius.circular(10)),
+          borderRadius: BorderRadius.circular(radius(10))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         if (activeShop != null || npcMessage.isNotEmpty)
           Row(children: [
@@ -717,7 +864,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                         : activeShop == 'altar'
                             ? '祭坛'
                             : '商人',
-                    style: const TextStyle(color: gold, fontSize: 12))),
+                    style: TextStyle(color: gold, fontSize: 12))),
             InkWell(
                 onTap: () => setState(() {
                       activeShop = null;
@@ -736,13 +883,61 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
               if (npcMessage.isNotEmpty)
                 Text(npcMessage, style: const TextStyle(fontSize: 13)),
               if (message.isNotEmpty)
-                Text(message,
-                    style: const TextStyle(color: gold, fontSize: 12)),
+                Text(message, style: TextStyle(color: gold, fontSize: 12)),
               if (activeShop == null && npcMessage.isEmpty && message.isEmpty)
-                const Text('旅途提示将显示在这里',
-                    style: TextStyle(color: muted, fontSize: 12))
+                Text('旅途提示将显示在这里', style: TextStyle(color: muted, fontSize: 12))
             ])))
       ]));
+
+  Widget compactNotice() {
+    final isStory = npcMessage.isNotEmpty;
+    final text = isStory ? npcMessage : message;
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        child: Material(
+            key: const ValueKey('compact-notice'),
+            color: panel,
+            shape: RoundedRectangleBorder(
+                side: BorderSide(color: gold.withOpacity(.25)),
+                borderRadius: BorderRadius.circular(radius(8))),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+                onTap: text.isEmpty
+                    ? help
+                    : () =>
+                        dialog(isStory ? '引路人' : '旅途提示', (_) => [Text(text)]),
+                child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 9),
+                    child: Row(children: [
+                      Icon(
+                          isStory
+                              ? Icons.chat_bubble_outline
+                              : Icons.info_outline,
+                          size: 15,
+                          color: gold),
+                      const SizedBox(width: 7),
+                      Expanded(
+                          child: Text(text.isEmpty ? '旅途提示 · 点击查看操作说明' : text,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  color: text.isEmpty ? muted : gold,
+                                  fontSize: 12))),
+                      Icon(Icons.chevron_right, size: 16, color: muted),
+                    ])))));
+  }
+
+  Widget gameBrand() => Row(mainAxisSize: MainAxisSize.min, children: [
+        SvgPicture.asset('assets/images/ui/tower-logo.svg',
+            key: const ValueKey('tower-logo'),
+            width: 32,
+            height: 32,
+            excludeFromSemantics: true),
+        const SizedBox(width: 6),
+        Text('星穹塔',
+            style: TextStyle(
+                color: gold, fontSize: 17, fontWeight: FontWeight.bold)),
+      ]);
 
   Widget game() => LayoutBuilder(builder: (context, box) {
         if (box.maxWidth < 320) {
@@ -753,169 +948,211 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                   height: box.maxHeight * 320 / box.maxWidth,
                   child: game()));
         }
+        final compactUi = compactGameUi;
         final compact = box.maxHeight < 650;
-        final headerHeight = compact ? 112.0 : 130.0,
-            controlsHeight = compact ? 130.0 : 164.0,
-            hintHeight = compact ? 92.0 : 156.0;
-        final boardSize = math.max(
-            110.0,
-            math.min(
-                box.maxWidth - 12,
-                box.maxHeight -
-                    headerHeight -
-                    controlsHeight -
-                    hintHeight -
-                    20));
+        final headerHeight = compact ? (compactUi ? 106.0 : 112.0) : 130.0;
+        final controlsHeight = compact ? (compactUi ? 122.0 : 130.0) : 164.0;
+        final hintHeight = compactUi ? 44.0 : (compact ? 92.0 : 156.0);
+
+        Widget boardAndNotice() => LayoutBuilder(builder: (context, space) {
+              final boardSize = math.max(
+                  0.0,
+                  math.min(
+                      space.maxWidth - 12, space.maxHeight - hintHeight - 4));
+              return Center(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(
+                    key: const ValueKey('game-board'),
+                    width: boardSize,
+                    height: boardSize,
+                    child: board()),
+                const SizedBox(height: 4),
+                SizedBox(height: hintHeight, child: compactNotice()),
+              ]));
+            });
+
+        Widget controls(double width) => gameControls(controlsHeight,
+            math.min(compact ? (compactUi ? 114 : 122) : 148, width - 190));
+
+        if (compactUi && box.maxWidth > box.maxHeight) {
+          final sideWidth = math.min(box.maxWidth * .44, 380.0);
+          final controlWidth = math.max(320.0, sideWidth);
+          return Row(children: [
+            Expanded(child: boardAndNotice()),
+            SizedBox(
+                width: sideWidth,
+                child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: SizedBox(
+                        width: controlWidth,
+                        child:
+                            Column(mainAxisSize: MainAxisSize.min, children: [
+                          gameHeader(headerHeight, compactUi),
+                          controls(controlWidth),
+                        ])))),
+          ]);
+        }
         return Column(children: [
-          SizedBox(
-              height: headerHeight,
-              child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Row(children: [
-                          Text('第 ${e.floor} 层',
-                              style: const TextStyle(
-                                  color: gold,
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold)),
-                          const SizedBox(width: 8),
-                          Flexible(
-                              child: Text(e.zoneName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                      color: muted, fontSize: 11))),
-                          const Spacer(),
-                          Semantics(
-                              button: true,
-                              label: '星穹塔',
-                              child: GestureDetector(
-                                  key: const ValueKey('hidden-mode-trigger'),
-                                  behavior: HitTestBehavior.opaque,
-                                  onTap: tapBrand,
-                                  child: const Text('✦ 星穹塔',
-                                      style: TextStyle(
-                                          color: gold,
-                                          fontSize: 19,
-                                          fontWeight: FontWeight.bold))))
-                        ]),
-                        Row(children: [
-                          art('hero/hero', size: 46),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: Column(children: [
-                            Row(children: [
-                              const Text('生命 ', style: TextStyle(fontSize: 12)),
-                              Expanded(
-                                  child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                    ClipRRect(
-                                        borderRadius: BorderRadius.circular(6),
-                                        child: LinearProgressIndicator(
-                                            value: e.hero['hp'] /
-                                                math.max(
-                                                    peak, e.hero['hp'] as int),
-                                            minHeight: 19,
-                                            color: const Color(0xffbd4359),
-                                            backgroundColor:
-                                                const Color(0xff3a1a2c))),
-                                    Text('${e.hero['hp']} / $peak',
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold))
-                                  ]))
-                            ]),
-                            const SizedBox(height: 5),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('⚔ 攻击 ${e.hero['atk']}',
-                                      style: const TextStyle(
-                                          color: Color(0xffff9d89),
-                                          fontSize: 12)),
-                                  Text('◈ 防御 ${e.hero['def']}',
-                                      style: const TextStyle(
-                                          color: Color(0xff9ecbff),
-                                          fontSize: 12)),
-                                  Text('撤销 ${e.history.length}/50',
-                                      style: const TextStyle(
-                                          color: muted, fontSize: 10))
-                                ])
-                          ]))
-                        ]),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              resource(
-                                  'ui/icon_gold', '${e.hero['gold']}', gold),
-                              resource('items/key_y',
-                                  '${e.hero['keys']['yellowKey']}', gold),
-                              resource(
-                                  'items/key_b',
-                                  '${e.hero['keys']['blueKey']}',
-                                  const Color(0xff8ec8ff)),
-                              resource(
-                                  'items/key_r',
-                                  '${e.hero['keys']['redKey']}',
-                                  const Color(0xffff919b))
-                            ])
-                      ]))),
+          gameHeader(headerHeight, compactUi),
           Expanded(
-              child: Center(
-                  child: SizedBox(
-                      key: const ValueKey('game-board'),
-                      width: boardSize,
-                      height: boardSize,
-                      child: board()))),
-          SizedBox(height: hintHeight, child: noticePanel()),
-          SizedBox(
-              key: const ValueKey('game-controls'),
-              height: controlsHeight,
-              child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                            width: box.maxWidth < 320 ? 65 : 85,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  button('快速存档', () => saves(true)),
-                                  button('菜单', menu)
-                                ])),
-                        pad(math.min(compact ? 122 : 148,
-                            box.maxWidth - (box.maxWidth < 320 ? 150 : 190))),
-                        SizedBox(
-                            width: box.maxWidth < 320 ? 65 : 85,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  smallButton(
-                                      '罗盘',
-                                      (e.state['items']['compass'] ?? 0) > 0
-                                          ? compass
-                                          : null),
-                                  smallButton(
-                                      e.near('altar') ? '祭坛' : '商人',
-                                      e.near('altar')
-                                          ? () => openShop('altar')
-                                          : e.near('merchant')
-                                              ? () => openShop('merchant')
-                                              : null),
-                                  smallButton('背包', bag)
-                                ]))
-                      ])))
+              child: compactUi
+                  ? boardAndNotice()
+                  : Center(
+                      child: SizedBox.square(
+                          key: const ValueKey('game-board'),
+                          dimension: math.max(
+                              110.0,
+                              math.min(
+                                  box.maxWidth - 12,
+                                  box.maxHeight -
+                                      headerHeight -
+                                      controlsHeight -
+                                      hintHeight -
+                                      20)),
+                          child: board()))),
+          if (!compactUi) SizedBox(height: hintHeight, child: noticePanel()),
+          controls(box.maxWidth),
         ]);
       });
+
+  Widget gameHeader(double headerHeight, bool compactUi) => SizedBox(
+      key: const ValueKey('game-header'),
+      height: headerHeight,
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(children: [
+                  Text('第 ${e.floor} 层',
+                      style: TextStyle(
+                          color: gold,
+                          fontSize: 23,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 8),
+                  if (compactUi)
+                    Expanded(child: zoneLabel())
+                  else ...[
+                    Flexible(child: zoneLabel()),
+                    const Spacer(),
+                  ],
+                  Semantics(
+                      button: true,
+                      label: '星穹塔',
+                      child: GestureDetector(
+                          key: const ValueKey('hidden-mode-trigger'),
+                          behavior: HitTestBehavior.opaque,
+                          onTap: tapBrand,
+                          child: compactUi
+                              ? gameBrand()
+                              : Text('✦ 星穹塔',
+                                  style: TextStyle(
+                                      color: gold,
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold))))
+                ]),
+                Row(children: [
+                  art('hero/hero', size: compactUi ? 40 : 46),
+                  const SizedBox(width: 10),
+                  Expanded(
+                      child: Column(children: [
+                    Row(children: [
+                      const Text('生命 ', style: TextStyle(fontSize: 12)),
+                      Expanded(
+                          child: Stack(alignment: Alignment.center, children: [
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: LinearProgressIndicator(
+                                value: e.hero['hp'] /
+                                    math.max(peak, e.hero['hp'] as int),
+                                minHeight: 19,
+                                color: const Color(0xffbd4359),
+                                backgroundColor: const Color(0xff3a1a2c))),
+                        Text('${e.hero['hp']} / $peak',
+                            style: const TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.bold))
+                      ]))
+                    ]),
+                    const SizedBox(height: 5),
+                    heroStats(compactUi),
+                  ]))
+                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      resource('ui/icon_gold', '${e.hero['gold']}', gold),
+                      resource('items/key_y', '${e.hero['keys']['yellowKey']}',
+                          gold),
+                      resource('items/key_b', '${e.hero['keys']['blueKey']}',
+                          const Color(0xff8ec8ff)),
+                      resource('items/key_r', '${e.hero['keys']['redKey']}',
+                          const Color(0xffff919b))
+                    ])
+              ])));
+
+  Widget zoneLabel() => Text(e.zoneName,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(color: muted, fontSize: 11));
+
+  Widget heroStats(bool compactUi) {
+    final stats =
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      Text('⚔ 攻击 ${e.hero['atk']}',
+          style: const TextStyle(color: Color(0xffff9d89), fontSize: 12)),
+      Text('◈ 防御 ${e.hero['def']}',
+          style: const TextStyle(color: Color(0xff9ecbff), fontSize: 12)),
+      Text('撤销 ${e.history.length}/50',
+          style: TextStyle(color: muted, fontSize: 10)),
+    ]);
+    if (!compactUi) return stats;
+    return LayoutBuilder(
+        builder: (context, box) => FittedBox(
+            fit: BoxFit.scaleDown,
+            child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: box.maxWidth),
+                child: stats)));
+  }
+
+  Widget gameControls(double controlsHeight, double padSize) => SizedBox(
+      key: const ValueKey('game-controls'),
+      height: controlsHeight,
+      child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            SizedBox(
+                width: 85,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      button('快速存档', () => saves(true)),
+                      button('菜单', menu)
+                    ])),
+            pad(padSize),
+            SizedBox(
+                width: 85,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      smallButton(
+                          '罗盘',
+                          (e.state['items']['compass'] ?? 0) > 0
+                              ? compass
+                              : null),
+                      smallButton(
+                          e.near('altar') ? '祭坛' : '商人',
+                          e.near('altar')
+                              ? () => openShop('altar')
+                              : e.near('merchant')
+                                  ? () => openShop('merchant')
+                                  : null),
+                      smallButton('背包', bag)
+                    ]))
+          ])));
+
   Widget resource(String path, String value, Color color) => Row(children: [
         art(path, size: 19),
         const SizedBox(width: 4),
@@ -973,7 +1210,7 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
             child: IconButton(
                 tooltip: '撤销一步',
                 onPressed: undo,
-                icon: const Icon(Icons.undo, color: gold, size: 22)))
+                icon: Icon(Icons.undo, color: gold, size: 22)))
       ]));
   Widget padKey(String dir, IconData icon) => Semantics(
       label: {'up': '上', 'down': '下', 'left': '左', 'right': '右'}[dir],
@@ -1002,11 +1239,13 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
         },
         child: Container(
             decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xff7b5b36), width: 3),
+                border: Border.all(
+                    color: skin.classic ? const Color(0xff7b5b36) : skin.trim,
+                    width: 3),
                 boxShadow: const [
                   BoxShadow(color: Colors.black54, blurRadius: 18)
                 ],
-                borderRadius: BorderRadius.circular(4)),
+                borderRadius: BorderRadius.circular(radius(4))),
             child: LayoutBuilder(builder: (context, constraints) {
               final cell = constraints.maxWidth / 11;
               final bosses = (e.world['ents'] as Map)
@@ -1091,6 +1330,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
             art(['#', 'w', '%', 'a'].contains(t)
                 ? tiles['wall']
                 : tiles['floor']),
+          if (!skin.classic && e.floor != 50 && t != '*' && t != '~')
+            ColoredBox(color: skin.button.withOpacity(.32)),
           if (overlay != null && !(e.floor == 50 && t == '*')) art(overlay),
           if (sprite != null && entity?['id'] != 'endLord')
             Semantics(
@@ -1119,7 +1360,8 @@ class _TowerScreenState extends State<TowerScreen> with WidgetsBindingObserver {
                         color: pv['canFight'] == true
                             ? const Color(0xe825814d)
                             : const Color(0xe8ae3149),
-                        borderRadius: BorderRadius.circular(3)),
+                        borderRadius:
+                            BorderRadius.circular(skin.pixel ? 0 : 3)),
                     child: Text(pv['loss'] == null ? '×' : '${pv['loss']}',
                         style: TextStyle(
                             color: Colors.white,

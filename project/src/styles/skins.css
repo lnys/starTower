@@ -1,0 +1,64 @@
+/* These rules apply only to alternate skins; the classic style is unchanged. */
+[data-style]:not([data-style='classic']) :is(.device, .app.screen) {
+  --bg: var(--skin-bg);
+  --text: #fff4e8;
+  --gold: var(--skin-accent);
+  --gold-soft: var(--skin-accent);
+  --muted: var(--skin-muted);
+  --panel: var(--skin-panel);
+  --line: color-mix(in srgb, var(--skin-trim), transparent 35%);
+  --line-gold: var(--skin-trim);
+  color: var(--text);
+}
+[data-style]:not([data-style='classic']) .app :is(.title, .game) { background-color: var(--skin-bg); }
+[data-style]:not([data-style='classic']) .app .game {
+  background-image: radial-gradient(ellipse at 50% 0%, var(--skin-panel), transparent 78%);
+}
+[data-style]:not([data-style='classic']) .app .veil {
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--skin-bg), transparent 12%));
+}
+[data-style]:not([data-style='classic']) .app :is(.logo-cn, .brand-name) {
+  background: none; color: var(--gold); animation: none;
+  filter: none; text-shadow: 0 3px 0 var(--skin-bg), 0 0 22px var(--skin-bg);
+}
+[data-style]:not([data-style='classic']) .app .logo-ring { display: none; }
+[data-style]:not([data-style='classic']) .app :is(.menu-btn, .modal, .panel, .travel-notice, .menu-row, .row-btn, .buy, .btn, .letter) {
+  border: 1px solid var(--skin-trim);
+  border-radius: var(--skin-radius);
+  color: var(--text);
+  background: var(--skin-panel);
+}
+[data-style]:not([data-style='classic']) .app :is(.menu-btn.primary, .menu-row.primary, .btn, .btn.alt, .buy:not(.ghost)) {
+  color: var(--gold);
+  background: linear-gradient(var(--skin-button), var(--skin-panel));
+}
+[data-style]:not([data-style='classic']) .app .menu-row.danger { color: #ffaaa6; }
+[data-style]:not([data-style='classic']) .app .board-slot {
+  --tint: color-mix(in srgb, var(--skin-trim), transparent 74%);
+  --glow: color-mix(in srgb, var(--skin-trim), transparent 75%);
+  border-radius: var(--skin-radius);
+}
+[data-style]:not([data-style='classic']) .app .board-frame {
+  border-radius: var(--skin-radius);
+  box-shadow: 0 0 0 2px var(--skin-trim), 0 8px 22px #0008;
+}
+[data-style]:not([data-style='classic']) .app .board { border-radius: var(--skin-radius); }
+[data-style]:not([data-style='classic']) .app .board:not(.rescue-garden) .skin-tint::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: var(--skin-button); opacity: .32;
+}
+[data-style]:not([data-style='classic']) .app .pad {
+  background: radial-gradient(var(--skin-button), var(--skin-bg)); border-color: var(--skin-trim);
+}
+[data-style]:not([data-style='classic']) .app .key.scroll {
+  background: var(--skin-button); border-color: var(--skin-trim); box-shadow: none;
+}
+[data-style='chinese'] .app :is(.logo-cn, .modal-title) { font-weight: 700; letter-spacing: .18em; }
+[data-style='league'] .app :is(.logo-cn, .modal-title) { font-family: var(--font-body); font-weight: 800; }
+[data-style='pixel'] .app :is(.logo-cn, .modal-title, .floor-chip, .hp-text) {
+  --font-display: ui-monospace, 'PingFang SC', 'Microsoft YaHei', monospace;
+}
+[data-style='pixel'] .app :is(.pad, .key.scroll, .res, .chip, .dmg, .avatar) { border-radius: 0; }
+[data-style='pixel'] .app :is(.board img, .board .cell, .avatar img) { image-rendering: pixelated; }
+[data-style='pixel'] .app :is(.hero, .cell img.mon, .cell img.pop) { animation-timing-function: steps(3); }
+[data-style='pixel'] .app :is(.modal, .menu-btn, .board-frame) { box-shadow: 3px 3px 0 var(--skin-trim); }

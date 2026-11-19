@@ -1,7 +1,7 @@
 {
   "name": "mota-tower",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.5",
   "type": "module",
   "description": "星穹塔 · 50 层原创魔塔冒险",
   "scripts": {
@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node tests/star-engine.mjs && node tests/star-rules.mjs && node tools/star-verify.mjs && node tests/star-replay.mjs",
+    "test": "node tests/star-engine.mjs && node tests/star-rules.mjs && node tools/star-verify.mjs && node tests/star-replay.mjs && node --test tests/star-ui.mjs",
     "test:simulate": "node tests/star-playthrough.mjs",
     "test:no-altar": "NO_ALTAR=1 node tests/star-playthrough.mjs",
     "test:double-keys": "DOUBLE_KEYS=1 node tests/star-playthrough.mjs",

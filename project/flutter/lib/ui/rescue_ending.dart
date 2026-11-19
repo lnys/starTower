@@ -31,6 +31,11 @@ class _RescueEndingState extends State<RescueEnding>
   @override
   Widget build(BuildContext context) {
     final still = MediaQuery.of(context).disableAnimations;
+    // Bypass AnimatedSize entirely for reduced motion, including layout ticks.
+    Widget letterSize(Widget child) => still
+        ? child
+        : AnimatedSize(
+            duration: const Duration(milliseconds: 350), child: child);
     return Scaffold(
         backgroundColor: const Color(0xff100d22),
         body: Stack(children: [
@@ -81,52 +86,45 @@ class _RescueEndingState extends State<RescueEnding>
                                     color: Color(0xffe6d6ef),
                                     fontSize: 16)),
                             const SizedBox(height: 24),
-                            AnimatedSize(
-                                duration: still
-                                    ? Duration.zero
-                                    : const Duration(milliseconds: 350),
-                                child: Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                        color: const Color(0xff2c203b),
-                                        border: Border.all(
-                                            color: const Color(0xff8c6385)),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: opened
-                                        ? const Column(children: [
-                                            Icon(Icons.favorite,
-                                                color: Color(0xfff3a6c7),
-                                                size: 32),
-                                            SizedBox(height: 12),
-                                            Text('致我的勇者',
-                                                style: TextStyle(
-                                                    color: Color(0xffffdebd),
-                                                    fontSize: 20)),
-                                            SizedBox(height: 12),
-                                            Text(
-                                                '你走过的每一层，都有一颗星替我记着。\n谢谢你没有放弃。\n这次，换我陪你看遍塔外的星空。',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    height: 1.9,
-                                                    color: Color(0xfff1e1ed))),
-                                            SizedBox(height: 14),
-                                            Text('纪念称号 · 她的唯一勇者',
-                                                style: TextStyle(
-                                                    color: Color(0xffffd56b))),
-                                          ])
-                                        : Column(children: [
-                                            const Icon(Icons.mail_outline,
-                                                size: 32,
-                                                color: Color(0xfff3a6c7)),
-                                            const SizedBox(height: 8),
-                                            const Text('她为你留了一封信'),
-                                            TextButton(
-                                                onPressed: () => setState(
-                                                    () => opened = true),
-                                                child: const Text('拆开这份惊喜')),
-                                          ]))),
+                            letterSize(Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    color: const Color(0xff2c203b),
+                                    border: Border.all(
+                                        color: const Color(0xff8c6385)),
+                                    borderRadius: BorderRadius.circular(20)),
+                                child: opened
+                                    ? const Column(children: [
+                                        Icon(Icons.favorite,
+                                            color: Color(0xfff3a6c7), size: 32),
+                                        SizedBox(height: 12),
+                                        Text('致我的勇者',
+                                            style: TextStyle(
+                                                color: Color(0xffffdebd),
+                                                fontSize: 20)),
+                                        SizedBox(height: 12),
+                                        Text(
+                                            '你走过的每一层，都有一颗星替我记着。\n谢谢你没有放弃。\n这次，换我陪你看遍塔外的星空。',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                height: 1.9,
+                                                color: Color(0xfff1e1ed))),
+                                        SizedBox(height: 14),
+                                        Text('纪念称号 · 她的唯一勇者',
+                                            style: TextStyle(
+                                                color: Color(0xffffd56b))),
+                                      ])
+                                    : Column(children: [
+                                        const Icon(Icons.mail_outline,
+                                            size: 32, color: Color(0xfff3a6c7)),
+                                        const SizedBox(height: 8),
+                                        const Text('她为你留了一封信'),
+                                        TextButton(
+                                            onPressed: () =>
+                                                setState(() => opened = true),
+                                            child: const Text('拆开这份惊喜')),
+                                      ]))),
                             const SizedBox(height: 24),
                             Text(
                                 '通关纪念  ·  50 / 50\n生命 ${widget.hp}  ·  攻击 ${widget.atk}  ·  防御 ${widget.def}',
