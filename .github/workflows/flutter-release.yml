@@ -1,8 +1,7 @@
-name: Flutter desktop release
+name: Flutter release
 on:
   push:
     tags: ['v*']
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -66,9 +65,67 @@ jobs:
           name: flutter-${{ runner.os }}
           path: project/flutter/release/*
           if-no-files-found: error
+  android:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: project/flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: stable
+          cache: true
+      - name: Install Android build tools
+        run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0'
+      - run: flutter pub get --enforce-lockfile
+      - name: Build and verify Android test APK
+        run: |
+          set -euo pipefail
+          flutter build apk --release --no-pub
+          VERSION="$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)"
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify "$APK"
+          mkdir -p release
+          cp "$APK" "release/StarDomeTower-Flutter-$VERSION-android-test.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flutter-Android
+          path: project/flutter/release/*.apk
+          if-no-files-found: error
+  ios-simulator:
+    runs-on: macos-15-intel
+    defaults:
+      run:
+        working-directory: project/flutter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.4'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - name: Build iOS simulator app
+        run: flutter build ios --simulator --debug --no-pub
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
+      - name: Package iOS simulator app
+        run: bash tool/packaging/ios-simulator.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flutter-iOS-Simulator
+          path: project/flutter/release/*-ios-simulator-universal.zip
+          if-no-files-found: error
   publish:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs: [build, android, ios-simulator]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -88,5 +145,11 @@ jobs:
           VERSION="$(sed -n 's/^version: \([^+]*\).*/\1/p' project/flutter/pubspec.yaml)"
           test "$GITHUB_REF_NAME" = "v$VERSION"
           cp project/flutter/tool/packaging/INSTALL.md release/INSTALL.md
-          (cd release && sha256sum *.dmg *.zip *.exe INSTALL.md > SHA256SUMS.txt)
-          gh release create "$GITHUB_REF_NAME" release/* --verify-tag --title "星穹塔 v$VERSION · Flutter 桌面版" --notes-file project/flutter/tool/packaging/RELEASE.md
+          (
+            cd release
+            PREFIX="StarDomeTower-Flutter-$VERSION"
+            sha256sum "$PREFIX-mac-universal.dmg" "$PREFIX-mac-universal.zip" \
+              "$PREFIX-windows-x64-setup.exe" "$PREFIX-windows-x64-portable.zip" \
+              "$PREFIX-android-test.apk" "$PREFIX-ios-simulator-universal.zip" INSTALL.md > SHA256SUMS.txt
+          )
+          gh release create "$GITHUB_REF_NAME" release/* --verify-tag --title "星穹塔 v$VERSION · Flutter" --notes-file project/flutter/tool/packaging/RELEASE.md

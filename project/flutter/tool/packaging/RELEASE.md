@@ -1,12 +1,14 @@
-新增 Flutter 原生游戏版本：仅保留游戏画面，不含网页介绍、二维码或模拟手机外壳。保留 50 层地图、战斗预判、祭坛商人、道具、撤销、自动和手动存档，内置离线素材和音乐。
+## 星穹塔 v1.0.5 · Flutter
 
-本版本源码包含于可复用 `$star-tower` Skill 的 `project/flutter/`。Vue 与 Electron 源码仍保留。
+- iOS、Android、Vue Web 与 Flutter Web 对齐 Logo、标题、棋盘提示和战斗／交易交互。
+- 游戏语言可在简体中文、英语和日语之间即时切换，默认简体中文。新增五套可选界面风格和动态标题页，调高背景音乐和音效。
+- Vue 移除扫码下载推广区，保留触屏操作。游戏规则、地图与存档格式不变。
 
-下载：
-- Mac：`mac-universal.dmg` 安装包，或 `mac-universal.zip`；包含 Intel 与 Apple 芯片架构。
-- Windows：`windows-x64-setup.exe` 安装包，或 `windows-x64-portable.zip`。
-- 安装步骤见 `INSTALL.md`，下载校验见 `SHA256SUMS.txt`。
+| 平台 | 下载文件 | 说明 |
+| --- | --- | --- |
+| Windows x64 | `windows-x64-setup.exe` / `windows-x64-portable.zip` | 安装版／便携版；无发布者签名 |
+| macOS | `mac-universal.dmg` / `mac-universal.zip` | Intel 与 Apple 芯片；临时签名，未经公证 |
+| Android | `android-test.apk` | 测试签名，可侧载测试；不用于 Google Play |
+| iOS | `ios-simulator-universal.zip` | 仅 Xcode 模拟器可用，不是 iPhone 真机 IPA |
 
-验证：两平台流水线均运行静态分析、8 项测试（含 3774 步通关回放）和 Release 构建；Mac 检查双架构、签名完整性及压缩包；Windows 自动执行安装、启动存活检查及卸载。该启动检查不代替 Windows 人工完整游玩。此前 Intel Mac 和 iPhone 模拟器已启动验证；Apple 芯片、Android 和 iPhone 真机未实测。本次不发布移动端安装包。
-
-当前 Mac 未进行 Developer ID 签名或公证，Windows 未签发布者证书。Flutter 存档与 Electron／网页版不自动互通。
+下载后可用 `SHA256SUMS.txt` 校验，安装步骤见 `INSTALL.md`。桌面流水线执行静态分析、测试及包检查；Windows 自动检查安装、启动和卸载，不代替人工完整游玩。移动包不代表已通过真机验证。

@@ -41,7 +41,9 @@ Mac packages are built into `release/` and require macOS 13 or newer. See the [d
 
 ## Updates
 
-**v1.0.5 (source snapshot; not released):** Aligns the UI across iOS, Android, Vue Web, and Flutter Web; adds an animated title screen and five optional themes; raises music and effect volume. Maps, combat rules, and save formats are unchanged. The update also adds in-game language switching and removes the download QR promo from Vue without removing touch controls. See the [changelog](游戏更新说明.md).
+**v1.0.5:** Aligns the UI across iOS, Android, Vue Web, and Flutter Web; adds an animated title screen and five optional themes; raises music and effect volume. Maps, combat rules, and save formats are unchanged. The update also adds in-game language switching and removes the download QR promo from Vue without removing touch controls. See the [changelog](游戏更新说明.md).
+
+[Flutter v1.0.5 downloads](https://github.com/lnys/starTower/releases/tag/v1.0.5): Windows, macOS, Android test APK, and iOS simulator ZIP.
 
 ## Language
 

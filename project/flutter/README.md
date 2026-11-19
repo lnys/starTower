@@ -2,7 +2,7 @@
 
 将 Vue 手机模拟器内的游戏迁为 Flutter 原生界面与 Dart 引擎。保留 50 层地图、战斗预判、机关剧情、商人祭坛、背包罗盘、50 步撤销、自动存档和三个手动存档；不包含项目介绍页、二维码、浏览器手机外壳。无需联网即可游玩。原有 SVG 素材已随项目复制，音效和各层背景音乐由本地脚本生成。
 
-当前源码版本：**1.0.5（构建号 5，暂未发布）**。
+当前源码版本：**1.0.5（构建号 5）**。
 
 ## 运行
 
@@ -84,8 +84,8 @@ python3 flutter/tool/subset_web_font.py /path/to/NotoSansCJKjp-Regular.otf ja
 
 验证详情见 [通关测试.md](通关测试.md)。
 
-## 桌面版发布
+## Flutter 发布
 
 版本及构建号以 `pubspec.yaml` 为准；Mac 构建后运行 `bash tool/packaging/macos.sh` 生成 Universal DMG 和 ZIP。Windows 需 Windows + Visual Studio 工具链构建，由 Inno Setup 6 使用 `tool/packaging/windows.iss` 生成安装包；完整流程见 Skill 仓库 `.github/workflows/flutter-release.yml`。安装说明见 [INSTALL.md](tool/packaging/INSTALL.md)。
 
-推送匹配 pubspec 的版本标签后，GitHub Actions 对两平台执行分析、测试、构建及安装包检查，全部通过后创建 Release。Windows 启动检查属于自动化验证，尚无人工完整游玩结果。Mac 未经 Developer ID 签名和公证，Windows 未签发布者证书。
+推送匹配 pubspec 的版本标签后，GitHub Actions 构建 Windows、macOS、Android APK 和 iOS 模拟器 ZIP，所有构建及检查通过后创建 Release。Android APK 使用测试签名；iOS 模拟器包不能安装到实体 iPhone。Windows 启动检查属于自动化验证，尚无人工完整游玩结果。Mac 未经 Developer ID 签名和公证，Windows 未签发布者证书。

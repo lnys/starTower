@@ -64,7 +64,7 @@ Vue 与 Flutter Web 同步手机端的游戏内交互：右上角先放 Logo 再
 
 Mac 上 `flutter build macos --release` 后执行 `bash tool/packaging/macos.sh` 生成并验证 Universal DMG / ZIP。Windows 必须在 Windows + Visual Studio C++ 工具链环境构建，不能从 Mac 直接交叉编译。Windows 打包配置为 `tool/packaging/windows.iss`（Inno Setup 6），需包含构建目录全部 DLL、data 和 Visual C++ 运行库。
 
-Skill 仓库 `.github/workflows/flutter-release.yml` 在推送版本标签时构建双平台；两者通过才发布 Release，版本标签必须匹配 Flutter pubspec。用户授权发布后才推送发布标签。工作流将安装、启动及卸载 Windows 安装包；启动存活检查不代表人工完整游玩。iOS 真机与商店发布、Android 正式发行另需各自签名配置。Flutter 存档与 Vue/Electron 不自动互通。
+Skill 仓库 `.github/workflows/flutter-release.yml` 在推送版本标签时构建 Windows、macOS、Android 测试 APK 与 iOS 模拟器 ZIP；全部通过才发布 Release，版本标签必须匹配 Flutter pubspec。用户授权发布后才推送发布标签。工作流将安装、启动及卸载 Windows 安装包；启动存活检查不代表人工完整游玩。iOS 真机与商店发布、Android 正式发行另需各自签名配置。Flutter 存档与 Vue/Electron 不自动互通。
 
 ## Electron 桌面版
 

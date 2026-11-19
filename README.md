@@ -20,9 +20,11 @@ https://github.com/user-attachments/assets/ee59ad69-22ea-4ac1-bb5e-8aaae13b1f35
 
 [下载原片（MP4 · 16:9 · 1920 × 1080）](project/video/cl/星穹塔-主宣传片-60s-16x9.mp4)
 
-## 💻 电脑客户端下载（Flutter v1.0.2）
+## Flutter v1.0.5 下载
 
-下方链接为历史安装包。当前 Skill 源码快照为 **v1.0.5，暂未发布**。
+前往 [v1.0.5 发布页](https://github.com/lnys/starTower/releases/tag/v1.0.5) 下载 Windows x64 安装／便携包、macOS 通用版 DMG／ZIP、Android 测试 APK 或 iOS 模拟器 ZIP。iOS 包不能安装到实体 iPhone；Android 包使用测试签名。
+
+## 💻 历史电脑客户端下载（Flutter v1.0.2）
 
 | 平台 | 安装版 | 解压即玩 |
 | --- | --- | --- |
@@ -150,7 +152,7 @@ project/
 - 调高背景音乐和操作音效，保留已保存的设置；加入五套新界面风格，可实时切换并保存。
 - 「返回游戏主界面」按钮加入房屋图标；「新的冒险」标题页加入随主题变化的动态星空，支持减少动态效果。
 - 标题页和游戏内可切换简体中文、英语、日语；Vue 移除扫码下载推广区，保留触屏操作。
-- Skill 已同步源码、资源和 60 秒主宣传片；详见 [游戏更新说明](project/游戏更新说明.md)。本次不新增 Release 或安装包。
+- Skill 已同步源码、资源和 60 秒主宣传片；详见 [游戏更新说明](project/游戏更新说明.md)。Flutter 构建产物见上方 v1.0.5 下载。
 
 ### v1.0.4 — 2026-11-18
 

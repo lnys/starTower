@@ -41,7 +41,9 @@ Mac 产物在 `release/`，支持 macOS 13 及以上。详见 [桌面版打包�
 
 ## 游戏更新
 
-**v1.0.5（源码已整理，暂未发布）**：同步 iOS、Android、Vue Web 与 Flutter Web 的游戏界面；增加标题页动态星空和五套可选风格，调高背景音乐与操作音效。地图、战斗规则与存档格式不变。本版还加入游戏内语言切换，并移除 Vue 的扫码下载推广区，保留触屏操作。详见 [游戏更新说明](游戏更新说明.md)。
+**v1.0.5**：同步 iOS、Android、Vue Web 与 Flutter Web 的游戏界面；增加标题页动态星空和五套可选风格，调高背景音乐与操作音效。地图、战斗规则与存档格式不变。本版还加入游戏内语言切换，并移除 Vue 的扫码下载推广区，保留触屏操作。详见 [游戏更新说明](游戏更新说明.md)。
+
+[v1.0.5 Flutter 下载](https://github.com/lnys/starTower/releases/tag/v1.0.5)：Windows、macOS、Android 测试 APK 和 iOS 模拟器包。
 
 ## 语言
 

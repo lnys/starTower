@@ -20,9 +20,11 @@ https://github.com/user-attachments/assets/ee59ad69-22ea-4ac1-bb5e-8aaae13b1f35
 
 [Download Original (MP4 · 16:9 · 1920 × 1080)](project/video/cl/星穹塔-主宣传片-60s-16x9.mp4)
 
-## Desktop Downloads (Flutter v1.0.2)
+## Flutter v1.0.5 Downloads
 
-The links below are for older installers. The current Skill source snapshot is **v1.0.5 and has not been released**.
+See the [v1.0.5 release](https://github.com/lnys/starTower/releases/tag/v1.0.5) for Windows x64 installer and portable builds, macOS Universal DMG and ZIP, the Android test APK, and the iOS simulator ZIP. The iOS package does not run on physical iPhones; the Android APK is test-signed.
+
+## Older Desktop Downloads (Flutter v1.0.2)
 
 | Platform | Installer | Portable |
 | --- | --- | --- |
@@ -163,7 +165,7 @@ For rules and balance, refer to `魔塔50层新玩法.md`. The engine is pure Ja
 
 - Added Simplified Chinese, English, and Japanese switching from the title screen and in-game. Removed Vue’s download QR promo but kept touch controls.
 
-- Synced the Skill source, assets, and 60-second trailer. See the [changelog](project/游戏更新说明.md). No new release or installers.
+- Synced the Skill source, assets, and 60-second trailer. See the [changelog](project/游戏更新说明.md). See Flutter v1.0.5 downloads above.
 
 ### v1.0.4 — 2026-11-18
 
